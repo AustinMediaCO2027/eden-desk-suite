@@ -3,6 +3,8 @@ import canvaLogo from "@/assets/logos/canva.webp";
 import pepsicoLogo from "@/assets/logos/pepsico.png";
 import bookingLogo from "@/assets/logos/booking.webp";
 import airbnbLogo from "@/assets/logos/airbnb.png";
+import fiverrLogo from "@/assets/logos/fiverr.png";
+import upworkLogo from "@/assets/logos/upwork.png";
 
 const logos = [
   { name: "Lovable", src: lovableLogo },
@@ -10,6 +12,8 @@ const logos = [
   { name: "PepsiCo", src: pepsicoLogo },
   { name: "Booking.com", src: bookingLogo },
   { name: "Airbnb", src: airbnbLogo },
+  { name: "Fiverr", src: fiverrLogo },
+  { name: "Upwork", src: upworkLogo },
 ];
 
 export const LogoMarquee = () => {
