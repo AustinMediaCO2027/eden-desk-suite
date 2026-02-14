@@ -9,7 +9,13 @@ import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import DashboardHome from "./pages/dashboard/DashboardHome";
-import PlaceholderPage from "./pages/dashboard/PlaceholderPage";
+import InvoicesPage from "./pages/dashboard/InvoicesPage";
+import QuotesPage from "./pages/dashboard/QuotesPage";
+import LetterheadPage from "./pages/dashboard/LetterheadPage";
+import TasksPage from "./pages/dashboard/TasksPage";
+import AIAgentPage from "./pages/dashboard/AIAgentPage";
+import BillingPage from "./pages/dashboard/BillingPage";
+import SettingsPage from "./pages/dashboard/SettingsPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -33,13 +39,13 @@ const App = () => (
               }
             >
               <Route index element={<DashboardHome />} />
-              <Route path="invoices" element={<PlaceholderPage />} />
-              <Route path="quotes" element={<PlaceholderPage />} />
-              <Route path="letterhead" element={<PlaceholderPage />} />
-              <Route path="tasks" element={<PlaceholderPage />} />
-              <Route path="ai" element={<PlaceholderPage />} />
-              <Route path="billing" element={<PlaceholderPage />} />
-              <Route path="settings" element={<PlaceholderPage />} />
+              <Route path="invoices" element={<InvoicesPage />} />
+              <Route path="quotes" element={<QuotesPage />} />
+              <Route path="letterhead" element={<LetterheadPage />} />
+              <Route path="tasks" element={<TasksPage />} />
+              <Route path="ai" element={<AIAgentPage />} />
+              <Route path="billing" element={<BillingPage />} />
+              <Route path="settings" element={<SettingsPage />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>
