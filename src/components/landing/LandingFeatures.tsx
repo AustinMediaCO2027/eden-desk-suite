@@ -37,6 +37,27 @@ export const LandingFeatures = () => {
   return (
     <section id="features" className="py-24 md:py-32">
       <div className="container mx-auto px-6">
+        {/* Stats bar */}
+        <div className="mb-20 rounded-2xl border border-border bg-gradient-to-r from-card via-violet-500/5 to-card p-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+            <div>
+              <p className="text-xs text-muted-foreground uppercase tracking-wider mb-2">Active Users</p>
+              <p className="text-4xl md:text-5xl font-bold text-violet-400">+2M</p>
+              <p className="text-xs text-muted-foreground mt-1">Across 120+ countries</p>
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground uppercase tracking-wider mb-2">Insights Delivered</p>
+              <p className="text-4xl md:text-5xl font-bold text-foreground">Real-time</p>
+              <p className="text-xs text-muted-foreground mt-1">Total Transaction Volume</p>
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground uppercase tracking-wider mb-2">System Reliability</p>
+              <p className="text-4xl md:text-5xl font-bold text-violet-400">99%</p>
+              <p className="text-xs text-muted-foreground mt-1">Uptime you can rely on</p>
+            </div>
+          </div>
+        </div>
+
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-5xl font-bold mb-4">
             Everything you need.
@@ -50,10 +71,10 @@ export const LandingFeatures = () => {
           {features.map(({ icon: Icon, title, description }) => (
             <div
               key={title}
-              className="group rounded-xl border border-border bg-card p-8 eden-card-hover"
+              className="group rounded-xl border border-border bg-card/50 backdrop-blur-sm p-8 eden-card-hover"
             >
-              <div className="h-12 w-12 rounded-lg bg-secondary flex items-center justify-center mb-5 group-hover:bg-foreground/10 transition-colors">
-                <Icon className="h-6 w-6 text-foreground" />
+              <div className="h-12 w-12 rounded-xl bg-violet-500/10 flex items-center justify-center mb-5 group-hover:bg-violet-500/20 transition-colors">
+                <Icon className="h-6 w-6 text-violet-400" />
               </div>
               <h3 className="text-lg font-semibold mb-2">{title}</h3>
               <p className="text-sm text-muted-foreground leading-relaxed">{description}</p>

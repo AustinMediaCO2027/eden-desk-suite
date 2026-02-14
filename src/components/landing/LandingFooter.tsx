@@ -1,11 +1,11 @@
-import logoFull from "@/assets/eden_desk_logo_full.png";
+import edenDarkLogo from "@/assets/eden_dark_logo.png";
 
 export const LandingFooter = () => {
   return (
-    <footer className="border-t border-border py-12">
+    <footer className="border-t border-border/50 py-12">
       <div className="container mx-auto px-6">
         <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-          <img src={logoFull} alt="Eden Desk" className="h-6 invert" />
+          <img src={edenDarkLogo} alt="Eden Desk" className="h-6" />
           <p className="text-xs text-muted-foreground">
             © {new Date().getFullYear()} Eden Desk. All rights reserved.
           </p>

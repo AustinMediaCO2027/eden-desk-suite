@@ -183,6 +183,7 @@ export type Database = {
           company_phone: string | null
           company_website: string | null
           created_at: string | null
+          free_generations_used: number
           id: string
           logo_url: string | null
           registration_number: string | null
@@ -208,6 +209,7 @@ export type Database = {
           company_phone?: string | null
           company_website?: string | null
           created_at?: string | null
+          free_generations_used?: number
           id?: string
           logo_url?: string | null
           registration_number?: string | null
@@ -233,6 +235,7 @@ export type Database = {
           company_phone?: string | null
           company_website?: string | null
           created_at?: string | null
+          free_generations_used?: number
           id?: string
           logo_url?: string | null
           registration_number?: string | null

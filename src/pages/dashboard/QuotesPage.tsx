@@ -17,6 +17,8 @@ import { downloadPDF } from "@/lib/pdf";
 import DocumentPreview, { TEMPLATE_OPTIONS, COLOR_OPTIONS } from "@/components/templates/DocumentPreview";
 import SendDocumentDialog from "@/components/dashboard/SendDocumentDialog";
 import type { Json } from "@/integrations/supabase/types";
+import { useGenerationLimit } from "@/hooks/useGenerationLimit";
+import PaywallDialog from "@/components/PaywallDialog";
 
 interface QuoteForm {
   id?: string;
@@ -48,6 +50,7 @@ const QuotesPage = () => {
   const { profile } = useProfile();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { showPaywall, setShowPaywall, checkAndProceed } = useGenerationLimit();
   const [quotes, setQuotes] = useState<any[]>([]);
   const [editing, setEditing] = useState<QuoteForm | null>(null);
   const [previewing, setPreviewing] = useState(false);
@@ -312,9 +315,10 @@ const QuotesPage = () => {
         </div>
         <div className="space-y-2"><Label>Notes / Terms</Label><Textarea value={editing.notes} onChange={e => setEditing({ ...editing, notes: e.target.value })} className="bg-secondary" rows={3} placeholder="Payment terms, thank you message, etc." /></div>
         <div className="flex gap-2">
-          <Button onClick={saveQuote}><Save className="h-4 w-4 mr-1" /> Save</Button>
+          <Button onClick={() => checkAndProceed(saveQuote)}><Save className="h-4 w-4 mr-1" /> Save</Button>
           <Button variant="outline" onClick={() => setPreviewing(true)}>Preview & Download</Button>
         </div>
+        <PaywallDialog open={showPaywall} onOpenChange={setShowPaywall} />
       </div>
     );
   }
