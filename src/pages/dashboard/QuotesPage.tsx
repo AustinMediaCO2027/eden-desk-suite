@@ -147,6 +147,10 @@ const QuotesPage = () => {
             clientEmail={editing.client_email}
             clientName={editing.client_name}
             total={calculateTotals(editing.items, editing.tax_rate).total}
+            items={editing.items}
+            taxRate={editing.tax_rate}
+            date={editing.date}
+            notes={editing.notes}
             profile={profile}
             onClose={() => setShowSendDialog(false)}
           />
