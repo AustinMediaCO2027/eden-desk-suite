@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
@@ -7,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Plus, Trash2, Download, Save, ArrowLeft, X, Send, Palette } from "lucide-react";
+import { Plus, Trash2, Download, Save, ArrowLeft, X, Send, Palette, FileText } from "lucide-react";
 import { LineItem, calculateTotals, emptyLineItem, formatNumberInput, parseNumberInput } from "@/lib/document-utils";
 import CompanyProfileBanner from "@/components/dashboard/CompanyProfileBanner";
 import { downloadPDF } from "@/lib/pdf";
@@ -43,6 +44,7 @@ const emptyQuote = (): QuoteForm => ({
 const QuotesPage = () => {
   const { user } = useAuth();
   const { profile } = useProfile();
+  const navigate = useNavigate();
   const { toast } = useToast();
   const [quotes, setQuotes] = useState<any[]>([]);
   const [editing, setEditing] = useState<QuoteForm | null>(null);
@@ -124,7 +126,38 @@ const QuotesPage = () => {
     });
   };
 
-  // Preview
+  const convertToInvoice = async (q: any) => {
+    if (!user) return;
+    const { subtotal, taxAmount, total } = calculateTotals(
+      (q.items as LineItem[]) || [],
+      q.tax_rate || 15
+    );
+    const invoiceNumber = `INV-${Date.now().toString().slice(-6)}`;
+    const { error } = await supabase.from("invoices").insert({
+      user_id: user.id,
+      invoice_number: invoiceNumber,
+      client_name: q.client_name,
+      client_email: q.client_email || "",
+      client_address: q.client_address || "",
+      date: new Date().toISOString().split("T")[0],
+      due_date: new Date(Date.now() + 30 * 86400000).toISOString().split("T")[0],
+      items: q.items as unknown as Json,
+      tax_rate: q.tax_rate || 15,
+      subtotal,
+      tax_amount: taxAmount,
+      total,
+      notes: q.notes || "",
+      status: "draft",
+    });
+    if (error) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Converted", description: `Invoice ${invoiceNumber} created from ${q.quote_number}.` });
+      navigate("/dashboard/invoices");
+    }
+  };
+
+
   if (previewing && editing) {
     const activeTemplate = previewTemplate || profile?.template_style || "classic";
     return (
@@ -296,6 +329,11 @@ const QuotesPage = () => {
                   <p className="font-semibold">R{Number(q.total).toFixed(2)}</p>
                   <span className={`text-xs px-2 py-0.5 rounded-full ${q.status === 'accepted' ? 'bg-green-900/30 text-green-400' : q.status === 'declined' ? 'bg-red-900/30 text-red-400' : 'bg-yellow-900/30 text-yellow-400'}`}>{q.status}</span>
                 </div>
+                {q.status === 'accepted' && (
+                  <Button variant="outline" size="sm" onClick={(e) => { e.stopPropagation(); convertToInvoice(q); }} title="Convert to Invoice">
+                    <FileText className="h-4 w-4 mr-1" /> Invoice
+                  </Button>
+                )}
                 <Button variant="ghost" size="sm" onClick={(e) => { e.stopPropagation(); loadQuote(q); setPreviewing(true); }}>
                   <Download className="h-4 w-4" />
                 </Button>
