@@ -16,6 +16,8 @@ import { downloadPDF } from "@/lib/pdf";
 import DocumentPreview, { TEMPLATE_OPTIONS, COLOR_OPTIONS } from "@/components/templates/DocumentPreview";
 import SendDocumentDialog from "@/components/dashboard/SendDocumentDialog";
 import type { Json } from "@/integrations/supabase/types";
+import { useGenerationLimit } from "@/hooks/useGenerationLimit";
+import PaywallDialog from "@/components/PaywallDialog";
 
 interface InvoiceForm {
   id?: string;
@@ -48,6 +50,7 @@ const InvoicesPage = () => {
   const { user } = useAuth();
   const { profile } = useProfile();
   const { toast } = useToast();
+  const { showPaywall, setShowPaywall, checkAndProceed } = useGenerationLimit();
   const [invoices, setInvoices] = useState<any[]>([]);
   const [editing, setEditing] = useState<InvoiceForm | null>(null);
   const [previewing, setPreviewing] = useState(false);
@@ -333,9 +336,10 @@ const InvoicesPage = () => {
         </div>
 
         <div className="flex gap-2">
-          <Button onClick={saveInvoice}><Save className="h-4 w-4 mr-1" /> Save</Button>
+          <Button onClick={() => checkAndProceed(saveInvoice)}><Save className="h-4 w-4 mr-1" /> Save</Button>
           <Button variant="outline" onClick={() => setPreviewing(true)}>Preview & Download</Button>
         </div>
+        <PaywallDialog open={showPaywall} onOpenChange={setShowPaywall} />
       </div>
     );
   }

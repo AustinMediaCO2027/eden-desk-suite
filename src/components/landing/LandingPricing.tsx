@@ -73,12 +73,12 @@ export const LandingPricing = () => {
               key={plan.name}
               className={`relative rounded-xl border p-8 flex flex-col ${
                 plan.highlighted
-                  ? "border-foreground bg-foreground/5"
-                  : "border-border bg-card"
+                  ? "border-violet-500/50 bg-violet-500/5"
+                  : "border-border bg-card/50 backdrop-blur-sm"
               } eden-card-hover`}
             >
               {plan.badge && (
-                <span className="absolute -top-3 left-1/2 -translate-x-1/2 text-xs font-medium bg-foreground text-background px-3 py-1 rounded-full">
+                <span className="absolute -top-3 left-1/2 -translate-x-1/2 text-xs font-medium bg-violet-600 text-white px-3 py-1 rounded-full">
                   {plan.badge}
                 </span>
               )}
@@ -93,14 +93,14 @@ export const LandingPricing = () => {
               <ul className="space-y-3 mb-8 flex-1">
                 {plan.features.map((f) => (
                   <li key={f} className="flex items-start gap-2 text-sm text-muted-foreground">
-                    <Check className="h-4 w-4 text-foreground mt-0.5 shrink-0" />
+                    <Check className="h-4 w-4 text-violet-400 mt-0.5 shrink-0" />
                     {f}
                   </li>
                 ))}
               </ul>
               <Link to="/auth?mode=signup">
                 <Button
-                  className="w-full"
+                  className={`w-full ${plan.highlighted ? "bg-violet-600 hover:bg-violet-700 text-white border-0" : ""}`}
                   variant={plan.highlighted ? "default" : "outline"}
                 >
                   Start Free Trial

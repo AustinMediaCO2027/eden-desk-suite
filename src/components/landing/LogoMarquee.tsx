@@ -18,7 +18,7 @@ const logos = [
 
 export const LogoMarquee = () => {
   return (
-    <section className="py-16 overflow-hidden border-y border-border">
+    <section className="py-16 overflow-hidden border-y border-border/50">
       <div className="container mx-auto px-6 mb-8">
         <p className="text-center text-xs text-muted-foreground uppercase tracking-widest">
           Trusted by teams worldwide
@@ -32,8 +32,8 @@ export const LogoMarquee = () => {
           {[...Array(4)].map((_, setIndex) => (
             <div key={setIndex} className="flex shrink-0 items-center gap-16 px-8">
               {logos.map((logo) => (
-                <div key={`${setIndex}-${logo.name}`} className="flex items-center justify-center opacity-40 hover:opacity-70 transition-opacity shrink-0">
-                  <img src={logo.src} alt={logo.name} className={`${logo.className} w-auto object-contain`} />
+                <div key={`${setIndex}-${logo.name}`} className="flex items-center justify-center opacity-60 hover:opacity-100 transition-opacity shrink-0">
+                  <img src={logo.src} alt={logo.name} className={`${logo.className} w-auto object-contain invert brightness-0 invert`} />
                 </div>
               ))}
             </div>

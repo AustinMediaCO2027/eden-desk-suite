@@ -24,6 +24,7 @@ export interface Profile {
   bank_account_number: string;
   bank_branch_code: string;
   bank_account_type: string;
+  free_generations_used: number;
 }
 
 export const useProfile = () => {

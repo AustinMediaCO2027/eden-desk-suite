@@ -13,6 +13,8 @@ import { downloadPDF } from "@/lib/pdf";
 import LetterheadPreview from "@/components/letterhead/LetterheadPreview";
 import { LETTERHEAD_TEMPLATES, LETTERHEAD_COLORS } from "@/components/letterhead/LetterheadTypes";
 import ClientSelector from "@/components/dashboard/ClientSelector";
+import { useGenerationLimit } from "@/hooks/useGenerationLimit";
+import PaywallDialog from "@/components/PaywallDialog";
 
 interface LetterheadForm {
   id?: string;
@@ -51,6 +53,7 @@ const LetterheadPage = () => {
   const { user } = useAuth();
   const { profile } = useProfile();
   const { toast } = useToast();
+  const { showPaywall, setShowPaywall, checkAndProceed } = useGenerationLimit();
   const [letterheads, setLetterheads] = useState<any[]>([]);
   const [editing, setEditing] = useState<LetterheadForm | null>(null);
   const [previewing, setPreviewing] = useState(false);
@@ -386,9 +389,10 @@ const LetterheadPage = () => {
         </div>
 
         <div className="flex gap-2">
-          <Button onClick={saveLetterhead}><Save className="h-4 w-4 mr-1" /> Save</Button>
+          <Button onClick={() => checkAndProceed(saveLetterhead)}><Save className="h-4 w-4 mr-1" /> Save</Button>
           <Button variant="outline" onClick={() => setPreviewing(true)}>Preview & Download</Button>
         </div>
+        <PaywallDialog open={showPaywall} onOpenChange={setShowPaywall} />
       </div>
     );
   }

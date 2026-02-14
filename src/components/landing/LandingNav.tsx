@@ -1,19 +1,19 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import logoFull from "@/assets/eden_desk_logo_full.png";
+import edenDarkLogo from "@/assets/eden_dark_logo.png";
 
 export const LandingNav = () => {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 eden-glass">
       <div className="container mx-auto flex items-center justify-between h-16 px-6">
         <Link to="/" className="flex items-center gap-2">
-          <img src={logoFull} alt="Eden Desk" className="h-7 invert" />
+          <img src={edenDarkLogo} alt="Eden Desk" className="h-7" />
         </Link>
 
-        <div className="hidden md:flex items-center gap-8">
-          <a href="#features" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Features</a>
-          <a href="#pricing" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Pricing</a>
-          <a href="#faq" className="text-sm text-muted-foreground hover:text-foreground transition-colors">FAQ</a>
+        <div className="hidden md:flex items-center gap-1 rounded-full border border-border/50 bg-card/30 backdrop-blur-sm px-2 py-1">
+          <a href="#features" className="text-sm text-muted-foreground hover:text-foreground transition-colors px-4 py-1.5 rounded-full hover:bg-secondary/50">Features</a>
+          <a href="#pricing" className="text-sm text-muted-foreground hover:text-foreground transition-colors px-4 py-1.5 rounded-full hover:bg-secondary/50">Pricing</a>
+          <a href="#faq" className="text-sm text-muted-foreground hover:text-foreground transition-colors px-4 py-1.5 rounded-full hover:bg-secondary/50">FAQ</a>
         </div>
 
         <div className="flex items-center gap-3">
@@ -23,8 +23,8 @@ export const LandingNav = () => {
             </Button>
           </Link>
           <Link to="/auth?mode=signup">
-            <Button size="sm">
-              Start Free Trial
+            <Button size="sm" className="bg-violet-600 hover:bg-violet-700 text-white border-0">
+              Signup
             </Button>
           </Link>
         </div>
