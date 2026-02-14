@@ -38,69 +38,60 @@ const plans = [
     ],
     highlighted: false,
   },
-  {
-    name: "Yearly",
-    price: "R985.99",
-    period: "/year",
-    description: "Best value — save 18%",
-    features: [
-      "Unlimited everything",
-      "All features included",
-      "Unlimited AI prompts",
-      "Priority support",
-    ],
-    highlighted: false,
-    badge: "Best Value",
-  },
 ];
 
 export const LandingPricing = () => {
   return (
-    <section id="pricing" className="py-24 md:py-32">
+    <section id="pricing" className="py-28 md:py-36 border-t border-border/30">
       <div className="container mx-auto px-6">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-5xl font-bold mb-4">
-            Simple, transparent pricing.
+        <div className="text-center mb-20">
+          <p className="text-[10px] text-muted-foreground uppercase tracking-[0.2em] mb-4">Pricing</p>
+          <h2 className="text-3xl md:text-5xl lg:text-6xl font-extrabold mb-5">
+            Plans that grow with you
           </h2>
           <p className="text-muted-foreground text-lg">
             Start with a 7-day free trial. No credit card required.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
           {plans.map((plan) => (
             <div
               key={plan.name}
-              className={`relative rounded-xl border p-8 flex flex-col ${
+              className={`relative rounded-2xl border p-8 flex flex-col transition-all duration-300 hover:-translate-y-1 ${
                 plan.highlighted
-                  ? "border-violet-500/50 bg-violet-500/5"
-                  : "border-border bg-card/50 backdrop-blur-sm"
-              } eden-card-hover`}
+                  ? "border-foreground/30 bg-card/40 shadow-[0_0_40px_rgba(255,255,255,0.03)]"
+                  : "border-border/40 bg-card/20 hover:border-border"
+              }`}
             >
               {plan.badge && (
-                <span className="absolute -top-3 left-1/2 -translate-x-1/2 text-xs font-medium bg-violet-600 text-white px-3 py-1 rounded-full">
+                <span className="absolute -top-3 left-1/2 -translate-x-1/2 text-[10px] font-semibold bg-foreground text-background px-4 py-1 rounded-full uppercase tracking-wider">
                   {plan.badge}
                 </span>
               )}
-              <div className="mb-6">
-                <h3 className="text-lg font-semibold mb-1">{plan.name}</h3>
+              <div className="mb-8">
+                <h3 className="text-lg font-bold mb-1">{plan.name}</h3>
                 <p className="text-xs text-muted-foreground">{plan.description}</p>
               </div>
-              <div className="mb-6">
-                <span className="text-4xl font-bold">{plan.price}</span>
-                <span className="text-muted-foreground text-sm">{plan.period}</span>
+              <div className="mb-8">
+                <span className="text-4xl font-extrabold">{plan.price}</span>
+                <span className="text-muted-foreground text-sm ml-1">{plan.period}</span>
               </div>
-              <ul className="space-y-3 mb-8 flex-1">
+              <ul className="space-y-3.5 mb-10 flex-1">
                 {plan.features.map((f) => (
-                  <li key={f} className="flex items-start gap-2 text-sm text-muted-foreground">
-                    <Check className="h-4 w-4 text-violet-400 mt-0.5 shrink-0" />
+                  <li key={f} className="flex items-start gap-3 text-sm text-muted-foreground">
+                    <Check className="h-4 w-4 text-foreground mt-0.5 shrink-0" />
                     {f}
                   </li>
                 ))}
               </ul>
               <Link to="/auth?mode=signup">
                 <Button
-                  className={`w-full ${plan.highlighted ? "bg-violet-600 hover:bg-violet-700 text-white border-0" : ""}`}
+                  className={`w-full rounded-xl h-11 ${
+                    plan.highlighted
+                      ? "bg-foreground text-background hover:bg-foreground/90 shadow-[0_0_20px_rgba(255,255,255,0.08)]"
+                      : "border-border/60"
+                  }`}
                   variant={plan.highlighted ? "default" : "outline"}
                 >
                   Start Free Trial
