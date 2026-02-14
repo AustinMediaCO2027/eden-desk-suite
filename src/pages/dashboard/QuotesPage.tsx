@@ -7,10 +7,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Plus, Trash2, Download, Save, ArrowLeft, X, Send } from "lucide-react";
+import { Plus, Trash2, Download, Save, ArrowLeft, X, Send, Palette } from "lucide-react";
 import { LineItem, calculateTotals, emptyLineItem } from "@/lib/document-utils";
 import { downloadPDF } from "@/lib/pdf";
-import DocumentPreview from "@/components/templates/DocumentPreview";
+import DocumentPreview, { TEMPLATE_OPTIONS } from "@/components/templates/DocumentPreview";
 import type { Json } from "@/integrations/supabase/types";
 
 interface QuoteForm {
@@ -45,6 +45,7 @@ const QuotesPage = () => {
   const [quotes, setQuotes] = useState<any[]>([]);
   const [editing, setEditing] = useState<QuoteForm | null>(null);
   const [previewing, setPreviewing] = useState(false);
+  const [previewTemplate, setPreviewTemplate] = useState<string>("");
 
   const fetchQuotes = async () => {
     if (!user) return;
@@ -121,9 +122,10 @@ const QuotesPage = () => {
 
   // Preview
   if (previewing && editing) {
+    const activeTemplate = previewTemplate || profile?.template_style || "classic";
     return (
       <div className="space-y-4">
-        <div className="flex gap-2 flex-wrap">
+        <div className="flex gap-2 flex-wrap items-center">
           <Button variant="outline" size="sm" onClick={() => setPreviewing(false)}>
             <ArrowLeft className="h-4 w-4 mr-1" /> Back
           </Button>
@@ -136,10 +138,34 @@ const QuotesPage = () => {
             </Button>
           )}
         </div>
+
+        {/* Template switcher */}
+        <div className="rounded-xl border border-border bg-card p-4">
+          <div className="flex items-center gap-2 mb-3">
+            <Palette className="h-4 w-4 text-muted-foreground" />
+            <p className="text-sm font-medium">Choose Template</p>
+          </div>
+          <div className="flex gap-2 flex-wrap">
+            {TEMPLATE_OPTIONS.map(t => (
+              <button
+                key={t.value}
+                onClick={() => setPreviewTemplate(t.value)}
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                  activeTemplate === t.value
+                    ? "bg-foreground text-background"
+                    : "bg-secondary text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {t.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
         <div className="rounded-lg overflow-hidden border border-border shadow-lg">
           <DocumentPreview
             id="quote-preview"
-            templateStyle={profile?.template_style}
+            templateStyle={activeTemplate}
             type="quote"
             profile={profile}
             documentNumber={editing.quote_number}
