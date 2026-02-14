@@ -8,13 +8,10 @@ const BoldTemplate = ({ type, profile, documentNumber, date, dueDate, clientName
 
   return (
     <div className="bg-white text-black max-w-[210mm] mx-auto" style={{ fontFamily: "Inter, sans-serif", minHeight: "297mm" }}>
-      {/* Dark header block */}
       <div className="px-10 pt-10 pb-8" style={{ backgroundColor: brandColor }}>
         <div className="flex justify-between items-start">
           <div>
-            {profile?.logo_url && (
-              <img src={profile.logo_url} alt="Logo" className="h-12 mb-3 object-contain brightness-0 invert" />
-            )}
+            {profile?.logo_url && <img src={profile.logo_url} alt="Logo" className="h-12 mb-3 object-contain brightness-0 invert" />}
             <h2 className="text-lg font-bold text-white">{profile?.company_name || "Your Company"}</h2>
             <p className="text-xs text-white/70 mt-1">{profile?.company_address}</p>
             <p className="text-xs text-white/70">{profile?.company_email} {profile?.company_phone && `• ${profile.company_phone}`}</p>
@@ -27,7 +24,6 @@ const BoldTemplate = ({ type, profile, documentNumber, date, dueDate, clientName
       </div>
 
       <div className="px-10 py-8">
-        {/* Info row */}
         <div className="flex justify-between mb-8">
           <div className="space-y-3">
             <div>
@@ -55,7 +51,6 @@ const BoldTemplate = ({ type, profile, documentNumber, date, dueDate, clientName
           </div>
         </div>
 
-        {/* Items */}
         <table className="w-full mb-6 text-sm">
           <thead>
             <tr className="border-b-2" style={{ borderColor: brandColor }}>
@@ -69,7 +64,10 @@ const BoldTemplate = ({ type, profile, documentNumber, date, dueDate, clientName
           <tbody>
             {items.map((item, i) => (
               <tr key={i} className="border-b border-gray-100">
-                <td className="py-3 text-gray-800">{item.description}</td>
+                <td className="py-3">
+                  <p className="text-gray-800">{item.description}</p>
+                  {item.details && <p className="text-xs text-gray-400 mt-0.5">{item.details}</p>}
+                </td>
                 <td className="py-3 text-center text-gray-600">{item.quantity}</td>
                 <td className="py-3 text-right text-gray-600">R{Number(item.rate).toFixed(2)}</td>
                 <td className="py-3 text-right text-gray-600">{taxRate}%</td>
@@ -79,7 +77,6 @@ const BoldTemplate = ({ type, profile, documentNumber, date, dueDate, clientName
           </tbody>
         </table>
 
-        {/* Totals */}
         <div className="flex justify-end mb-8">
           <div className="w-64">
             <div className="flex justify-between text-sm py-1.5 text-gray-500"><span>Subtotal</span><span>R{subtotal.toFixed(2)}</span></div>
@@ -90,7 +87,6 @@ const BoldTemplate = ({ type, profile, documentNumber, date, dueDate, clientName
           </div>
         </div>
 
-        {/* Banking */}
         {type === "invoice" && profile?.bank_name && (
           <div className="border-l-4 pl-4 mb-6" style={{ borderColor: brandColor }}>
             <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2">Banking Details</p>

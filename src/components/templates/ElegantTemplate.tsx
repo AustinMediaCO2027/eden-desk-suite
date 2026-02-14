@@ -8,18 +8,14 @@ const ElegantTemplate = ({ type, profile, documentNumber, date, dueDate, clientN
 
   return (
     <div className="bg-white text-black max-w-[210mm] mx-auto" style={{ fontFamily: "'Georgia', 'Times New Roman', serif", minHeight: "297mm" }}>
-      {/* Elegant top border */}
       <div className="h-1 w-full" style={{ backgroundColor: brandColor }} />
-      
       <div className="p-10">
-        {/* Header */}
         <div className="text-center mb-10 pt-4">
           {profile?.logo_url && <img src={profile.logo_url} alt="Logo" className="h-14 mx-auto mb-4 object-contain" />}
           <h1 className="text-3xl font-normal tracking-[0.2em] text-gray-900" style={{ fontFamily: "'Georgia', serif" }}>{title}</h1>
           <div className="w-16 h-[2px] mx-auto mt-3" style={{ backgroundColor: brandColor }} />
         </div>
 
-        {/* Two column info */}
         <div className="flex justify-between mb-10 pb-8 border-b border-gray-200">
           <div className="space-y-1">
             <p className="text-xs uppercase tracking-[0.15em] text-gray-400 mb-2" style={{ fontFamily: "Inter, sans-serif" }}>From</p>
@@ -39,7 +35,6 @@ const ElegantTemplate = ({ type, profile, documentNumber, date, dueDate, clientN
           </div>
         </div>
 
-        {/* Document details */}
         <div className="flex gap-8 mb-8 text-sm" style={{ fontFamily: "Inter, sans-serif" }}>
           <div>
             <p className="text-xs text-gray-400 uppercase tracking-wider">{title} No.</p>
@@ -57,7 +52,6 @@ const ElegantTemplate = ({ type, profile, documentNumber, date, dueDate, clientN
           )}
         </div>
 
-        {/* Items */}
         <table className="w-full mb-8 text-sm" style={{ fontFamily: "Inter, sans-serif" }}>
           <thead>
             <tr className="border-y border-gray-300">
@@ -70,7 +64,10 @@ const ElegantTemplate = ({ type, profile, documentNumber, date, dueDate, clientN
           <tbody>
             {items.map((item, i) => (
               <tr key={i} className="border-b border-gray-100">
-                <td className="py-3 text-gray-800">{item.description}</td>
+                <td className="py-3">
+                  <p className="text-gray-800">{item.description}</p>
+                  {item.details && <p className="text-xs text-gray-400 mt-0.5 italic">{item.details}</p>}
+                </td>
                 <td className="py-3 text-center text-gray-600">{item.quantity}</td>
                 <td className="py-3 text-right text-gray-600">R{Number(item.rate).toFixed(2)}</td>
                 <td className="py-3 text-right text-gray-800">R{Number(item.amount).toFixed(2)}</td>
@@ -79,7 +76,6 @@ const ElegantTemplate = ({ type, profile, documentNumber, date, dueDate, clientN
           </tbody>
         </table>
 
-        {/* Totals */}
         <div className="flex justify-end mb-10" style={{ fontFamily: "Inter, sans-serif" }}>
           <div className="w-56">
             <div className="flex justify-between text-sm py-1.5 text-gray-500"><span>Subtotal</span><span>R{subtotal.toFixed(2)}</span></div>
@@ -93,7 +89,6 @@ const ElegantTemplate = ({ type, profile, documentNumber, date, dueDate, clientN
           </div>
         </div>
 
-        {/* Banking */}
         {type === "invoice" && profile?.bank_name && (
           <div className="border border-gray-200 rounded p-4 mb-6" style={{ fontFamily: "Inter, sans-serif" }}>
             <p className="text-xs uppercase tracking-[0.15em] text-gray-400 mb-2">Banking Details</p>
@@ -119,7 +114,6 @@ const ElegantTemplate = ({ type, profile, documentNumber, date, dueDate, clientN
           <p className="text-xs text-gray-400 italic" style={{ fontFamily: "'Georgia', serif" }}>Thank you for your business.</p>
         </div>
       </div>
-
       <div className="h-1 w-full" style={{ backgroundColor: brandColor }} />
     </div>
   );

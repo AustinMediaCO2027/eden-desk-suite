@@ -1,5 +1,4 @@
-import { Profile } from "@/hooks/useProfile";
-import { LineItem, calculateTotals } from "@/lib/document-utils";
+import { calculateTotals } from "@/lib/document-utils";
 import type { TemplateProps } from "./ClassicTemplate";
 
 const ModernTemplate = ({ type, profile, documentNumber, date, dueDate, clientName, clientEmail, clientAddress, items, taxRate, notes }: TemplateProps) => {
@@ -9,20 +8,13 @@ const ModernTemplate = ({ type, profile, documentNumber, date, dueDate, clientNa
 
   return (
     <div className="bg-white text-black max-w-[210mm] mx-auto" style={{ fontFamily: "Inter, sans-serif", minHeight: "297mm" }}>
-      {/* Top brand strip */}
       <div className="h-3 w-full" style={{ backgroundColor: brandColor }} />
-
       <div className="p-10">
-        {/* Header - logo centered */}
         <div className="text-center mb-8">
           {profile?.logo_url && <img src={profile.logo_url} alt="Logo" className="h-16 mx-auto mb-3 object-contain" />}
           <h2 className="text-xl font-bold text-gray-900">{profile?.company_name || "Your Company"}</h2>
-          <p className="text-xs text-gray-500 mt-1">
-            {profile?.company_address} {profile?.company_phone && `• ${profile.company_phone}`}
-          </p>
-          <p className="text-xs text-gray-500">
-            {profile?.company_email} {profile?.company_website && `• ${profile.company_website}`}
-          </p>
+          <p className="text-xs text-gray-500 mt-1">{profile?.company_address} {profile?.company_phone && `• ${profile.company_phone}`}</p>
+          <p className="text-xs text-gray-500">{profile?.company_email} {profile?.company_website && `• ${profile.company_website}`}</p>
           {(profile?.registration_number || profile?.vat_number) && (
             <p className="text-xs text-gray-400 mt-1">
               {profile?.registration_number && `Reg: ${profile.registration_number}`}
@@ -32,7 +24,6 @@ const ModernTemplate = ({ type, profile, documentNumber, date, dueDate, clientNa
           )}
         </div>
 
-        {/* Document info row */}
         <div className="flex justify-between items-start mb-8 rounded-lg p-5" style={{ backgroundColor: `${brandColor}08`, border: `1px solid ${brandColor}20` }}>
           <div>
             <h1 className="text-2xl font-bold" style={{ color: brandColor }}>{title}</h1>
@@ -44,7 +35,6 @@ const ModernTemplate = ({ type, profile, documentNumber, date, dueDate, clientNa
           </div>
         </div>
 
-        {/* Bill To */}
         <div className="mb-8">
           <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: brandColor }}>Bill To</p>
           <p className="text-sm font-semibold text-gray-900">{clientName}</p>
@@ -52,7 +42,6 @@ const ModernTemplate = ({ type, profile, documentNumber, date, dueDate, clientNa
           <p className="text-xs text-gray-500 whitespace-pre-line">{clientAddress}</p>
         </div>
 
-        {/* Items table */}
         <table className="w-full mb-6 text-sm">
           <thead>
             <tr>
@@ -66,7 +55,10 @@ const ModernTemplate = ({ type, profile, documentNumber, date, dueDate, clientNa
           <tbody>
             {items.map((item, i) => (
               <tr key={i} className={i % 2 === 0 ? "bg-gray-50" : "bg-white"}>
-                <td className="py-2.5 px-3 text-gray-800">{item.description}</td>
+                <td className="py-2.5 px-3">
+                  <p className="text-gray-800">{item.description}</p>
+                  {item.details && <p className="text-xs text-gray-400 mt-0.5">{item.details}</p>}
+                </td>
                 <td className="py-2.5 px-3 text-center text-gray-600">{item.quantity}</td>
                 <td className="py-2.5 px-3 text-right text-gray-600">R{Number(item.rate).toFixed(2)}</td>
                 <td className="py-2.5 px-3 text-right text-gray-600">{taxRate}%</td>
@@ -76,7 +68,6 @@ const ModernTemplate = ({ type, profile, documentNumber, date, dueDate, clientNa
           </tbody>
         </table>
 
-        {/* Totals */}
         <div className="flex justify-end mb-8">
           <div className="w-64 rounded-lg overflow-hidden border border-gray-200">
             <div className="flex justify-between text-sm py-2 px-4 text-gray-600 bg-gray-50"><span>Subtotal</span><span>R{subtotal.toFixed(2)}</span></div>
@@ -85,7 +76,6 @@ const ModernTemplate = ({ type, profile, documentNumber, date, dueDate, clientNa
           </div>
         </div>
 
-        {/* Banking Details */}
         {type === "invoice" && profile?.bank_name && (
           <div className="rounded-lg p-4 mb-6" style={{ backgroundColor: `${brandColor}05`, border: `1px solid ${brandColor}15` }}>
             <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: brandColor }}>Banking Details</p>
@@ -99,7 +89,6 @@ const ModernTemplate = ({ type, profile, documentNumber, date, dueDate, clientNa
           </div>
         )}
 
-        {/* Notes */}
         {notes && (
           <div className="mb-6">
             <p className="text-xs font-semibold uppercase tracking-wider mb-1" style={{ color: brandColor }}>Notes</p>
@@ -107,13 +96,10 @@ const ModernTemplate = ({ type, profile, documentNumber, date, dueDate, clientNa
           </div>
         )}
 
-        {/* Footer */}
         <div className="mt-auto pt-6 text-center">
           <p className="text-xs text-gray-400">Thank you for your business.</p>
         </div>
       </div>
-
-      {/* Bottom brand strip */}
       <div className="h-3 w-full" style={{ backgroundColor: brandColor }} />
     </div>
   );
