@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Plus, Trash2, Download, Save, ArrowLeft, X, Send, Palette } from "lucide-react";
 import { LineItem, calculateTotals, emptyLineItem, formatNumberInput, parseNumberInput } from "@/lib/document-utils";
 import CompanyProfileBanner from "@/components/dashboard/CompanyProfileBanner";
+import ClientSelector from "@/components/dashboard/ClientSelector";
 import { downloadPDF } from "@/lib/pdf";
 import DocumentPreview, { TEMPLATE_OPTIONS, COLOR_OPTIONS } from "@/components/templates/DocumentPreview";
 import SendDocumentDialog from "@/components/dashboard/SendDocumentDialog";
@@ -254,7 +255,10 @@ const InvoicesPage = () => {
             </select>
           </div>
           <div className="space-y-2">
-            <Label>Client Name</Label>
+            <div className="flex items-center justify-between">
+              <Label>Client Name</Label>
+              <ClientSelector onSelect={c => setEditing({ ...editing, client_name: c.name, client_email: c.email, client_address: c.address })} />
+            </div>
             <Input value={editing.client_name} onChange={e => setEditing({ ...editing, client_name: e.target.value })} className="bg-secondary" />
           </div>
           <div className="space-y-2">
