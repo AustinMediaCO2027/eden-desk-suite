@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Plus, Trash2, Download, Save, ArrowLeft, X, Bot, Send, Palette } from "lucide-react";
+import { Plus, Trash2, Download, Save, ArrowLeft, X, Bot, Send, Palette, Mail, FileText } from "lucide-react";
 import { downloadPDF } from "@/lib/pdf";
 import LetterheadPreview from "@/components/letterhead/LetterheadPreview";
 import { LETTERHEAD_TEMPLATES, LETTERHEAD_COLORS } from "@/components/letterhead/LetterheadTypes";
@@ -397,7 +397,31 @@ const LetterheadPage = () => {
         <Button onClick={() => setEditing(emptyLetterhead())}><Plus className="h-4 w-4 mr-1" /> New Letterhead</Button>
       </div>
       {letterheads.length === 0 ? (
-        <div className="rounded-xl border border-border bg-card p-12 text-center"><p className="text-muted-foreground">No letterheads yet. Create your first one.</p></div>
+        <div className="rounded-xl border border-border bg-card p-16 flex flex-col items-center justify-center text-center space-y-6">
+          <div className="relative">
+            <div className="w-20 h-20 rounded-2xl bg-primary/10 flex items-center justify-center">
+              <Mail className="h-9 w-9 text-primary" />
+            </div>
+            <div className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center">
+              <Plus className="h-3.5 w-3.5 text-primary" />
+            </div>
+          </div>
+          <div className="space-y-2 max-w-md">
+            <h3 className="text-lg font-semibold">Create Professional Letterheads</h3>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              Design branded letterheads with your company logo, colours, and details. Choose from Classic, Corporate, or Executive templates — then download as PDF or email directly.
+            </p>
+          </div>
+          <div className="flex flex-wrap justify-center gap-3 text-xs text-muted-foreground">
+            <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-muted/50"><FileText className="h-3.5 w-3.5" /> 3 Templates</span>
+            <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-muted/50"><Palette className="h-3.5 w-3.5" /> Custom Colours</span>
+            <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-muted/50"><Download className="h-3.5 w-3.5" /> PDF Export</span>
+            <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-muted/50"><Send className="h-3.5 w-3.5" /> Email Direct</span>
+          </div>
+          <Button size="lg" className="mt-2" onClick={() => setEditing(emptyLetterhead())}>
+            <Plus className="h-4 w-4 mr-2" /> Create Your First Letterhead
+          </Button>
+        </div>
       ) : (
         <div className="space-y-3">
           {letterheads.map(l => (
