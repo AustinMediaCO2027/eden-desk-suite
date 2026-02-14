@@ -3,12 +3,19 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Bot, Send, User } from "lucide-react";
+import { Bot, Send, User, Sparkles } from "lucide-react";
+import ReactMarkdown from "react-markdown";
 
 interface Message {
   role: "user" | "assistant";
   content: string;
 }
+
+const SUGGESTIONS = [
+  "Write an email to the marketing team",
+  "Summarize key points",
+  "Create a follow-up checklist",
+];
 
 const AIAgentPage = () => {
   const { toast } = useToast();
@@ -17,11 +24,14 @@ const AIAgentPage = () => {
   const [loading, setLoading] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages]);
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
-  const send = async () => {
-    if (!input.trim() || loading) return;
-    const userMsg: Message = { role: "user", content: input };
+  const send = async (text?: string) => {
+    const msg = text || input;
+    if (!msg.trim() || loading) return;
+    const userMsg: Message = { role: "user", content: msg };
     const allMessages = [...messages, userMsg];
     setMessages(allMessages);
     setInput("");
@@ -32,8 +42,9 @@ const AIAgentPage = () => {
         body: { messages: allMessages, type: "chat" },
       });
       if (resp.error) throw new Error(resp.error.message);
-      const text = resp.data?.text || resp.data?.content || "I couldn't generate a response.";
-      setMessages(prev => [...prev, { role: "assistant", content: text }]);
+      const responseText =
+        resp.data?.text || resp.data?.content || "I couldn't generate a response.";
+      setMessages((prev) => [...prev, { role: "assistant", content: responseText }]);
     } catch (err: any) {
       toast({ title: "AI Error", description: err.message, variant: "destructive" });
     } finally {
@@ -41,71 +52,143 @@ const AIAgentPage = () => {
     }
   };
 
+  const hasMessages = messages.length > 0;
+
   return (
     <div className="flex flex-col h-[calc(100vh-8rem)]">
-      <div className="flex items-center gap-2 mb-4">
-        <Bot className="h-6 w-6" />
-        <h1 className="text-2xl font-bold">AI Agent</h1>
-      </div>
+      {/* Messages area */}
+      <div className="flex-1 overflow-y-auto">
+        {!hasMessages ? (
+          /* Empty state – centered like the reference */
+          <div className="flex flex-col items-center justify-center h-full text-center px-4">
+            {/* Sparkle icon with gradient background */}
+            <div className="relative mb-6">
+              <div className="h-16 w-16 rounded-full bg-gradient-to-br from-blue-400 via-violet-500 to-pink-400 flex items-center justify-center shadow-lg shadow-violet-500/20">
+                <Sparkles className="h-7 w-7 text-white" />
+              </div>
+            </div>
+            <h3 className="text-lg font-semibold text-foreground mb-8">
+              Asking with AI Suggestions
+            </h3>
 
-      <div className="flex-1 overflow-y-auto space-y-4 pb-4">
-        {messages.length === 0 && (
-          <div className="flex flex-col items-center justify-center h-full text-center">
-            <Bot className="h-12 w-12 text-muted-foreground mb-4" />
-            <h3 className="text-lg font-semibold mb-1">How can I help?</h3>
-            <p className="text-sm text-muted-foreground max-w-sm">
-              I can help you draft letterheads, write professional emails, create business content, and more.
-            </p>
+            {/* Suggestions card */}
+            <div className="w-full max-w-md rounded-2xl border border-border bg-card shadow-lg p-2 space-y-1">
+              {SUGGESTIONS.map((suggestion, i) => (
+                <button
+                  key={i}
+                  onClick={() => send(suggestion)}
+                  className={`w-full text-left px-4 py-3 rounded-xl text-sm transition-all duration-200 ${
+                    i === 1
+                      ? "bg-gradient-to-r from-blue-500/80 via-violet-500/80 to-pink-400/80 text-white font-medium shadow-md"
+                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                  }`}
+                >
+                  {suggestion}
+                </button>
+              ))}
+
+              {/* Input bar inside the card */}
+              <div className="relative mt-1">
+                <Input
+                  placeholder="Ask, write or search for anything..."
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && send()}
+                  className="bg-muted/50 border-0 rounded-xl pr-12 h-12 text-sm placeholder:text-muted-foreground/60"
+                />
+                <Button
+                  size="icon"
+                  onClick={() => send()}
+                  disabled={loading || !input.trim()}
+                  className="absolute right-1.5 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-foreground text-background hover:bg-foreground/80"
+                >
+                  <Send className="h-3.5 w-3.5" />
+                </Button>
+              </div>
+            </div>
           </div>
-        )}
-        {messages.map((msg, i) => (
-          <div key={i} className={`flex gap-3 ${msg.role === "user" ? "justify-end" : ""}`}>
-            {msg.role === "assistant" && (
-              <div className="h-8 w-8 rounded-lg bg-secondary flex items-center justify-center shrink-0">
-                <Bot className="h-4 w-4" />
+        ) : (
+          /* Chat messages */
+          <div className="space-y-4 pb-4 pt-4">
+            {messages.map((msg, i) => (
+              <div
+                key={i}
+                className={`flex gap-3 ${msg.role === "user" ? "justify-end" : ""}`}
+              >
+                {msg.role === "assistant" && (
+                  <div className="h-8 w-8 rounded-full bg-gradient-to-br from-blue-400 via-violet-500 to-pink-400 flex items-center justify-center shrink-0 shadow-sm">
+                    <Sparkles className="h-3.5 w-3.5 text-white" />
+                  </div>
+                )}
+                <div
+                  className={`rounded-2xl px-4 py-3 max-w-[80%] text-sm ${
+                    msg.role === "user"
+                      ? "bg-foreground text-background"
+                      : "bg-card border border-border"
+                  }`}
+                >
+                  {msg.role === "assistant" ? (
+                    <div className="prose prose-sm dark:prose-invert max-w-none">
+                      <ReactMarkdown>{msg.content}</ReactMarkdown>
+                    </div>
+                  ) : (
+                    <p className="whitespace-pre-wrap">{msg.content}</p>
+                  )}
+                </div>
+                {msg.role === "user" && (
+                  <div className="h-8 w-8 rounded-full bg-foreground flex items-center justify-center shrink-0">
+                    <User className="h-3.5 w-3.5 text-background" />
+                  </div>
+                )}
+              </div>
+            ))}
+            {loading && (
+              <div className="flex gap-3">
+                <div className="h-8 w-8 rounded-full bg-gradient-to-br from-blue-400 via-violet-500 to-pink-400 flex items-center justify-center shrink-0">
+                  <Sparkles className="h-3.5 w-3.5 text-white" />
+                </div>
+                <div className="rounded-2xl px-4 py-3 bg-card border border-border">
+                  <div className="flex gap-1.5">
+                    <div className="h-2 w-2 rounded-full bg-muted-foreground/60 animate-pulse" />
+                    <div
+                      className="h-2 w-2 rounded-full bg-muted-foreground/60 animate-pulse"
+                      style={{ animationDelay: "0.2s" }}
+                    />
+                    <div
+                      className="h-2 w-2 rounded-full bg-muted-foreground/60 animate-pulse"
+                      style={{ animationDelay: "0.4s" }}
+                    />
+                  </div>
+                </div>
               </div>
             )}
-            <div className={`rounded-xl px-4 py-3 max-w-[80%] text-sm ${
-              msg.role === "user" ? "bg-foreground text-background" : "bg-card border border-border"
-            }`}>
-              <p className="whitespace-pre-wrap">{msg.content}</p>
-            </div>
-            {msg.role === "user" && (
-              <div className="h-8 w-8 rounded-lg bg-foreground flex items-center justify-center shrink-0">
-                <User className="h-4 w-4 text-background" />
-              </div>
-            )}
-          </div>
-        ))}
-        {loading && (
-          <div className="flex gap-3">
-            <div className="h-8 w-8 rounded-lg bg-secondary flex items-center justify-center shrink-0">
-              <Bot className="h-4 w-4" />
-            </div>
-            <div className="rounded-xl px-4 py-3 bg-card border border-border">
-              <div className="flex gap-1">
-                <div className="h-2 w-2 rounded-full bg-muted-foreground animate-pulse" />
-                <div className="h-2 w-2 rounded-full bg-muted-foreground animate-pulse" style={{ animationDelay: "0.2s" }} />
-                <div className="h-2 w-2 rounded-full bg-muted-foreground animate-pulse" style={{ animationDelay: "0.4s" }} />
-              </div>
-            </div>
+            <div ref={bottomRef} />
           </div>
         )}
-        <div ref={bottomRef} />
       </div>
 
-      <div className="flex gap-2 pt-4 border-t border-border">
-        <Input
-          placeholder="Ask me anything..."
-          value={input}
-          onChange={e => setInput(e.target.value)}
-          onKeyDown={e => e.key === "Enter" && send()}
-          className="bg-secondary"
-        />
-        <Button onClick={send} disabled={loading || !input.trim()}>
-          <Send className="h-4 w-4" />
-        </Button>
-      </div>
+      {/* Bottom input bar – only shown when there are messages */}
+      {hasMessages && (
+        <div className="pt-4 border-t border-border">
+          <div className="relative">
+            <Input
+              placeholder="Ask, write or search for anything..."
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && send()}
+              className="bg-muted/50 border border-border rounded-xl pr-12 h-12 text-sm"
+            />
+            <Button
+              size="icon"
+              onClick={() => send()}
+              disabled={loading || !input.trim()}
+              className="absolute right-1.5 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-foreground text-background hover:bg-foreground/80"
+            >
+              <Send className="h-3.5 w-3.5" />
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
