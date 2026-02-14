@@ -18,6 +18,7 @@ import {
   Sun,
   Moon,
   ChevronDown,
+  Users,
 } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
@@ -26,6 +27,7 @@ const mainNav = [
   { to: "/dashboard/invoices", icon: Receipt, label: "Invoices" },
   { to: "/dashboard/quotes", icon: FileText, label: "Quotes" },
   { to: "/dashboard/letterhead", icon: Mail, label: "Letterheads" },
+  { to: "/dashboard/clients", icon: Users, label: "Clients" },
   { to: "/dashboard/tasks", icon: CalendarDays, label: "Tasks" },
   { to: "/dashboard/ai", icon: Bot, label: "AI Agent" },
 ];
