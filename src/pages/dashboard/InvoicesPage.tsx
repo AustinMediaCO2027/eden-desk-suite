@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Plus, Trash2, Download, Save, ArrowLeft, X, Send, Palette } from "lucide-react";
+import { Plus, Trash2, Download, Save, ArrowLeft, X, Send, Palette, Copy } from "lucide-react";
 import { LineItem, calculateTotals, emptyLineItem, formatNumberInput, parseNumberInput } from "@/lib/document-utils";
 import CompanyProfileBanner from "@/components/dashboard/CompanyProfileBanner";
 import ClientSelector from "@/components/dashboard/ClientSelector";
@@ -365,7 +365,10 @@ const InvoicesPage = () => {
                     {inv.status}
                   </span>
                 </div>
-                <Button variant="ghost" size="sm" onClick={(e) => { e.stopPropagation(); setEditing({ ...emptyInvoice(), id: inv.id, invoice_number: inv.invoice_number, client_name: inv.client_name, client_email: inv.client_email || "", client_address: inv.client_address || "", date: inv.date || "", due_date: inv.due_date || "", items: (inv.items as LineItem[]) || [emptyLineItem()], tax_rate: inv.tax_rate || 15, notes: inv.notes || "", status: inv.status || "draft" }); setPreviewing(true); }}>
+                <Button variant="ghost" size="sm" title="Duplicate" onClick={(e) => { e.stopPropagation(); setEditing({ ...emptyInvoice(), client_name: inv.client_name, client_email: inv.client_email || "", client_address: inv.client_address || "", items: (inv.items as LineItem[]) || [emptyLineItem()], tax_rate: inv.tax_rate || 15, notes: inv.notes || "", status: "draft" }); }}>
+                  <Copy className="h-4 w-4" />
+                </Button>
+                <Button variant="ghost" size="sm" onClick={(e) => { e.stopPropagation(); loadInvoice(inv); setPreviewing(true); }}>
                   <Download className="h-4 w-4" />
                 </Button>
                 <Button variant="ghost" size="sm" onClick={(e) => { e.stopPropagation(); deleteInvoice(inv.id); }}>
