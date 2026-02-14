@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Plus, Trash2, Download, Save, ArrowLeft, X, Send, Palette, FileText } from "lucide-react";
+import { Plus, Trash2, Download, Save, ArrowLeft, X, Send, Palette, FileText, Copy } from "lucide-react";
 import { LineItem, calculateTotals, emptyLineItem, formatNumberInput, parseNumberInput } from "@/lib/document-utils";
 import CompanyProfileBanner from "@/components/dashboard/CompanyProfileBanner";
 import ClientSelector from "@/components/dashboard/ClientSelector";
@@ -341,6 +341,9 @@ const QuotesPage = () => {
                     <FileText className="h-4 w-4 mr-1" /> Invoice
                   </Button>
                 )}
+                <Button variant="ghost" size="sm" title="Duplicate" onClick={(e) => { e.stopPropagation(); setEditing({ ...emptyQuote(), client_name: q.client_name, client_email: q.client_email || "", client_address: q.client_address || "", items: (q.items as LineItem[]) || [emptyLineItem()], tax_rate: q.tax_rate || 15, notes: q.notes || "", status: "pending" }); }}>
+                  <Copy className="h-4 w-4" />
+                </Button>
                 <Button variant="ghost" size="sm" onClick={(e) => { e.stopPropagation(); loadQuote(q); setPreviewing(true); }}>
                   <Download className="h-4 w-4" />
                 </Button>
