@@ -7,7 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Plus, Trash2, Download, Save, ArrowLeft, X, Bot, Send, Palette, Mail, FileText, Upload, Image } from "lucide-react";
+import { Plus, Trash2, Download, Save, ArrowLeft, X, Bot, Send, Palette, Mail, FileText } from "lucide-react";
+import LogoUploadWidget from "@/components/dashboard/LogoUploadWidget";
 import { downloadPDF } from "@/lib/pdf";
 import LetterheadPreview from "@/components/letterhead/LetterheadPreview";
 import { LETTERHEAD_TEMPLATES, LETTERHEAD_COLORS } from "@/components/letterhead/LetterheadTypes";
@@ -60,27 +61,7 @@ const LetterheadPage = () => {
   const [sending, setSending] = useState(false);
   const [sendEmail, setSendEmail] = useState("");
   const [showSendForm, setShowSendForm] = useState(false);
-  const [logoUploading, setLogoUploading] = useState(false);
 
-  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file || !user) return;
-    setLogoUploading(true);
-    const ext = file.name.split(".").pop();
-    const path = `${user.id}/logo.${ext}`;
-    const { error: uploadError } = await supabase.storage.from("logos").upload(path, file, { upsert: true });
-    if (uploadError) {
-      toast({ title: "Upload failed", description: uploadError.message, variant: "destructive" });
-      setLogoUploading(false);
-      return;
-    }
-    const { data } = supabase.storage.from("logos").getPublicUrl(path);
-    await supabase.from("profiles").update({ logo_url: data.publicUrl }).eq("user_id", user.id);
-    toast({ title: "Logo uploaded successfully" });
-    setLogoUploading(false);
-    // Trigger profile refresh
-    window.location.reload();
-  };
 
   const fetchLetterheads = async () => {
     if (!user) return;
@@ -316,28 +297,7 @@ const LetterheadPage = () => {
           <Button variant="ghost" size="sm" onClick={() => setEditing(null)}><X className="h-4 w-4" /></Button>
         </div>
 
-        {/* Company Logo */}
-        <div className="rounded-xl border border-border bg-card p-4">
-          <div className="flex items-center gap-4">
-            {profile?.logo_url ? (
-              <img src={profile.logo_url} alt="Logo" className="h-14 w-14 rounded-xl object-contain bg-secondary p-2" />
-            ) : (
-              <div className="h-14 w-14 rounded-xl bg-secondary flex items-center justify-center">
-                <Image className="h-6 w-6 text-muted-foreground" />
-              </div>
-            )}
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium">{profile?.logo_url ? "Company Logo" : "Add Company Logo"}</p>
-              <p className="text-xs text-muted-foreground">{profile?.logo_url ? "Your logo will appear on the letterhead" : "Upload a logo to brand your letterheads"}</p>
-            </div>
-            <label className="cursor-pointer shrink-0">
-              <input type="file" accept="image/png,image/jpeg,image/webp" onChange={handleLogoUpload} className="hidden" />
-              <Button variant="outline" size="sm" asChild disabled={logoUploading}>
-                <span><Upload className="h-3.5 w-3.5 mr-1.5" /> {logoUploading ? "Uploading..." : profile?.logo_url ? "Change" : "Upload"}</span>
-              </Button>
-            </label>
-          </div>
-        </div>
+        <LogoUploadWidget logoUrl={profile?.logo_url} />
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">

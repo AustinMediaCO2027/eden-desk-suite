@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Plus, Trash2, Download, Save, ArrowLeft, X, Send, Palette, Copy } from "lucide-react";
+import LogoUploadWidget from "@/components/dashboard/LogoUploadWidget";
 import { LineItem, calculateTotals, emptyLineItem, formatNumberInput, parseNumberInput } from "@/lib/document-utils";
 import CompanyProfileBanner from "@/components/dashboard/CompanyProfileBanner";
 import ClientSelector from "@/components/dashboard/ClientSelector";
@@ -239,6 +240,7 @@ const InvoicesPage = () => {
 
         {/* Company Profile Banner */}
         <CompanyProfileBanner profile={profile} />
+        <LogoUploadWidget logoUrl={profile?.logo_url} />
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
