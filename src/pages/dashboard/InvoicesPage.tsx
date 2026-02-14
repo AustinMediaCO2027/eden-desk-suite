@@ -12,6 +12,7 @@ import { LineItem, calculateTotals, emptyLineItem } from "@/lib/document-utils";
 import CompanyProfileBanner from "@/components/dashboard/CompanyProfileBanner";
 import { downloadPDF } from "@/lib/pdf";
 import DocumentPreview, { TEMPLATE_OPTIONS } from "@/components/templates/DocumentPreview";
+import SendDocumentDialog from "@/components/dashboard/SendDocumentDialog";
 import type { Json } from "@/integrations/supabase/types";
 
 interface InvoiceForm {
@@ -49,6 +50,7 @@ const InvoicesPage = () => {
   const [editing, setEditing] = useState<InvoiceForm | null>(null);
   const [previewing, setPreviewing] = useState(false);
   const [previewTemplate, setPreviewTemplate] = useState<string>("");
+  const [showSendDialog, setShowSendDialog] = useState(false);
 
   const fetchInvoices = async () => {
     if (!user) return;
@@ -141,12 +143,22 @@ const InvoicesPage = () => {
           <Button size="sm" onClick={() => downloadPDF("invoice-preview", `invoice-${editing.invoice_number}`)}>
             <Download className="h-4 w-4 mr-1" /> Download PDF
           </Button>
-          {editing.client_email && (
-            <Button size="sm" variant="outline">
-              <Send className="h-4 w-4 mr-1" /> Send to {editing.client_email}
-            </Button>
-          )}
+          <Button size="sm" variant="outline" onClick={() => setShowSendDialog(true)}>
+            <Send className="h-4 w-4 mr-1" /> Send
+          </Button>
         </div>
+
+        {showSendDialog && (
+          <SendDocumentDialog
+            type="invoice"
+            documentNumber={editing.invoice_number}
+            clientEmail={editing.client_email}
+            clientName={editing.client_name}
+            total={calculateTotals(editing.items, editing.tax_rate).total}
+            profile={profile}
+            onClose={() => setShowSendDialog(false)}
+          />
+        )}
 
         {/* Template switcher */}
         <div className="rounded-xl border border-border bg-card p-4">

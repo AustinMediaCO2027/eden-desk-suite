@@ -12,6 +12,7 @@ import { LineItem, calculateTotals, emptyLineItem } from "@/lib/document-utils";
 import CompanyProfileBanner from "@/components/dashboard/CompanyProfileBanner";
 import { downloadPDF } from "@/lib/pdf";
 import DocumentPreview, { TEMPLATE_OPTIONS } from "@/components/templates/DocumentPreview";
+import SendDocumentDialog from "@/components/dashboard/SendDocumentDialog";
 import type { Json } from "@/integrations/supabase/types";
 
 interface QuoteForm {
@@ -47,6 +48,7 @@ const QuotesPage = () => {
   const [editing, setEditing] = useState<QuoteForm | null>(null);
   const [previewing, setPreviewing] = useState(false);
   const [previewTemplate, setPreviewTemplate] = useState<string>("");
+  const [showSendDialog, setShowSendDialog] = useState(false);
 
   const fetchQuotes = async () => {
     if (!user) return;
@@ -133,12 +135,22 @@ const QuotesPage = () => {
           <Button size="sm" onClick={() => downloadPDF("quote-preview", `quote-${editing.quote_number}`)}>
             <Download className="h-4 w-4 mr-1" /> Download PDF
           </Button>
-          {editing.client_email && (
-            <Button size="sm" variant="outline">
-              <Send className="h-4 w-4 mr-1" /> Send to {editing.client_email}
-            </Button>
-          )}
+          <Button size="sm" variant="outline" onClick={() => setShowSendDialog(true)}>
+            <Send className="h-4 w-4 mr-1" /> Send
+          </Button>
         </div>
+
+        {showSendDialog && (
+          <SendDocumentDialog
+            type="quote"
+            documentNumber={editing.quote_number}
+            clientEmail={editing.client_email}
+            clientName={editing.client_name}
+            total={calculateTotals(editing.items, editing.tax_rate).total}
+            profile={profile}
+            onClose={() => setShowSendDialog(false)}
+          />
+        )}
 
         {/* Template switcher */}
         <div className="rounded-xl border border-border bg-card p-4">
