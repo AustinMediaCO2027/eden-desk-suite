@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      clients: {
+        Row: {
+          address: string | null
+          created_at: string | null
+          email: string | null
+          id: string
+          name: string
+          phone: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          address?: string | null
+          created_at?: string | null
+          email?: string | null
+          id?: string
+          name?: string
+          phone?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          address?: string | null
+          created_at?: string | null
+          email?: string | null
+          id?: string
+          name?: string
+          phone?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       invoices: {
         Row: {
           client_address: string | null
