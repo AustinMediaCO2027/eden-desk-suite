@@ -17,10 +17,11 @@ import {
   X,
   Sun,
   Moon,
-  ChevronDown,
   Users,
+  MoreHorizontal,
 } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import edenLogo from "@/assets/eden_desk_icon.png";
 
 const mainNav = [
   { to: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
@@ -29,6 +30,9 @@ const mainNav = [
   { to: "/dashboard/letterhead", icon: Mail, label: "Letterheads" },
   { to: "/dashboard/clients", icon: Users, label: "Clients" },
   { to: "/dashboard/tasks", icon: CalendarDays, label: "Tasks" },
+];
+
+const toolsNav = [
   { to: "/dashboard/ai", icon: Bot, label: "AI Agent" },
 ];
 
@@ -48,6 +52,9 @@ export const DashboardLayout = () => {
     ? profile.company_name.slice(0, 2).toUpperCase()
     : user?.email?.slice(0, 2).toUpperCase() || "ED";
 
+  const displayName = profile?.company_name || user?.email?.split("@")[0] || "User";
+  const displayRole = profile?.subscription_plan === "trial" ? "Free Trial" : "Admin";
+
   const renderNavItem = ({ to, icon: Icon, label }: typeof mainNav[0]) => {
     const isActive = location.pathname === to;
     return (
@@ -55,96 +62,93 @@ export const DashboardLayout = () => {
         key={to}
         to={to}
         onClick={() => setSidebarOpen(false)}
-        className={`relative flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] transition-colors ${
+        className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all duration-150 ${
           isActive
-            ? "bg-sidebar-accent text-sidebar-foreground font-medium"
-            : "text-muted-foreground hover:text-sidebar-foreground hover:bg-sidebar-accent/50"
+            ? "bg-primary text-primary-foreground font-medium shadow-sm"
+            : "text-muted-foreground hover:text-sidebar-foreground hover:bg-sidebar-accent/60"
         }`}
       >
-        {isActive && (
-          <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 bg-foreground rounded-r-full" />
-        )}
-        <Icon className="h-4 w-4 shrink-0" />
-        {label}
+        <Icon className={`h-[18px] w-[18px] shrink-0 ${isActive ? "text-primary-foreground" : ""}`} />
+        <span>{label}</span>
       </Link>
     );
   };
+
+  const renderGroupLabel = (label: string) => (
+    <p className="text-[10px] font-semibold text-muted-foreground/70 uppercase tracking-[0.12em] px-3 mb-1.5 mt-6 first:mt-0">
+      {label}
+    </p>
+  );
 
   return (
     <div className="flex h-screen bg-background overflow-hidden">
       {/* Mobile overlay */}
       {sidebarOpen && (
-        <div className="fixed inset-0 bg-background/80 z-40 lg:hidden" onClick={() => setSidebarOpen(false)} />
+        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-40 lg:hidden" onClick={() => setSidebarOpen(false)} />
       )}
 
       {/* Sidebar */}
       <aside
-        className={`fixed lg:static inset-y-0 left-0 z-50 w-60 bg-sidebar border-r border-sidebar-border flex flex-col transform transition-transform lg:translate-x-0 ${
+        className={`fixed lg:static inset-y-0 left-0 z-50 w-[240px] bg-sidebar border-r border-sidebar-border flex flex-col transform transition-transform lg:translate-x-0 ${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
         {/* Logo section */}
-        <div className="px-5 pt-6 pb-2">
-          <div className="flex items-center justify-between">
-            <Link to="/dashboard">
-              <h1 className="text-base font-bold tracking-tight">eden desk</h1>
-            </Link>
-            <button className="lg:hidden text-sidebar-foreground" onClick={() => setSidebarOpen(false)}>
-              <X className="h-4 w-4" />
-            </button>
-          </div>
-          <p className="text-[11px] text-muted-foreground mt-0.5">Your Business. Organized.</p>
-        </div>
-
-        {/* User profile card */}
-        <div className="mx-3 mt-4 mb-2 p-3 rounded-lg bg-sidebar-accent/50 border border-sidebar-border">
-          <div className="flex items-center gap-2.5">
-            <Avatar className="h-8 w-8">
-              <AvatarFallback className="bg-foreground text-background text-xs font-semibold">
-                {userInitials}
-              </AvatarFallback>
-            </Avatar>
-            <div className="flex-1 min-w-0">
-              <p className="text-[13px] font-medium truncate">
-                {profile?.company_name || user?.email?.split("@")[0] || "User"}
-              </p>
-              <p className="text-[11px] text-muted-foreground truncate">
-                {profile?.subscription_plan === "trial" ? "Free Trial" : "Admin"}
-              </p>
-            </div>
-            <ChevronDown className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
-          </div>
+        <div className="px-5 pt-5 pb-1 flex items-center justify-between">
+          <Link to="/dashboard" className="flex items-center gap-2.5">
+            <img src={edenLogo} alt="Eden Desk" className="h-7 w-7 rounded-lg" />
+            <span className="text-[15px] font-bold tracking-tight">eden desk</span>
+          </Link>
+          <button className="lg:hidden text-sidebar-foreground" onClick={() => setSidebarOpen(false)}>
+            <X className="h-4 w-4" />
+          </button>
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 px-3 pt-4 overflow-y-auto">
-          <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest px-3 mb-2">Main</p>
+        <nav className="flex-1 px-3 pt-5 overflow-y-auto space-y-0.5">
+          {renderGroupLabel("Documents")}
           <div className="space-y-0.5">
             {mainNav.map(renderNavItem)}
           </div>
 
-          <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest px-3 mb-2 mt-6">Account</p>
+          {renderGroupLabel("Tools")}
+          <div className="space-y-0.5">
+            {toolsNav.map(renderNavItem)}
+          </div>
+
+          {renderGroupLabel("Account")}
           <div className="space-y-0.5">
             {accountNav.map(renderNavItem)}
+            <button
+              onClick={toggleTheme}
+              className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-muted-foreground hover:text-sidebar-foreground hover:bg-sidebar-accent/60 w-full transition-all duration-150"
+            >
+              {theme === "dark" ? <Sun className="h-[18px] w-[18px]" /> : <Moon className="h-[18px] w-[18px]" />}
+              <span>{theme === "dark" ? "Light Mode" : "Dark Mode"}</span>
+            </button>
           </div>
         </nav>
 
-        {/* Bottom actions */}
-        <div className="p-3 border-t border-sidebar-border space-y-0.5">
-          <button
-            onClick={toggleTheme}
-            className="flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] text-muted-foreground hover:text-sidebar-foreground hover:bg-sidebar-accent/50 w-full transition-colors"
-          >
-            {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-            {theme === "dark" ? "Light Mode" : "Dark Mode"}
-          </button>
-          <button
-            onClick={signOut}
-            className="flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] text-muted-foreground hover:text-destructive hover:bg-sidebar-accent/50 w-full transition-colors"
-          >
-            <LogOut className="h-4 w-4" />
-            Logout
-          </button>
+        {/* User card at bottom */}
+        <div className="p-3 border-t border-sidebar-border">
+          <div className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-sidebar-accent/60 transition-colors cursor-pointer">
+            <Avatar className="h-9 w-9 shrink-0">
+              <AvatarFallback className="bg-primary text-primary-foreground text-xs font-semibold">
+                {userInitials}
+              </AvatarFallback>
+            </Avatar>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium truncate leading-tight">{displayName}</p>
+              <p className="text-[11px] text-muted-foreground truncate leading-tight">{displayRole}</p>
+            </div>
+            <button
+              onClick={(e) => { e.stopPropagation(); signOut(); }}
+              title="Logout"
+              className="text-muted-foreground hover:text-destructive transition-colors shrink-0"
+            >
+              <LogOut className="h-4 w-4" />
+            </button>
+          </div>
         </div>
       </aside>
 
@@ -155,7 +159,10 @@ export const DashboardLayout = () => {
           <button onClick={() => setSidebarOpen(true)}>
             <Menu className="h-5 w-5" />
           </button>
-          <span className="text-sm font-bold mx-auto">eden desk</span>
+          <div className="flex items-center gap-2 mx-auto">
+            <img src={edenLogo} alt="Eden Desk" className="h-5 w-5 rounded" />
+            <span className="text-sm font-bold">eden desk</span>
+          </div>
         </header>
 
         <main className="flex-1 overflow-y-auto">
