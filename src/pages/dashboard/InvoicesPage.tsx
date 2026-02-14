@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Plus, Trash2, Download, Save, ArrowLeft, X, Send, Palette } from "lucide-react";
 import { LineItem, calculateTotals, emptyLineItem } from "@/lib/document-utils";
+import CompanyProfileBanner from "@/components/dashboard/CompanyProfileBanner";
 import { downloadPDF } from "@/lib/pdf";
 import DocumentPreview, { TEMPLATE_OPTIONS } from "@/components/templates/DocumentPreview";
 import type { Json } from "@/integrations/supabase/types";
@@ -201,6 +202,9 @@ const InvoicesPage = () => {
           <h1 className="text-2xl font-bold">{editing.id ? "Edit Invoice" : "New Invoice"}</h1>
           <Button variant="ghost" size="sm" onClick={() => setEditing(null)}><X className="h-4 w-4" /></Button>
         </div>
+
+        {/* Company Profile Banner */}
+        <CompanyProfileBanner profile={profile} />
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">

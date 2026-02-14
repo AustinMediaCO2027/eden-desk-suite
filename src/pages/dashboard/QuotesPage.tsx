@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Plus, Trash2, Download, Save, ArrowLeft, X, Send, Palette } from "lucide-react";
 import { LineItem, calculateTotals, emptyLineItem } from "@/lib/document-utils";
+import CompanyProfileBanner from "@/components/dashboard/CompanyProfileBanner";
 import { downloadPDF } from "@/lib/pdf";
 import DocumentPreview, { TEMPLATE_OPTIONS } from "@/components/templates/DocumentPreview";
 import type { Json } from "@/integrations/supabase/types";
@@ -192,6 +193,10 @@ const QuotesPage = () => {
           <h1 className="text-2xl font-bold">{editing.id ? "Edit Quote" : "New Quote"}</h1>
           <Button variant="ghost" size="sm" onClick={() => setEditing(null)}><X className="h-4 w-4" /></Button>
         </div>
+
+        {/* Company Profile Banner */}
+        <CompanyProfileBanner profile={profile} />
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2"><Label>Quote Number</Label><Input value={editing.quote_number} onChange={e => setEditing({ ...editing, quote_number: e.target.value })} className="bg-secondary" /></div>
           <div className="space-y-2"><Label>Status</Label>
@@ -255,6 +260,9 @@ const QuotesPage = () => {
                   <p className="font-semibold">R{Number(q.total).toFixed(2)}</p>
                   <span className={`text-xs px-2 py-0.5 rounded-full ${q.status === 'accepted' ? 'bg-green-900/30 text-green-400' : q.status === 'declined' ? 'bg-red-900/30 text-red-400' : 'bg-yellow-900/30 text-yellow-400'}`}>{q.status}</span>
                 </div>
+                <Button variant="ghost" size="sm" onClick={(e) => { e.stopPropagation(); loadQuote(q); setPreviewing(true); }}>
+                  <Download className="h-4 w-4" />
+                </Button>
                 <Button variant="ghost" size="sm" onClick={(e) => { e.stopPropagation(); deleteQuote(q.id); }}><Trash2 className="h-4 w-4" /></Button>
               </div>
             </div>
