@@ -2,16 +2,14 @@ import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
 import { supabase } from "@/integrations/supabase/client";
-import { Receipt, FileText, Mail, CalendarDays } from "lucide-react";
+import { Receipt, FileText, Mail, CalendarDays, Check } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
 } from "@/components/ui/dialog";
+import edenIcon from "@/assets/eden_desk_icon.png";
 
 const DashboardHome = () => {
   const { user } = useAuth();
@@ -37,11 +35,17 @@ const DashboardHome = () => {
     };
     fetchStats();
 
-    // Show trial popup for new users
     if (profile?.subscription_plan === "trial") {
       setShowTrial(true);
     }
   }, [user, profile]);
+
+  const trialFeatures = [
+    "Invoices & Quotes",
+    "Letterheads with AI drafting",
+    "PDF download & email",
+    "5 AI prompts per day",
+  ];
 
   const statCards = [
     { icon: Receipt, label: "Invoices", value: stats.invoices, desc: "Total created", to: "/dashboard/invoices" },
@@ -54,26 +58,45 @@ const DashboardHome = () => {
     <div className="space-y-8">
       {/* Trial popup */}
       <Dialog open={showTrial} onOpenChange={setShowTrial}>
-        <DialogContent className="bg-card border-border">
-          <DialogHeader>
-            <DialogTitle className="text-xl">🎉 Welcome to Eden Desk!</DialogTitle>
-            <DialogDescription className="text-muted-foreground">
-              You have a <span className="font-semibold text-foreground">7-day free trial</span> of the Silver plan.
-              After your trial, continue for just <span className="font-semibold text-foreground">R59.99/month</span>.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-3 mt-2">
-            <p className="text-sm text-muted-foreground">Your trial includes:</p>
-            <ul className="text-sm space-y-1 text-muted-foreground">
-              <li>✓ Invoices & Quotes</li>
-              <li>✓ Letterheads with AI drafting</li>
-              <li>✓ PDF download & email</li>
-              <li>✓ 5 AI prompts per day</li>
-            </ul>
+        <DialogContent className="bg-card border-border p-0 overflow-hidden max-w-md">
+          {/* Top accent strip */}
+          <div className="h-1 w-full bg-gradient-to-r from-foreground/20 via-foreground to-foreground/20" />
+          
+          <div className="px-8 pt-8 pb-6 flex flex-col items-center text-center">
+            {/* Eden icon - white version */}
+            <div className="mb-6">
+              <img src={edenIcon} alt="Eden Desk" className="h-14 w-14 invert" />
+            </div>
+
+            <h2 className="text-2xl font-bold tracking-tight mb-2">Welcome to Eden Desk</h2>
+            <p className="text-sm text-muted-foreground leading-relaxed max-w-xs">
+              Your <span className="text-foreground font-medium">7-day free trial</span> of the Silver plan is active.
+              Continue after for just <span className="text-foreground font-medium">R59.99/month</span>.
+            </p>
+
+            {/* Features list */}
+            <div className="w-full mt-6 space-y-2.5">
+              {trialFeatures.map((feature) => (
+                <div key={feature} className="flex items-center gap-3 text-sm text-muted-foreground">
+                  <div className="h-5 w-5 rounded-full bg-foreground/10 flex items-center justify-center shrink-0">
+                    <Check className="h-3 w-3 text-foreground" />
+                  </div>
+                  <span>{feature}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* CTA */}
+            <Button className="w-full mt-8 h-11 text-sm font-medium" onClick={() => setShowTrial(false)}>
+              Start Exploring
+            </Button>
+            <button
+              onClick={() => setShowTrial(false)}
+              className="mt-3 text-xs text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Maybe later
+            </button>
           </div>
-          <Button className="w-full mt-4" onClick={() => setShowTrial(false)}>
-            Start Exploring
-          </Button>
         </DialogContent>
       </Dialog>
 
