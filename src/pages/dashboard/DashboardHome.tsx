@@ -13,7 +13,10 @@ import {
   Clock,
   TrendingUp,
   AlertCircle,
-  CheckCircle2,
+  ArrowUpRight,
+  Mail,
+  Users,
+  Bot,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -23,14 +26,6 @@ import {
   Dialog,
   DialogContent,
 } from "@/components/ui/dialog";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import edenIcon from "@/assets/eden_desk_icon.png";
 import { format } from "date-fns";
 
@@ -67,7 +62,6 @@ const DashboardHome = () => {
     if (!user) return;
 
     const fetchData = async () => {
-      // Fetch recent invoices
       const { data: invData } = await supabase
         .from("invoices")
         .select("id, invoice_number, status, date, client_name, total")
@@ -77,7 +71,6 @@ const DashboardHome = () => {
 
       if (invData) setInvoices(invData);
 
-      // Fetch upcoming tasks
       const { data: taskData } = await supabase
         .from("tasks")
         .select("id, title, date, status")
@@ -88,7 +81,6 @@ const DashboardHome = () => {
 
       if (taskData) setTasks(taskData);
 
-      // Calculate stats
       const allInvoices = invData || [];
       const outstanding = allInvoices
         .filter((i) => i.status !== "paid")
@@ -148,24 +140,34 @@ const DashboardHome = () => {
     switch (status) {
       case "paid":
         return (
-          <Badge variant="outline" className="border-foreground/20 text-foreground text-[11px] font-medium">
+          <span className="inline-flex items-center gap-1 text-[11px] font-medium text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 px-2 py-0.5 rounded-full">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
             Paid
-          </Badge>
+          </span>
         );
       case "overdue":
         return (
-          <Badge variant="outline" className="border-destructive/40 text-destructive text-[11px] font-medium">
+          <span className="inline-flex items-center gap-1 text-[11px] font-medium text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-500/10 px-2 py-0.5 rounded-full">
+            <span className="w-1.5 h-1.5 rounded-full bg-red-500" />
             Overdue
-          </Badge>
+          </span>
         );
       default:
         return (
-          <Badge variant="secondary" className="text-[11px] font-medium">
+          <span className="inline-flex items-center gap-1 text-[11px] font-medium text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
+            <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground/50" />
             Draft
-          </Badge>
+          </span>
         );
     }
   };
+
+  const quickActions = [
+    { label: "New Invoice", icon: Receipt, to: "/dashboard/invoices", color: "bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400" },
+    { label: "New Quote", icon: FileText, to: "/dashboard/quotes", color: "bg-violet-50 dark:bg-violet-500/10 text-violet-600 dark:text-violet-400" },
+    { label: "Letterhead", icon: Mail, to: "/dashboard/letterhead", color: "bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400" },
+    { label: "AI Agent", icon: Bot, to: "/dashboard/ai", color: "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400" },
+  ];
 
   const analyticsCards = [
     {
@@ -173,24 +175,32 @@ const DashboardHome = () => {
       value: formatCurrency(stats.outstanding),
       label: "Total unpaid invoices",
       icon: AlertCircle,
+      iconColor: "text-orange-500",
+      bgColor: "bg-orange-50 dark:bg-orange-500/10",
     },
     {
       title: "Due in 30 Days",
       value: formatCurrency(stats.dueSoon),
       label: "Upcoming payments",
       icon: Clock,
+      iconColor: "text-blue-500",
+      bgColor: "bg-blue-50 dark:bg-blue-500/10",
     },
     {
-      title: "Revenue This Month",
+      title: "Revenue",
       value: formatCurrency(stats.revenueMonth),
       label: "Paid this month",
       icon: TrendingUp,
+      iconColor: "text-emerald-500",
+      bgColor: "bg-emerald-50 dark:bg-emerald-500/10",
     },
     {
-      title: "Tasks Due Today",
+      title: "Tasks Due",
       value: stats.tasksDue.toString(),
       label: "Pending tasks",
       icon: CalendarDays,
+      iconColor: "text-violet-500",
+      bgColor: "bg-violet-50 dark:bg-violet-500/10",
     },
   ];
 
@@ -232,31 +242,58 @@ const DashboardHome = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Top bar */}
-      <div className="px-6 lg:px-8 py-5 border-b border-border flex items-center justify-between">
-        <div>
-          <h1 className="text-xl font-semibold tracking-tight">Dashboard</h1>
-          <p className="text-[13px] text-muted-foreground mt-0.5">
-            Welcome back, {profile?.company_name || user?.email?.split("@")[0] || "there"}
-          </p>
+      {/* Header */}
+      <div className="px-6 lg:px-8 pt-8 pb-2">
+        <div className="flex items-start justify-between">
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight">
+              Good {new Date().getHours() < 12 ? "morning" : new Date().getHours() < 17 ? "afternoon" : "evening"}, {profile?.company_name || user?.email?.split("@")[0] || "there"} 👋
+            </h1>
+            <p className="text-sm text-muted-foreground mt-1">
+              Here's what's happening with your business today.
+            </p>
+          </div>
+          <Link to="/dashboard/invoices">
+            <Button size="sm" className="text-xs shadow-sm">
+              <Plus className="h-3.5 w-3.5 mr-1.5" />
+              Create Invoice
+            </Button>
+          </Link>
         </div>
-        <Button variant="outline" size="sm" onClick={() => {}} className="text-xs">
-          <Plus className="h-3.5 w-3.5 mr-1" />
-          Create Invoice
-        </Button>
       </div>
 
       <div className="px-6 lg:px-8 py-6 space-y-6">
+        {/* Quick Actions */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          {quickActions.map(({ label, icon: Icon, to, color }) => (
+            <Link
+              key={label}
+              to={to}
+              className="group flex items-center gap-3 p-4 rounded-2xl border border-border bg-card hover:shadow-md hover:-translate-y-0.5 transition-all duration-200"
+            >
+              <div className={`h-10 w-10 rounded-xl ${color} flex items-center justify-center shrink-0`}>
+                <Icon className="h-5 w-5" />
+              </div>
+              <div className="min-w-0">
+                <p className="text-sm font-medium truncate">{label}</p>
+                <p className="text-[11px] text-muted-foreground">Create new</p>
+              </div>
+            </Link>
+          ))}
+        </div>
+
         {/* Analytics Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-          {analyticsCards.map(({ title, value, label, icon: Icon }) => (
+          {analyticsCards.map(({ title, value, label, icon: Icon, iconColor, bgColor }) => (
             <div
               key={title}
-              className="rounded-xl border border-border bg-card p-5 transition-colors hover:bg-accent/50"
+              className="rounded-2xl border border-border bg-card p-5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200"
             >
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-[12px] font-medium text-muted-foreground uppercase tracking-wide">{title}</span>
-                <Icon className="h-4 w-4 text-muted-foreground" />
+              <div className="flex items-center justify-between mb-4">
+                <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">{title}</span>
+                <div className={`h-8 w-8 rounded-lg ${bgColor} flex items-center justify-center`}>
+                  <Icon className={`h-4 w-4 ${iconColor}`} />
+                </div>
               </div>
               <p className="text-2xl font-bold tracking-tight">{value}</p>
               <p className="text-[11px] text-muted-foreground mt-1">{label}</p>
@@ -266,87 +303,87 @@ const DashboardHome = () => {
 
         <div className="flex flex-col xl:flex-row gap-6">
           {/* Recent Invoices */}
-          <div className="flex-1 rounded-xl border border-border bg-card">
-            <div className="px-5 py-4 border-b border-border flex items-center justify-between">
-              <h2 className="text-sm font-semibold">Recent Invoices</h2>
-              <div className="flex items-center gap-2">
-                <Button variant="ghost" size="sm" className="h-8 text-xs text-muted-foreground">
-                  <Filter className="h-3.5 w-3.5 mr-1" />
-                  Filter
+          <div className="flex-1 rounded-2xl border border-border bg-card overflow-hidden">
+            <div className="px-6 py-4 border-b border-border flex items-center justify-between">
+              <h2 className="text-base font-semibold">Recent Invoices</h2>
+              <Link to="/dashboard/invoices">
+                <Button variant="ghost" size="sm" className="text-xs text-muted-foreground gap-1">
+                  View all <ArrowUpRight className="h-3.5 w-3.5" />
                 </Button>
-                <Button variant="ghost" size="sm" className="h-8 text-xs text-muted-foreground">
-                  <Search className="h-3.5 w-3.5 mr-1" />
-                  Search
-                </Button>
+              </Link>
+            </div>
+
+            {invoices.length === 0 ? (
+              <div className="p-16 text-center">
+                <div className="w-14 h-14 rounded-2xl bg-muted/50 flex items-center justify-center mx-auto mb-4">
+                  <Receipt className="h-7 w-7 text-muted-foreground" />
+                </div>
+                <p className="text-sm font-medium mb-1">No invoices yet</p>
+                <p className="text-xs text-muted-foreground mb-4">Create your first invoice to start tracking payments.</p>
                 <Link to="/dashboard/invoices">
-                  <Button size="sm" className="h-8 text-xs">
+                  <Button size="sm" className="text-xs">
                     <Plus className="h-3.5 w-3.5 mr-1" />
                     Create Invoice
                   </Button>
                 </Link>
               </div>
-            </div>
-
-            {invoices.length === 0 ? (
-              <div className="p-12 text-center">
-                <Receipt className="h-8 w-8 text-muted-foreground mx-auto mb-3" />
-                <p className="text-sm text-muted-foreground">No invoices yet</p>
-                <Link to="/dashboard/invoices">
-                  <Button size="sm" className="mt-4 text-xs">
-                    Create Your First Invoice
-                  </Button>
-                </Link>
-              </div>
             ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow className="hover:bg-transparent">
-                    <TableHead className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">Invoice #</TableHead>
-                    <TableHead className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">Status</TableHead>
-                    <TableHead className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">Date</TableHead>
-                    <TableHead className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">Client</TableHead>
-                    <TableHead className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground text-right">Total</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {invoices.map((inv) => (
-                    <TableRow key={inv.id} className="hover:bg-accent/30 transition-colors">
-                      <TableCell className="text-[13px] font-medium">{inv.invoice_number}</TableCell>
-                      <TableCell>{getStatusBadge(inv.status)}</TableCell>
-                      <TableCell className="text-[13px] text-muted-foreground">
-                        {inv.date ? format(new Date(inv.date), "dd MMM yyyy") : "—"}
-                      </TableCell>
-                      <TableCell className="text-[13px]">{inv.client_name}</TableCell>
-                      <TableCell className="text-[13px] font-medium text-right">
+              <div className="divide-y divide-border">
+                {invoices.map((inv) => (
+                  <Link
+                    key={inv.id}
+                    to="/dashboard/invoices"
+                    className="flex items-center justify-between px-6 py-3.5 hover:bg-accent/40 transition-colors"
+                  >
+                    <div className="flex items-center gap-4 min-w-0">
+                      <div className="h-9 w-9 rounded-lg bg-muted/50 flex items-center justify-center shrink-0">
+                        <Receipt className="h-4 w-4 text-muted-foreground" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-sm font-medium truncate">{inv.invoice_number}</p>
+                        <p className="text-[11px] text-muted-foreground truncate">{inv.client_name}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-4 shrink-0">
+                      {getStatusBadge(inv.status)}
+                      <span className="text-sm font-semibold tabular-nums w-28 text-right">
                         {inv.total ? formatCurrency(inv.total) : "—"}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                      </span>
+                    </div>
+                  </Link>
+                ))}
+              </div>
             )}
           </div>
 
-          {/* Upcoming Tasks - hidden on smaller screens */}
-          <div className="hidden xl:block w-72 shrink-0 rounded-xl border border-border bg-card">
-            <div className="px-5 py-4 border-b border-border">
-              <h2 className="text-sm font-semibold">Upcoming Tasks</h2>
+          {/* Upcoming Tasks */}
+          <div className="hidden xl:flex xl:flex-col w-80 shrink-0 rounded-2xl border border-border bg-card overflow-hidden">
+            <div className="px-6 py-4 border-b border-border flex items-center justify-between">
+              <h2 className="text-base font-semibold">Upcoming Tasks</h2>
+              <Link to="/dashboard/tasks">
+                <Button variant="ghost" size="sm" className="text-xs text-muted-foreground gap-1">
+                  View all <ArrowUpRight className="h-3.5 w-3.5" />
+                </Button>
+              </Link>
             </div>
             {tasks.length === 0 ? (
-              <div className="p-8 text-center">
-                <CalendarDays className="h-6 w-6 text-muted-foreground mx-auto mb-2" />
-                <p className="text-xs text-muted-foreground">No pending tasks</p>
+              <div className="flex-1 flex flex-col items-center justify-center p-8 text-center">
+                <div className="w-12 h-12 rounded-2xl bg-muted/50 flex items-center justify-center mb-3">
+                  <CalendarDays className="h-6 w-6 text-muted-foreground" />
+                </div>
+                <p className="text-sm font-medium mb-1">All caught up!</p>
+                <p className="text-xs text-muted-foreground">No pending tasks right now.</p>
               </div>
             ) : (
-              <div className="p-3 space-y-1">
+              <div className="flex-1 p-3 space-y-1">
                 {tasks.map((task) => (
                   <div
                     key={task.id}
-                    className="flex items-start gap-3 px-3 py-2.5 rounded-lg hover:bg-accent/30 transition-colors"
+                    className="flex items-start gap-3 px-3 py-3 rounded-xl hover:bg-accent/40 transition-colors"
                   >
-                    <Checkbox className="mt-0.5 h-4 w-4 border-border" />
-                    <div className="min-w-0">
-                      <p className="text-[13px] font-medium truncate">{task.title}</p>
+                    <Checkbox className="mt-0.5 h-4 w-4 rounded border-border" />
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-medium truncate">{task.title}</p>
                       <p className="text-[11px] text-muted-foreground">
                         {task.date ? format(new Date(task.date), "dd MMM yyyy") : "No date"}
                       </p>
@@ -355,11 +392,6 @@ const DashboardHome = () => {
                 ))}
               </div>
             )}
-            <div className="px-5 py-3 border-t border-border">
-              <Link to="/dashboard/tasks" className="text-[12px] text-muted-foreground hover:text-foreground transition-colors">
-                View all tasks →
-              </Link>
-            </div>
           </div>
         </div>
       </div>
