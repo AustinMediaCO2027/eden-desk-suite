@@ -7,13 +7,13 @@ import fiverrLogo from "@/assets/logos/fiverr.png";
 import upworkLogo from "@/assets/logos/upwork.png";
 
 const logos = [
-  { name: "Lovable", src: lovableLogo },
-  { name: "Canva", src: canvaLogo },
-  { name: "PepsiCo", src: pepsicoLogo },
-  { name: "Booking.com", src: bookingLogo },
-  { name: "Airbnb", src: airbnbLogo },
-  { name: "Fiverr", src: fiverrLogo },
-  { name: "Upwork", src: upworkLogo },
+  { name: "Lovable", src: lovableLogo, className: "h-12" },
+  { name: "Canva", src: canvaLogo, className: "h-12" },
+  { name: "PepsiCo", src: pepsicoLogo, className: "h-20" },
+  { name: "Booking.com", src: bookingLogo, className: "h-12" },
+  { name: "Airbnb", src: airbnbLogo, className: "h-12" },
+  { name: "Fiverr", src: fiverrLogo, className: "h-12" },
+  { name: "Upwork", src: upworkLogo, className: "h-12" },
 ];
 
 export const LogoMarquee = () => {
@@ -33,7 +33,7 @@ export const LogoMarquee = () => {
             <div key={setIndex} className="flex shrink-0 items-center gap-16 px-8">
               {logos.map((logo) => (
                 <div key={`${setIndex}-${logo.name}`} className="flex items-center justify-center opacity-40 hover:opacity-70 transition-opacity shrink-0">
-                  <img src={logo.src} alt={logo.name} className="h-12 w-auto object-contain" />
+                  <img src={logo.src} alt={logo.name} className={`${logo.className} w-auto object-contain`} />
                 </div>
               ))}
             </div>
