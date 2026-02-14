@@ -7,13 +7,13 @@ import fiverrLogo from "@/assets/logos/fiverr.png";
 import upworkLogo from "@/assets/logos/upwork.png";
 
 const logos = [
-  { name: "Lovable", src: lovableLogo, className: "h-10" },
-  { name: "Canva", src: canvaLogo, className: "h-10" },
-  { name: "PepsiCo", src: pepsicoLogo, className: "h-16" },
-  { name: "Booking.com", src: bookingLogo, className: "h-10" },
-  { name: "Airbnb", src: airbnbLogo, className: "h-10" },
-  { name: "Fiverr", src: fiverrLogo, className: "h-10" },
-  { name: "Upwork", src: upworkLogo, className: "h-10" },
+  { name: "Lovable", src: lovableLogo, className: "h-12" },
+  { name: "Canva", src: canvaLogo, className: "h-12" },
+  { name: "PepsiCo", src: pepsicoLogo, className: "h-20" },
+  { name: "Booking.com", src: bookingLogo, className: "h-12" },
+  { name: "Airbnb", src: airbnbLogo, className: "h-12" },
+  { name: "Fiverr", src: fiverrLogo, className: "h-12" },
+  { name: "Upwork", src: upworkLogo, className: "h-12" },
 ];
 
 export const LogoMarquee = () => {
@@ -37,7 +37,7 @@ export const LogoMarquee = () => {
                     src={logo.src}
                     alt={logo.name}
                     className={`${logo.className} w-auto object-contain`}
-                    style={{ filter: "brightness(0) invert(1)", opacity: 0.85 }}
+                    style={{ filter: "brightness(0) invert(1)", opacity: 1 }}
                   />
                 </div>
               ))}

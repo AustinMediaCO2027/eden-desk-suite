@@ -1,17 +1,19 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
+import moonBg from "@/assets/moon-bg.jpg";
 
 export const LandingCTA = () => {
   return (
     <section className="py-28 md:py-40 border-t border-border/20">
       <div className="container mx-auto px-6">
-        <div className="relative rounded-3xl border border-border/30 overflow-hidden py-24 md:py-32 px-8 text-center" style={{ background: "linear-gradient(180deg, hsl(0 0% 6%) 0%, hsl(0 0% 2%) 100%)" }}>
+        <div className="relative rounded-3xl border border-border/30 overflow-hidden py-24 md:py-32 px-8 text-center">
+          {/* Moon background */}
+          <img src={moonBg} alt="" className="absolute inset-0 w-full h-full object-cover opacity-30" />
+          <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-background/50 to-background/90" />
+
           {/* Glow effects */}
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[1px] bg-gradient-to-r from-transparent via-foreground/20 to-transparent" />
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[400px] h-[300px] rounded-full" style={{ background: "radial-gradient(ellipse, hsl(0 0% 100% / 0.03) 0%, transparent 70%)" }} />
-          {/* Grid */}
-          <div className="absolute inset-0 opacity-[0.02]" style={{ backgroundImage: "linear-gradient(hsl(0 0% 100%) 1px, transparent 1px), linear-gradient(90deg, hsl(0 0% 100%) 1px, transparent 1px)", backgroundSize: "40px 40px" }} />
 
           <h2 className="text-4xl md:text-5xl lg:text-7xl font-extrabold mb-6 relative z-10 leading-tight">
             Ready to streamline
