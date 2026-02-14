@@ -15,6 +15,15 @@ export interface Profile {
   trial_ends_at: string;
   ai_prompts_used_today: number;
   ai_prompts_reset_date: string;
+  registration_number: string;
+  vat_number: string;
+  brand_color: string;
+  template_style: string;
+  bank_name: string;
+  bank_account_holder: string;
+  bank_account_number: string;
+  bank_branch_code: string;
+  bank_account_type: string;
 }
 
 export const useProfile = () => {

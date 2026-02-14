@@ -105,6 +105,12 @@ export type Database = {
         Row: {
           ai_prompts_reset_date: string | null
           ai_prompts_used_today: number | null
+          bank_account_holder: string | null
+          bank_account_number: string | null
+          bank_account_type: string | null
+          bank_branch_code: string | null
+          bank_name: string | null
+          brand_color: string | null
           company_address: string | null
           company_email: string | null
           company_name: string | null
@@ -113,14 +119,23 @@ export type Database = {
           created_at: string | null
           id: string
           logo_url: string | null
+          registration_number: string | null
           subscription_plan: string | null
+          template_style: string | null
           trial_ends_at: string | null
           updated_at: string | null
           user_id: string
+          vat_number: string | null
         }
         Insert: {
           ai_prompts_reset_date?: string | null
           ai_prompts_used_today?: number | null
+          bank_account_holder?: string | null
+          bank_account_number?: string | null
+          bank_account_type?: string | null
+          bank_branch_code?: string | null
+          bank_name?: string | null
+          brand_color?: string | null
           company_address?: string | null
           company_email?: string | null
           company_name?: string | null
@@ -129,14 +144,23 @@ export type Database = {
           created_at?: string | null
           id?: string
           logo_url?: string | null
+          registration_number?: string | null
           subscription_plan?: string | null
+          template_style?: string | null
           trial_ends_at?: string | null
           updated_at?: string | null
           user_id: string
+          vat_number?: string | null
         }
         Update: {
           ai_prompts_reset_date?: string | null
           ai_prompts_used_today?: number | null
+          bank_account_holder?: string | null
+          bank_account_number?: string | null
+          bank_account_type?: string | null
+          bank_branch_code?: string | null
+          bank_name?: string | null
+          brand_color?: string | null
           company_address?: string | null
           company_email?: string | null
           company_name?: string | null
@@ -145,10 +169,13 @@ export type Database = {
           created_at?: string | null
           id?: string
           logo_url?: string | null
+          registration_number?: string | null
           subscription_plan?: string | null
+          template_style?: string | null
           trial_ends_at?: string | null
           updated_at?: string | null
           user_id?: string
+          vat_number?: string | null
         }
         Relationships: []
       }
