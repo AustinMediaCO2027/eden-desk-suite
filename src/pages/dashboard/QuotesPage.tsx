@@ -11,7 +11,7 @@ import { Plus, Trash2, Download, Save, ArrowLeft, X, Send, Palette } from "lucid
 import { LineItem, calculateTotals, emptyLineItem, formatNumberInput, parseNumberInput } from "@/lib/document-utils";
 import CompanyProfileBanner from "@/components/dashboard/CompanyProfileBanner";
 import { downloadPDF } from "@/lib/pdf";
-import DocumentPreview, { TEMPLATE_OPTIONS } from "@/components/templates/DocumentPreview";
+import DocumentPreview, { TEMPLATE_OPTIONS, COLOR_OPTIONS } from "@/components/templates/DocumentPreview";
 import SendDocumentDialog from "@/components/dashboard/SendDocumentDialog";
 import type { Json } from "@/integrations/supabase/types";
 
@@ -49,6 +49,7 @@ const QuotesPage = () => {
   const [previewing, setPreviewing] = useState(false);
   const [previewTemplate, setPreviewTemplate] = useState<string>("");
   const [showSendDialog, setShowSendDialog] = useState(false);
+  const [previewColor, setPreviewColor] = useState<string>("");
 
   const fetchQuotes = async () => {
     if (!user) return;
@@ -156,13 +157,12 @@ const QuotesPage = () => {
           />
         )}
 
-        {/* Template switcher */}
         <div className="rounded-xl border border-border bg-card p-4">
           <div className="flex items-center gap-2 mb-3">
             <Palette className="h-4 w-4 text-muted-foreground" />
             <p className="text-sm font-medium">Choose Template</p>
           </div>
-          <div className="flex gap-2 flex-wrap">
+          <div className="flex gap-2 flex-wrap mb-4">
             {TEMPLATE_OPTIONS.map(t => (
               <button
                 key={t.value}
@@ -175,6 +175,20 @@ const QuotesPage = () => {
               >
                 {t.label}
               </button>
+            ))}
+          </div>
+          <div className="flex items-center gap-2">
+            <p className="text-xs text-muted-foreground mr-1">Colour:</p>
+            {COLOR_OPTIONS.map(c => (
+              <button
+                key={c.value}
+                onClick={() => setPreviewColor(previewColor === c.value ? "" : c.value)}
+                title={c.label}
+                className={`w-7 h-7 rounded-full border-2 transition-all ${
+                  previewColor === c.value ? "border-foreground scale-110" : "border-transparent hover:border-muted-foreground"
+                }`}
+                style={{ backgroundColor: c.value }}
+              />
             ))}
           </div>
         </div>
@@ -194,6 +208,7 @@ const QuotesPage = () => {
             taxRate={editing.tax_rate}
             notes={editing.notes}
             status={editing.status}
+            colorOverride={previewColor || undefined}
           />
         </div>
       </div>

@@ -9,12 +9,20 @@ import CreativeTemplate from "./CreativeTemplate";
 import type { TemplateProps } from "./ClassicTemplate";
 
 export const TEMPLATE_OPTIONS = [
-  { value: "classic", label: "Classic", desc: "Logo left, details right. Traditional corporate layout." },
-  { value: "modern", label: "Modern", desc: "Brand color banner. Centered logo. Bold headers." },
-  { value: "minimal", label: "Minimal", desc: "Ultra clean. Thin lines. Light typography." },
-  { value: "bold", label: "Bold", desc: "Dark header block. Strong brand presence. High contrast." },
-  { value: "elegant", label: "Elegant", desc: "Serif typography. Refined borders. Sophisticated feel." },
-  { value: "creative", label: "Creative", desc: "Side color bar. Asymmetric layout. Standout design." },
+  { value: "classic", label: "Classic", desc: "Clean corporate layout with colored header bar and side-by-side details." },
+  { value: "modern", label: "Modern", desc: "Minimalist black & white with bold table headers." },
+  { value: "minimal", label: "Minimal", desc: "Ultra clean. Light typography. Maximum whitespace." },
+  { value: "bold", label: "Bold", desc: "Full-width colored header. High contrast. Strong brand." },
+  { value: "elegant", label: "Elegant", desc: "Serif accents. Refined borders. Sophisticated feel." },
+  { value: "creative", label: "Creative", desc: "Side accent bar. Asymmetric layout. Standout design." },
+];
+
+export const COLOR_OPTIONS = [
+  { value: "#1A1A1A", label: "Black" },
+  { value: "#1A5276", label: "Blue" },
+  { value: "#1E6B4A", label: "Green" },
+  { value: "#9B2C5E", label: "Pink" },
+  { value: "#6B4226", label: "Brown" },
 ];
 
 interface DocumentPreviewProps {
@@ -32,11 +40,12 @@ interface DocumentPreviewProps {
   taxRate: number;
   notes: string;
   status: string;
+  colorOverride?: string;
 }
 
-const DocumentPreview = ({ id, templateStyle, ...rest }: DocumentPreviewProps) => {
+const DocumentPreview = ({ id, templateStyle, colorOverride, ...rest }: DocumentPreviewProps) => {
   const style = templateStyle || "classic";
-  const props: TemplateProps = rest;
+  const props: TemplateProps = { ...rest, colorOverride };
 
   const renderTemplate = () => {
     switch (style) {
