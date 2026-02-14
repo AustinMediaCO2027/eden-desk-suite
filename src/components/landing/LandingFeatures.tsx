@@ -25,31 +25,32 @@ const features = [
 
 export const LandingFeatures = () => {
   return (
-    <section id="features" className="py-28 md:py-36">
+    <section id="features" className="py-28 md:py-40">
       <div className="container mx-auto px-6">
         {/* Stats bar */}
-        <div className="mb-24 rounded-2xl border border-border/50 bg-card/30 p-10">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-10 text-center">
+        <div className="mb-28 rounded-3xl border border-border/40 bg-gradient-to-b from-card/40 to-card/10 p-12 md:p-16">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 text-center">
             <div>
-              <p className="text-[10px] text-muted-foreground uppercase tracking-[0.2em] mb-3">Active Users</p>
-              <p className="text-5xl md:text-6xl font-extrabold text-foreground">+2M</p>
-              <p className="text-xs text-muted-foreground mt-2">Across 120+ countries</p>
+              <p className="text-[10px] text-muted-foreground uppercase tracking-[0.25em] mb-4 font-medium">Active Users</p>
+              <p className="text-6xl md:text-7xl font-extrabold text-foreground leading-none">+2M</p>
+              <p className="text-sm text-muted-foreground mt-3">Across 120+ countries</p>
             </div>
-            <div className="border-x-0 md:border-x border-border/30">
-              <p className="text-[10px] text-muted-foreground uppercase tracking-[0.2em] mb-3">Documents Created</p>
-              <p className="text-5xl md:text-6xl font-extrabold text-foreground">Real-time</p>
-              <p className="text-xs text-muted-foreground mt-2">Instant generation & delivery</p>
+            <div className="md:border-x border-border/20 md:px-8">
+              <p className="text-[10px] text-muted-foreground uppercase tracking-[0.25em] mb-4 font-medium">Documents Created</p>
+              <p className="text-6xl md:text-7xl font-extrabold text-foreground leading-none">Real-time</p>
+              <p className="text-sm text-muted-foreground mt-3">Instant generation & delivery</p>
             </div>
             <div>
-              <p className="text-[10px] text-muted-foreground uppercase tracking-[0.2em] mb-3">System Reliability</p>
-              <p className="text-5xl md:text-6xl font-extrabold text-foreground">99%</p>
-              <p className="text-xs text-muted-foreground mt-2">Uptime you can rely on</p>
+              <p className="text-[10px] text-muted-foreground uppercase tracking-[0.25em] mb-4 font-medium">System Reliability</p>
+              <p className="text-6xl md:text-7xl font-extrabold text-foreground leading-none">99%</p>
+              <p className="text-sm text-muted-foreground mt-3">Uptime you can rely on</p>
             </div>
           </div>
         </div>
 
         <div className="text-center mb-20">
-          <h2 className="text-3xl md:text-5xl lg:text-6xl font-extrabold mb-5">
+          <p className="text-[10px] text-muted-foreground uppercase tracking-[0.25em] mb-5 font-medium">Features</p>
+          <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-5">
             Everything Your Business Needs
           </h2>
           <p className="text-muted-foreground text-lg max-w-xl mx-auto">
@@ -57,16 +58,16 @@ export const LandingFeatures = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {features.map(({ icon: Icon, title, description }) => (
             <div
               key={title}
-              className="group rounded-2xl border border-border/50 bg-card/20 p-8 transition-all duration-300 hover:bg-card/40 hover:border-border hover:-translate-y-1"
+              className="group rounded-2xl border border-border/40 bg-gradient-to-b from-card/30 to-transparent p-8 transition-all duration-300 hover:from-card/60 hover:border-border/70 hover:-translate-y-1.5 hover:shadow-[0_20px_60px_-20px_rgba(255,255,255,0.04)]"
             >
-              <div className="h-12 w-12 rounded-xl border border-border/50 bg-card/50 flex items-center justify-center mb-6 group-hover:border-foreground/20 transition-colors">
-                <Icon className="h-5 w-5 text-foreground" strokeWidth={1.5} />
+              <div className="h-14 w-14 rounded-2xl border border-border/40 bg-card/40 flex items-center justify-center mb-7 group-hover:border-foreground/15 group-hover:bg-card/60 transition-all duration-300">
+                <Icon className="h-6 w-6 text-foreground/80 group-hover:text-foreground transition-colors" strokeWidth={1.5} />
               </div>
-              <h3 className="text-base font-bold mb-3">{title}</h3>
+              <h3 className="text-lg font-bold mb-3">{title}</h3>
               <p className="text-sm text-muted-foreground leading-relaxed">{description}</p>
             </div>
           ))}

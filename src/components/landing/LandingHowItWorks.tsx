@@ -23,11 +23,11 @@ const steps = [
 
 export const LandingHowItWorks = () => {
   return (
-    <section id="how-it-works" className="py-28 md:py-36 border-t border-border/30">
+    <section id="how-it-works" className="py-28 md:py-40 border-t border-border/20">
       <div className="container mx-auto px-6">
         <div className="text-center mb-20">
-          <p className="text-[10px] text-muted-foreground uppercase tracking-[0.2em] mb-4">How It Works</p>
-          <h2 className="text-3xl md:text-5xl lg:text-6xl font-extrabold">
+          <p className="text-[10px] text-muted-foreground uppercase tracking-[0.25em] mb-5 font-medium">How It Works</p>
+          <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold">
             Three simple steps
           </h2>
         </div>
@@ -37,17 +37,17 @@ export const LandingHowItWorks = () => {
             <div key={num} className="relative group">
               {/* Connector line */}
               {i < steps.length - 1 && (
-                <div className="hidden md:block absolute top-12 left-[60%] w-[80%] h-[1px] bg-gradient-to-r from-border/50 to-transparent" />
+                <div className="hidden md:block absolute top-14 left-[60%] w-[80%] h-[1px] bg-gradient-to-r from-border/40 to-transparent" />
               )}
               
-              <div className="rounded-2xl border border-border/40 bg-card/20 p-8 transition-all duration-300 hover:bg-card/40 hover:border-border hover:-translate-y-1">
-                <div className="flex items-center gap-4 mb-6">
-                  <span className="text-3xl font-extrabold text-muted-foreground/30">{num}</span>
-                  <div className="h-10 w-10 rounded-xl border border-border/50 bg-card/50 flex items-center justify-center">
-                    <Icon className="h-5 w-5 text-foreground" strokeWidth={1.5} />
+              <div className="rounded-2xl border border-border/40 bg-gradient-to-b from-card/30 to-transparent p-9 transition-all duration-300 hover:from-card/60 hover:border-border/70 hover:-translate-y-1.5 hover:shadow-[0_20px_60px_-20px_rgba(255,255,255,0.04)]">
+                <div className="flex items-center gap-5 mb-7">
+                  <span className="text-4xl font-extrabold text-foreground/10">{num}</span>
+                  <div className="h-12 w-12 rounded-2xl border border-border/40 bg-card/40 flex items-center justify-center">
+                    <Icon className="h-5 w-5 text-foreground/80" strokeWidth={1.5} />
                   </div>
                 </div>
-                <h3 className="text-lg font-bold mb-3">{title}</h3>
+                <h3 className="text-xl font-bold mb-3">{title}</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">{description}</p>
               </div>
             </div>
