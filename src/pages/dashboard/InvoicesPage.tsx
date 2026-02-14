@@ -312,13 +312,16 @@ const InvoicesPage = () => {
                 <p className="font-medium">{inv.invoice_number}</p>
                 <p className="text-sm text-muted-foreground">{inv.client_name}</p>
               </div>
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-3">
                 <div className="text-right">
                   <p className="font-semibold">R{Number(inv.total).toFixed(2)}</p>
                   <span className={`text-xs px-2 py-0.5 rounded-full ${inv.status === 'paid' ? 'bg-green-900/30 text-green-400' : inv.status === 'overdue' ? 'bg-red-900/30 text-red-400' : 'bg-secondary text-muted-foreground'}`}>
                     {inv.status}
                   </span>
                 </div>
+                <Button variant="ghost" size="sm" onClick={(e) => { e.stopPropagation(); setEditing({ ...emptyInvoice(), id: inv.id, invoice_number: inv.invoice_number, client_name: inv.client_name, client_email: inv.client_email || "", client_address: inv.client_address || "", date: inv.date || "", due_date: inv.due_date || "", items: (inv.items as LineItem[]) || [emptyLineItem()], tax_rate: inv.tax_rate || 15, notes: inv.notes || "", status: inv.status || "draft" }); setPreviewing(true); }}>
+                  <Download className="h-4 w-4" />
+                </Button>
                 <Button variant="ghost" size="sm" onClick={(e) => { e.stopPropagation(); deleteInvoice(inv.id); }}>
                   <Trash2 className="h-4 w-4" />
                 </Button>

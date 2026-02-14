@@ -130,8 +130,8 @@
   }
 
   .eden-card-hover:hover {
-    background: hsl(0 0% 12%);
-    border-color: hsl(0 0% 24%);
+    background: hsl(var(--accent));
+    border-color: hsl(var(--border));
     transform: translateY(-2px);
   }
 
