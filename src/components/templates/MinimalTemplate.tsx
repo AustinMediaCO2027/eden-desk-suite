@@ -1,5 +1,4 @@
-import { Profile } from "@/hooks/useProfile";
-import { LineItem, calculateTotals } from "@/lib/document-utils";
+import { calculateTotals } from "@/lib/document-utils";
 import type { TemplateProps } from "./ClassicTemplate";
 
 const MinimalTemplate = ({ type, profile, documentNumber, date, dueDate, clientName, clientEmail, clientAddress, items, taxRate, notes }: TemplateProps) => {
@@ -9,7 +8,6 @@ const MinimalTemplate = ({ type, profile, documentNumber, date, dueDate, clientN
 
   return (
     <div className="bg-white text-black p-10 max-w-[210mm] mx-auto" style={{ fontFamily: "Inter, sans-serif", minHeight: "297mm" }}>
-      {/* Minimal header */}
       <div className="flex justify-between items-start mb-10">
         <div>
           {profile?.logo_url && <img src={profile.logo_url} alt="Logo" className="h-10 mb-4 object-contain" />}
@@ -27,10 +25,8 @@ const MinimalTemplate = ({ type, profile, documentNumber, date, dueDate, clientN
         </div>
       </div>
 
-      {/* Thin divider */}
       <div className="h-[1px] w-full bg-gray-200 mb-8" />
 
-      {/* Dates + Bill To row */}
       <div className="flex justify-between mb-10">
         <div className="text-sm space-y-1">
           <p className="text-gray-400 text-xs uppercase tracking-wider">Date</p>
@@ -50,7 +46,6 @@ const MinimalTemplate = ({ type, profile, documentNumber, date, dueDate, clientN
         </div>
       </div>
 
-      {/* Items */}
       <table className="w-full mb-8 text-sm">
         <thead>
           <tr className="border-b border-gray-200">
@@ -63,7 +58,10 @@ const MinimalTemplate = ({ type, profile, documentNumber, date, dueDate, clientN
         <tbody>
           {items.map((item, i) => (
             <tr key={i} className="border-b border-gray-100">
-              <td className="py-3 text-gray-800">{item.description}</td>
+              <td className="py-3">
+                <p className="text-gray-800">{item.description}</p>
+                {item.details && <p className="text-xs text-gray-400 mt-0.5">{item.details}</p>}
+              </td>
               <td className="py-3 text-center text-gray-600">{item.quantity}</td>
               <td className="py-3 text-right text-gray-600">R{Number(item.rate).toFixed(2)}</td>
               <td className="py-3 text-right text-gray-800">R{Number(item.amount).toFixed(2)}</td>
@@ -72,7 +70,6 @@ const MinimalTemplate = ({ type, profile, documentNumber, date, dueDate, clientN
         </tbody>
       </table>
 
-      {/* Totals */}
       <div className="flex justify-end mb-10">
         <div className="w-56 space-y-1">
           <div className="flex justify-between text-sm text-gray-500"><span>Subtotal</span><span>R{subtotal.toFixed(2)}</span></div>
@@ -82,7 +79,6 @@ const MinimalTemplate = ({ type, profile, documentNumber, date, dueDate, clientN
         </div>
       </div>
 
-      {/* Banking Details */}
       {type === "invoice" && profile?.bank_name && (
         <div className="mb-8">
           <p className="text-xs text-gray-400 uppercase tracking-wider mb-2">Banking Details</p>
@@ -94,7 +90,6 @@ const MinimalTemplate = ({ type, profile, documentNumber, date, dueDate, clientN
         </div>
       )}
 
-      {/* Notes */}
       {notes && (
         <div className="mb-8">
           <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">Notes</p>
@@ -102,7 +97,6 @@ const MinimalTemplate = ({ type, profile, documentNumber, date, dueDate, clientN
         </div>
       )}
 
-      {/* Footer */}
       <div className="mt-auto pt-8">
         <div className="h-[1px] w-full bg-gray-200 mb-3" />
         <p className="text-[10px] text-gray-400 text-center tracking-wide">Thank you for your business.</p>

@@ -8,11 +8,8 @@ const CreativeTemplate = ({ type, profile, documentNumber, date, dueDate, client
 
   return (
     <div className="bg-white text-black max-w-[210mm] mx-auto flex" style={{ fontFamily: "Inter, sans-serif", minHeight: "297mm" }}>
-      {/* Left sidebar */}
       <div className="w-[70px] flex-shrink-0 flex flex-col items-center py-10" style={{ backgroundColor: brandColor }}>
-        {profile?.logo_url && (
-          <img src={profile.logo_url} alt="Logo" className="w-10 h-10 object-contain brightness-0 invert mb-4" />
-        )}
+        {profile?.logo_url && <img src={profile.logo_url} alt="Logo" className="w-10 h-10 object-contain brightness-0 invert mb-4" />}
         <div className="flex-1 flex items-center">
           <p className="text-white text-[10px] font-bold tracking-[0.3em] uppercase" style={{ writingMode: "vertical-rl", transform: "rotate(180deg)" }}>
             {profile?.company_name || "Your Company"}
@@ -20,9 +17,7 @@ const CreativeTemplate = ({ type, profile, documentNumber, date, dueDate, client
         </div>
       </div>
 
-      {/* Main content */}
       <div className="flex-1 p-8">
-        {/* Title row */}
         <div className="flex justify-between items-start mb-8">
           <div>
             <h1 className="text-3xl font-black tracking-tight text-gray-900">{title}</h1>
@@ -39,7 +34,6 @@ const CreativeTemplate = ({ type, profile, documentNumber, date, dueDate, client
           </div>
         </div>
 
-        {/* Date + Client cards */}
         <div className="grid grid-cols-2 gap-4 mb-8">
           <div className="rounded-lg p-4" style={{ backgroundColor: `${brandColor}08` }}>
             <p className="text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: brandColor }}>Details</p>
@@ -56,7 +50,6 @@ const CreativeTemplate = ({ type, profile, documentNumber, date, dueDate, client
           </div>
         </div>
 
-        {/* Items */}
         <table className="w-full mb-6 text-sm">
           <thead>
             <tr>
@@ -69,7 +62,10 @@ const CreativeTemplate = ({ type, profile, documentNumber, date, dueDate, client
           <tbody>
             {items.map((item, i) => (
               <tr key={i} className="border-b border-gray-100">
-                <td className="py-2.5 text-gray-800">{item.description}</td>
+                <td className="py-2.5">
+                  <p className="text-gray-800">{item.description}</p>
+                  {item.details && <p className="text-xs text-gray-400 mt-0.5">{item.details}</p>}
+                </td>
                 <td className="py-2.5 text-center text-gray-600">{item.quantity}</td>
                 <td className="py-2.5 text-right text-gray-600">R{Number(item.rate).toFixed(2)}</td>
                 <td className="py-2.5 text-right text-gray-800 font-medium">R{Number(item.amount).toFixed(2)}</td>
@@ -78,7 +74,6 @@ const CreativeTemplate = ({ type, profile, documentNumber, date, dueDate, client
           </tbody>
         </table>
 
-        {/* Totals */}
         <div className="flex justify-end mb-8">
           <div className="w-56">
             <div className="flex justify-between text-sm py-1 text-gray-500"><span>Subtotal</span><span>R{subtotal.toFixed(2)}</span></div>
@@ -88,7 +83,6 @@ const CreativeTemplate = ({ type, profile, documentNumber, date, dueDate, client
           </div>
         </div>
 
-        {/* Banking */}
         {type === "invoice" && profile?.bank_name && (
           <div className="rounded-lg p-4 mb-6" style={{ backgroundColor: `${brandColor}06`, borderLeft: `3px solid ${brandColor}` }}>
             <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2">Banking Details</p>

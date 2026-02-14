@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Plus, Trash2, Download, Save, ArrowLeft, X, Send, Palette } from "lucide-react";
-import { LineItem, calculateTotals, emptyLineItem } from "@/lib/document-utils";
+import { LineItem, calculateTotals, emptyLineItem, formatNumberInput, parseNumberInput } from "@/lib/document-utils";
 import CompanyProfileBanner from "@/components/dashboard/CompanyProfileBanner";
 import { downloadPDF } from "@/lib/pdf";
 import DocumentPreview, { TEMPLATE_OPTIONS } from "@/components/templates/DocumentPreview";
@@ -264,21 +264,26 @@ const InvoicesPage = () => {
           <Label className="mb-2 block">Line Items</Label>
           <div className="space-y-2">
             {editing.items.map((item, i) => (
-              <div key={i} className="grid grid-cols-12 gap-2 items-end">
-                <div className="col-span-5">
-                  <Input placeholder="Description" value={item.description} onChange={e => updateItem(i, "description", e.target.value)} className="bg-secondary" />
+              <div key={i} className="space-y-1">
+                <div className="grid grid-cols-12 gap-2 items-end">
+                  <div className="col-span-5">
+                    <Input placeholder="Item name (e.g. Banner Print)" value={item.description} onChange={e => updateItem(i, "description", e.target.value)} className="bg-secondary" />
+                  </div>
+                  <div className="col-span-2">
+                    <Input type="number" placeholder="Qty" value={formatNumberInput(item.quantity)} onChange={e => updateItem(i, "quantity", parseNumberInput(e.target.value))} className="bg-secondary" />
+                  </div>
+                  <div className="col-span-2">
+                    <Input type="number" placeholder="Rate" value={formatNumberInput(item.rate)} onChange={e => updateItem(i, "rate", parseNumberInput(e.target.value))} className="bg-secondary" />
+                  </div>
+                  <div className="col-span-2 text-right text-sm font-medium py-2">R{Number(item.amount).toFixed(2)}</div>
+                  <div className="col-span-1">
+                    <Button variant="ghost" size="sm" onClick={() => setEditing({ ...editing, items: editing.items.filter((_, j) => j !== i) })} disabled={editing.items.length === 1}>
+                      <Trash2 className="h-4 w-4 text-muted-foreground" />
+                    </Button>
+                  </div>
                 </div>
-                <div className="col-span-2">
-                  <Input type="number" placeholder="Qty" value={item.quantity} onChange={e => updateItem(i, "quantity", Number(e.target.value))} className="bg-secondary" />
-                </div>
-                <div className="col-span-2">
-                  <Input type="number" placeholder="Rate" value={item.rate} onChange={e => updateItem(i, "rate", Number(e.target.value))} className="bg-secondary" />
-                </div>
-                <div className="col-span-2 text-right text-sm font-medium py-2">R{Number(item.amount).toFixed(2)}</div>
-                <div className="col-span-1">
-                  <Button variant="ghost" size="sm" onClick={() => setEditing({ ...editing, items: editing.items.filter((_, j) => j !== i) })} disabled={editing.items.length === 1}>
-                    <Trash2 className="h-4 w-4 text-muted-foreground" />
-                  </Button>
+                <div className="pl-0">
+                  <Input placeholder="Details (e.g. 3000x3000mm | including installation)" value={item.details || ""} onChange={e => updateItem(i, "details", e.target.value)} className="bg-secondary text-xs h-8" />
                 </div>
               </div>
             ))}

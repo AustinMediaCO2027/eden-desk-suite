@@ -16,7 +16,7 @@ interface TemplateProps {
   status: string;
 }
 
-const ClassicTemplate = ({ type, profile, documentNumber, date, dueDate, clientName, clientEmail, clientAddress, items, taxRate, notes, status }: TemplateProps) => {
+const ClassicTemplate = ({ type, profile, documentNumber, date, dueDate, clientName, clientEmail, clientAddress, items, taxRate, notes }: TemplateProps) => {
   const { subtotal, taxAmount, total } = calculateTotals(items, taxRate);
   const brandColor = profile?.brand_color || "#2563EB";
   const title = type === "invoice" ? "INVOICE" : "QUOTE";
@@ -74,7 +74,10 @@ const ClassicTemplate = ({ type, profile, documentNumber, date, dueDate, clientN
         <tbody>
           {items.map((item, i) => (
             <tr key={i} className="border-b border-gray-100">
-              <td className="py-2.5 px-3 text-gray-800">{item.description}</td>
+              <td className="py-2.5 px-3">
+                <p className="text-gray-800">{item.description}</p>
+                {item.details && <p className="text-xs text-gray-400 mt-0.5">{item.details}</p>}
+              </td>
               <td className="py-2.5 px-3 text-center text-gray-600">{item.quantity}</td>
               <td className="py-2.5 px-3 text-right text-gray-600">R{Number(item.rate).toFixed(2)}</td>
               <td className="py-2.5 px-3 text-right text-gray-600">{taxRate}%</td>
