@@ -1,4 +1,4 @@
-import { Receipt, FileText, CalendarDays, Bot } from "lucide-react";
+import { Receipt, FileText, CalendarDays, Bot, Mail, Shield, Zap, Globe } from "lucide-react";
 
 const features = [
   {
@@ -20,6 +20,26 @@ const features = [
     icon: Bot,
     title: "AI Document Drafting",
     description: "Let AI help you draft professional documents instantly. Generate letterheads, content, and more with a single prompt.",
+  },
+  {
+    icon: Mail,
+    title: "Email Integration",
+    description: "Send invoices, quotes, and documents directly from the platform. No need to download, attach, or leave Eden Desk.",
+  },
+  {
+    icon: Shield,
+    title: "Secure & Reliable",
+    description: "Your data is encrypted and stored securely. Enterprise-grade security with 99.9% uptime guarantee.",
+  },
+  {
+    icon: Zap,
+    title: "Instant PDF Export",
+    description: "Download beautifully formatted PDFs in one click. Perfect for printing or sharing with clients.",
+  },
+  {
+    icon: Globe,
+    title: "Multi-Currency Support",
+    description: "Work with clients globally. Support for ZAR, USD, EUR, GBP and more currencies out of the box.",
   },
 ];
 
@@ -62,9 +82,9 @@ export const LandingFeatures = () => {
           {features.map(({ icon: Icon, title, description }) => (
             <div
               key={title}
-              className="group rounded-2xl border border-border/40 bg-gradient-to-b from-card/30 to-transparent p-8 transition-all duration-300 hover:from-card/60 hover:border-border/70 hover:-translate-y-1.5 hover:shadow-[0_20px_60px_-20px_rgba(255,255,255,0.04)]"
+              className="group rounded-2xl border border-border/40 bg-gradient-to-b from-card/30 to-transparent p-8 transition-all duration-300 hover:from-card/60 hover:border-border/70 hover:-translate-y-2 hover:shadow-[0_20px_60px_-20px_rgba(255,255,255,0.06)]"
             >
-              <div className="h-14 w-14 rounded-2xl border border-border/40 bg-card/40 flex items-center justify-center mb-7 group-hover:border-foreground/15 group-hover:bg-card/60 transition-all duration-300">
+              <div className="h-14 w-14 rounded-2xl border border-border/40 bg-card/40 flex items-center justify-center mb-7 group-hover:border-foreground/20 group-hover:bg-card/70 transition-all duration-300">
                 <Icon className="h-6 w-6 text-foreground/80 group-hover:text-foreground transition-colors" strokeWidth={1.5} />
               </div>
               <h3 className="text-lg font-bold mb-3">{title}</h3>

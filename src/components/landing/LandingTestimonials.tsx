@@ -17,6 +17,24 @@ const testimonials = [
     role: "Operations Manager",
     initials: "LT",
   },
+  {
+    quote: "The best invoicing platform I've used in 10 years of freelancing. The PDF exports look incredibly professional.",
+    name: "David R.",
+    role: "Consultant",
+    initials: "DR",
+  },
+  {
+    quote: "We manage 50+ clients and Eden Desk handles it all flawlessly. Task management keeps our team on track every day.",
+    name: "Priya N.",
+    role: "Project Manager",
+    initials: "PN",
+  },
+  {
+    quote: "From quote to invoice to payment — the entire workflow is seamless. Our revenue collection improved by 40%.",
+    name: "Michael B.",
+    role: "Small Business Owner",
+    initials: "MB",
+  },
 ];
 
 export const LandingTestimonials = () => {
@@ -25,16 +43,19 @@ export const LandingTestimonials = () => {
       <div className="container mx-auto px-6">
         <div className="text-center mb-20">
           <p className="text-[10px] text-muted-foreground uppercase tracking-[0.25em] mb-5 font-medium">Testimonials</p>
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold">
+          <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-5">
             Loved by businesses
           </h2>
+          <p className="text-muted-foreground text-lg max-w-lg mx-auto">
+            Join thousands of professionals who trust Eden Desk daily.
+          </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
           {testimonials.map((t) => (
             <div
               key={t.name}
-              className="rounded-2xl border border-border/40 bg-gradient-to-b from-card/30 to-transparent p-9 flex flex-col transition-all duration-300 hover:from-card/50 hover:border-border/60"
+              className="rounded-2xl border border-border/40 bg-gradient-to-b from-card/30 to-transparent p-9 flex flex-col transition-all duration-300 hover:from-card/50 hover:border-border/60 hover:-translate-y-1"
             >
               {/* Stars */}
               <div className="flex gap-1 mb-6">
