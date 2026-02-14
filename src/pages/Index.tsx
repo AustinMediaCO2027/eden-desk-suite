@@ -1,4 +1,5 @@
 import { LandingHero } from "@/components/landing/LandingHero";
+import { LogoMarquee } from "@/components/landing/LogoMarquee";
 import { LandingFeatures } from "@/components/landing/LandingFeatures";
 import { LandingPricing } from "@/components/landing/LandingPricing";
 import { LandingFAQ } from "@/components/landing/LandingFAQ";
@@ -10,6 +11,7 @@ const Index = () => {
     <div className="min-h-screen bg-background">
       <LandingNav />
       <LandingHero />
+      <LogoMarquee />
       <LandingFeatures />
       <LandingPricing />
       <LandingFAQ />
