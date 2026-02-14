@@ -110,24 +110,57 @@ export type Database = {
       letterheads: {
         Row: {
           body: string | null
+          closing: string | null
           created_at: string | null
+          date: string | null
           id: string
+          recipient_address: string | null
+          recipient_company: string | null
+          recipient_email: string | null
+          recipient_name: string | null
+          recipient_phone: string | null
+          recipient_title: string | null
+          sender_name: string | null
+          sender_title: string | null
+          subject: string | null
           title: string | null
           updated_at: string | null
           user_id: string
         }
         Insert: {
           body?: string | null
+          closing?: string | null
           created_at?: string | null
+          date?: string | null
           id?: string
+          recipient_address?: string | null
+          recipient_company?: string | null
+          recipient_email?: string | null
+          recipient_name?: string | null
+          recipient_phone?: string | null
+          recipient_title?: string | null
+          sender_name?: string | null
+          sender_title?: string | null
+          subject?: string | null
           title?: string | null
           updated_at?: string | null
           user_id: string
         }
         Update: {
           body?: string | null
+          closing?: string | null
           created_at?: string | null
+          date?: string | null
           id?: string
+          recipient_address?: string | null
+          recipient_company?: string | null
+          recipient_email?: string | null
+          recipient_name?: string | null
+          recipient_phone?: string | null
+          recipient_title?: string | null
+          sender_name?: string | null
+          sender_title?: string | null
+          subject?: string | null
           title?: string | null
           updated_at?: string | null
           user_id?: string
