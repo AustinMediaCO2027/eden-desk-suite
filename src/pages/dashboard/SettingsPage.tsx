@@ -7,14 +7,104 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Save, Upload, Check } from "lucide-react";
-
-const TEMPLATE_OPTIONS = [
-  { value: "classic", label: "Classic Professional", desc: "Logo left, details right. Traditional corporate layout." },
-  { value: "modern", label: "Modern Split", desc: "Brand color banner strip. Centered logo. Bold headers." },
-  { value: "minimal", label: "Minimal", desc: "Ultra clean. Thin lines. Light typography." },
-];
+import { TEMPLATE_OPTIONS } from "@/components/templates/DocumentPreview";
 
 const COLOR_PRESETS = ["#2563EB", "#0F172A", "#16A34A", "#DC2626", "#7C3AED", "#0891B2", "#CA8A04", "#E11D48"];
+
+// Mini visual thumbnail for template picker
+const TemplateThumbnail = ({ style, brandColor }: { style: string; brandColor: string }) => {
+  const base = "w-full h-28 bg-white rounded-t-lg p-2 flex flex-col";
+  
+  if (style === "bold") return (
+    <div className={base}>
+      <div className="h-8 rounded-sm mb-1.5 flex items-center px-2" style={{ backgroundColor: brandColor }}>
+        <div className="w-6 h-2 bg-white/60 rounded-sm" />
+        <div className="ml-auto w-10 h-3 bg-white/80 rounded-sm" />
+      </div>
+      <div className="flex-1 px-1 space-y-1">
+        <div className="flex gap-1"><div className="w-8 h-1.5 bg-gray-200 rounded-sm" /><div className="w-12 h-1.5 bg-gray-200 rounded-sm" /></div>
+        <div className="h-[1px] bg-gray-200" />
+        <div className="space-y-0.5"><div className="w-full h-1 bg-gray-100 rounded-sm" /><div className="w-full h-1 bg-gray-100 rounded-sm" /></div>
+        <div className="ml-auto w-12 h-3 rounded-sm" style={{ backgroundColor: brandColor }} />
+      </div>
+    </div>
+  );
+
+  if (style === "modern") return (
+    <div className={base}>
+      <div className="h-1 w-full rounded-t-sm" style={{ backgroundColor: brandColor }} />
+      <div className="flex-1 flex flex-col items-center pt-2 space-y-1">
+        <div className="w-6 h-3 bg-gray-200 rounded-sm" />
+        <div className="w-16 h-1.5 bg-gray-300 rounded-sm" />
+        <div className="w-full rounded-sm p-1 mt-1" style={{ backgroundColor: `${brandColor}10` }}>
+          <div className="flex justify-between"><div className="w-10 h-2 rounded-sm" style={{ backgroundColor: `${brandColor}40` }} /><div className="w-8 h-1.5 bg-gray-200 rounded-sm" /></div>
+        </div>
+        <div className="w-full space-y-0.5"><div className="h-2 rounded-sm" style={{ backgroundColor: brandColor }} /><div className="w-full h-1 bg-gray-100 rounded-sm" /><div className="w-full h-1 bg-gray-50 rounded-sm" /></div>
+      </div>
+      <div className="h-1 w-full rounded-b-sm" style={{ backgroundColor: brandColor }} />
+    </div>
+  );
+
+  if (style === "minimal") return (
+    <div className={base}>
+      <div className="flex justify-between items-start px-1 pt-1">
+        <div><div className="w-14 h-2 bg-gray-200 rounded-sm mb-1" /><div className="w-6 h-1 bg-gray-100 rounded-sm" /></div>
+        <div className="space-y-0.5 text-right"><div className="w-10 h-1.5 bg-gray-300 rounded-sm ml-auto" /><div className="w-8 h-1 bg-gray-100 rounded-sm ml-auto" /></div>
+      </div>
+      <div className="h-[1px] bg-gray-200 my-2" />
+      <div className="flex-1 space-y-1 px-1">
+        <div className="flex gap-4"><div className="w-6 h-1 bg-gray-100 rounded-sm" /><div className="w-8 h-1 bg-gray-100 rounded-sm" /></div>
+        <div className="h-[1px] bg-gray-100" />
+        <div className="space-y-0.5"><div className="w-full h-1 bg-gray-100 rounded-sm" /><div className="w-full h-1 bg-gray-100 rounded-sm" /></div>
+        <div className="ml-auto w-10 h-1.5 rounded-sm" style={{ backgroundColor: brandColor }} />
+      </div>
+    </div>
+  );
+
+  if (style === "elegant") return (
+    <div className={base}>
+      <div className="h-[2px] w-full" style={{ backgroundColor: brandColor }} />
+      <div className="flex-1 flex flex-col items-center pt-2 space-y-1">
+        <div className="w-4 h-3 bg-gray-200 rounded-sm" />
+        <div className="w-10 h-2 bg-gray-200 rounded-sm" style={{ fontStyle: "italic" }} />
+        <div className="w-6 h-[2px]" style={{ backgroundColor: brandColor }} />
+        <div className="flex justify-between w-full px-2 pt-1"><div className="space-y-0.5"><div className="w-6 h-1 bg-gray-200 rounded-sm" /><div className="w-10 h-1 bg-gray-100 rounded-sm" /></div><div className="space-y-0.5 text-right"><div className="w-6 h-1 bg-gray-200 rounded-sm ml-auto" /><div className="w-10 h-1 bg-gray-100 rounded-sm ml-auto" /></div></div>
+        <div className="h-[1px] w-full bg-gray-200" />
+        <div className="space-y-0.5 w-full"><div className="w-full h-1 bg-gray-100 rounded-sm" /><div className="w-full h-1 bg-gray-100 rounded-sm" /></div>
+      </div>
+      <div className="h-[2px] w-full" style={{ backgroundColor: brandColor }} />
+    </div>
+  );
+
+  if (style === "creative") return (
+    <div className={`${base} !flex-row !p-0`}>
+      <div className="w-4 h-full rounded-l-lg" style={{ backgroundColor: brandColor }} />
+      <div className="flex-1 p-2 space-y-1">
+        <div className="flex justify-between"><div className="w-14 h-2.5 bg-gray-300 rounded-sm" /><div className="space-y-0.5"><div className="w-10 h-1 bg-gray-200 rounded-sm" /><div className="w-8 h-1 bg-gray-100 rounded-sm" /></div></div>
+        <div className="grid grid-cols-2 gap-1 mt-1"><div className="rounded-sm p-1" style={{ backgroundColor: `${brandColor}08` }}><div className="w-8 h-1 rounded-sm" style={{ backgroundColor: `${brandColor}30` }} /><div className="w-6 h-1 bg-gray-100 rounded-sm mt-0.5" /></div><div className="rounded-sm p-1" style={{ backgroundColor: `${brandColor}08` }}><div className="w-8 h-1 rounded-sm" style={{ backgroundColor: `${brandColor}30` }} /><div className="w-10 h-1 bg-gray-100 rounded-sm mt-0.5" /></div></div>
+        <div className="space-y-0.5"><div className="w-full h-1 bg-gray-100 rounded-sm" /><div className="w-full h-1 bg-gray-100 rounded-sm" /></div>
+        <div className="ml-auto w-10 h-1.5 rounded-sm" style={{ backgroundColor: brandColor }} />
+      </div>
+    </div>
+  );
+
+  // Classic (default)
+  return (
+    <div className={base}>
+      <div className="flex justify-between items-start px-1 pt-1">
+        <div className="w-6 h-4 bg-gray-200 rounded-sm" />
+        <div className="space-y-0.5 text-right"><div className="w-12 h-1.5 bg-gray-300 rounded-sm" /><div className="w-8 h-1 bg-gray-100 rounded-sm ml-auto" /></div>
+      </div>
+      <div className="h-[2px] w-full my-2" style={{ backgroundColor: brandColor }} />
+      <div className="flex-1 space-y-1 px-1">
+        <div className="flex justify-between"><div className="w-12 h-2 rounded-sm" style={{ backgroundColor: `${brandColor}30` }} /><div className="space-y-0.5"><div className="w-10 h-1 bg-gray-200 rounded-sm" /><div className="w-8 h-1 bg-gray-100 rounded-sm" /></div></div>
+        <div className="w-full h-2 rounded-sm" style={{ backgroundColor: `${brandColor}10` }} />
+        <div className="space-y-0.5"><div className="w-full h-1 bg-gray-100 rounded-sm" /><div className="w-full h-1 bg-gray-100 rounded-sm" /></div>
+        <div className="ml-auto w-10 h-1.5 rounded-sm" style={{ backgroundColor: `${brandColor}30` }} />
+      </div>
+    </div>
+  );
+};
 
 const SettingsPage = () => {
   const { user } = useAuth();
@@ -170,20 +260,24 @@ const SettingsPage = () => {
       {/* Template Style */}
       <div className="rounded-xl border border-border bg-card p-6 space-y-4">
         <h3 className="font-semibold">Invoice Template</h3>
-        <p className="text-xs text-muted-foreground">Choose a layout style for your invoices and quotes.</p>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+        <p className="text-xs text-muted-foreground">Choose a layout style for your invoices and quotes. You can also switch templates when previewing.</p>
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
           {TEMPLATE_OPTIONS.map(t => (
             <button
               key={t.value}
               onClick={() => setForm({ ...form, template_style: t.value })}
-              className={`rounded-xl border-2 p-4 text-left transition-all ${
+              className={`rounded-xl border-2 overflow-hidden transition-all ${
                 form.template_style === t.value
-                  ? "border-foreground bg-secondary"
+                  ? "border-foreground ring-2 ring-foreground/20"
                   : "border-border hover:border-muted-foreground/50"
               }`}
             >
-              <p className="font-medium text-sm">{t.label}</p>
-              <p className="text-xs text-muted-foreground mt-1">{t.desc}</p>
+              {/* Mini preview visual */}
+              <TemplateThumbnail style={t.value} brandColor={form.brand_color} />
+              <div className="p-3 text-left">
+                <p className="font-medium text-xs">{t.label}</p>
+                <p className="text-[10px] text-muted-foreground mt-0.5 leading-tight">{t.desc}</p>
+              </div>
             </button>
           ))}
         </div>
