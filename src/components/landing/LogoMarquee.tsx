@@ -7,20 +7,20 @@ import fiverrLogo from "@/assets/logos/fiverr.png";
 import upworkLogo from "@/assets/logos/upwork.png";
 
 const logos = [
-  { name: "Lovable", src: lovableLogo, className: "h-8" },
-  { name: "Canva", src: canvaLogo, className: "h-8" },
-  { name: "PepsiCo", src: pepsicoLogo, className: "h-14" },
-  { name: "Booking.com", src: bookingLogo, className: "h-8" },
-  { name: "Airbnb", src: airbnbLogo, className: "h-8" },
-  { name: "Fiverr", src: fiverrLogo, className: "h-8" },
-  { name: "Upwork", src: upworkLogo, className: "h-8" },
+  { name: "Lovable", src: lovableLogo, className: "h-10" },
+  { name: "Canva", src: canvaLogo, className: "h-10" },
+  { name: "PepsiCo", src: pepsicoLogo, className: "h-16" },
+  { name: "Booking.com", src: bookingLogo, className: "h-10" },
+  { name: "Airbnb", src: airbnbLogo, className: "h-10" },
+  { name: "Fiverr", src: fiverrLogo, className: "h-10" },
+  { name: "Upwork", src: upworkLogo, className: "h-10" },
 ];
 
 export const LogoMarquee = () => {
   return (
-    <section className="py-16 border-t border-border/30">
-      <div className="container mx-auto px-6 mb-10">
-        <p className="text-center text-xs text-muted-foreground uppercase tracking-[0.2em] font-medium">
+    <section className="py-20 border-t border-border/30">
+      <div className="container mx-auto px-6 mb-12">
+        <p className="text-center text-xs text-muted-foreground uppercase tracking-[0.25em] font-medium">
           Trusted by modern businesses worldwide
         </p>
       </div>
@@ -30,10 +30,15 @@ export const LogoMarquee = () => {
 
         <div className="flex animate-marquee">
           {[...Array(4)].map((_, setIndex) => (
-            <div key={setIndex} className="flex shrink-0 items-center gap-20 px-10">
+            <div key={setIndex} className="flex shrink-0 items-center gap-24 px-12">
               {logos.map((logo) => (
-                <div key={`${setIndex}-${logo.name}`} className="flex items-center justify-center opacity-40 hover:opacity-70 transition-opacity duration-300 shrink-0">
-                  <img src={logo.src} alt={logo.name} className={`${logo.className} w-auto object-contain brightness-0 invert`} />
+                <div key={`${setIndex}-${logo.name}`} className="flex items-center justify-center shrink-0">
+                  <img
+                    src={logo.src}
+                    alt={logo.name}
+                    className={`${logo.className} w-auto object-contain`}
+                    style={{ filter: "brightness(0) invert(1)", opacity: 0.85 }}
+                  />
                 </div>
               ))}
             </div>
