@@ -2,7 +2,10 @@ import { useEffect, useLayoutEffect, useState } from "react";
 import { LandingHero } from "@/components/landing/LandingHero";
 import { LogoMarquee } from "@/components/landing/LogoMarquee";
 import { LandingFeatures } from "@/components/landing/LandingFeatures";
+import { LandingHowItWorks } from "@/components/landing/LandingHowItWorks";
 import { LandingPricing } from "@/components/landing/LandingPricing";
+import { LandingTestimonials } from "@/components/landing/LandingTestimonials";
+import { LandingCTA } from "@/components/landing/LandingCTA";
 import { LandingFAQ } from "@/components/landing/LandingFAQ";
 import { LandingFooter } from "@/components/landing/LandingFooter";
 import { LandingNav } from "@/components/landing/LandingNav";
@@ -10,13 +13,11 @@ import edenDarkIcon from "@/assets/eden_dark_icon.png";
 
 const Index = () => {
   const [showSplash, setShowSplash] = useState(() => {
-    // Immediately force dark mode
     document.documentElement.classList.add("dark");
     document.documentElement.classList.remove("light");
     return true;
   });
 
-  // Force dark mode on landing page
   useLayoutEffect(() => {
     const root = document.documentElement;
     const previousTheme = localStorage.getItem("eden-theme") || "light";
@@ -30,7 +31,6 @@ const Index = () => {
     };
   }, []);
 
-  // Splash screen with eden icon
   useEffect(() => {
     const timer = setTimeout(() => setShowSplash(false), 1800);
     return () => clearTimeout(timer);
@@ -54,7 +54,10 @@ const Index = () => {
       <LandingHero />
       <LogoMarquee />
       <LandingFeatures />
+      <LandingHowItWorks />
       <LandingPricing />
+      <LandingTestimonials />
+      <LandingCTA />
       <LandingFAQ />
       <LandingFooter />
     </div>
