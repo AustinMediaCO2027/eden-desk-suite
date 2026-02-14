@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Star } from "lucide-react";
-import dashboardPreview from "@/assets/dashboard-preview.png";
+import { DashboardMockup } from "./DashboardMockup";
 
 export const LandingHero = () => {
   return (
@@ -51,18 +51,11 @@ export const LandingHero = () => {
           </a>
         </div>
 
-        {/* Dashboard preview */}
+        {/* Dashboard mockup */}
         <div className="relative mt-16 animate-slide-up" style={{ animationDelay: "0.4s" }}>
           <div className="relative mx-auto max-w-5xl">
             <div className="absolute -inset-4 bg-gradient-to-t from-background via-transparent to-transparent z-10 pointer-events-none" />
-            <div className="rounded-t-2xl border border-border border-b-0 overflow-hidden shadow-2xl shadow-foreground/5">
-              <img
-                src={dashboardPreview}
-                alt="Eden Desk Dashboard Preview"
-                className="w-full h-auto"
-                loading="lazy"
-              />
-            </div>
+            <DashboardMockup />
           </div>
         </div>
       </div>
