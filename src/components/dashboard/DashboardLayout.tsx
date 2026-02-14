@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useLocation, Outlet } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import { useTheme } from "@/hooks/useTheme";
 import {
   LayoutDashboard,
   Receipt,
@@ -13,6 +14,8 @@ import {
   LogOut,
   Menu,
   X,
+  Sun,
+  Moon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import logoFull from "@/assets/eden_desk_logo_full.png";
@@ -30,6 +33,7 @@ const navItems = [
 
 export const DashboardLayout = () => {
   const { signOut } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -48,7 +52,7 @@ export const DashboardLayout = () => {
       >
         <div className="flex items-center justify-between h-16 px-6 border-b border-sidebar-border">
           <Link to="/dashboard">
-            <img src={logoFull} alt="Eden Desk" className="h-6 invert" />
+            <img src={logoFull} alt="Eden Desk" className={`h-6 ${theme === "dark" ? "invert" : ""}`} />
           </Link>
           <button className="lg:hidden text-sidebar-foreground" onClick={() => setSidebarOpen(false)}>
             <X className="h-5 w-5" />
@@ -76,7 +80,15 @@ export const DashboardLayout = () => {
           })}
         </nav>
 
-        <div className="p-3 border-t border-sidebar-border">
+        <div className="p-3 border-t border-sidebar-border space-y-1">
+          {/* Theme toggle */}
+          <button
+            onClick={toggleTheme}
+            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-muted-foreground hover:text-sidebar-foreground hover:bg-sidebar-accent/50 w-full transition-colors"
+          >
+            {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            {theme === "dark" ? "Light Mode" : "Dark Mode"}
+          </button>
           <button
             onClick={signOut}
             className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-muted-foreground hover:text-destructive hover:bg-sidebar-accent/50 w-full transition-colors"
@@ -94,7 +106,7 @@ export const DashboardLayout = () => {
           <button onClick={() => setSidebarOpen(true)}>
             <Menu className="h-5 w-5" />
           </button>
-          <img src={logoFull} alt="Eden Desk" className="h-5 mx-auto invert" />
+          <img src={logoFull} alt="Eden Desk" className={`h-5 mx-auto ${theme === "dark" ? "invert" : ""}`} />
         </header>
 
         <main className="flex-1 overflow-y-auto p-6 lg:p-8">
