@@ -7,9 +7,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Plus, Trash2, Download, Save, ArrowLeft, X } from "lucide-react";
+import { Plus, Trash2, Download, Save, ArrowLeft, X, Send } from "lucide-react";
 import { LineItem, calculateTotals, emptyLineItem } from "@/lib/document-utils";
 import { downloadPDF } from "@/lib/pdf";
+import DocumentPreview from "@/components/templates/DocumentPreview";
 import type { Json } from "@/integrations/supabase/types";
 
 interface QuoteForm {
@@ -118,64 +119,45 @@ const QuotesPage = () => {
     });
   };
 
+  // Preview
   if (previewing && editing) {
-    const { subtotal, taxAmount, total } = calculateTotals(editing.items, editing.tax_rate);
     return (
       <div className="space-y-4">
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={() => setPreviewing(false)}><ArrowLeft className="h-4 w-4 mr-1" /> Back</Button>
-          <Button size="sm" onClick={() => downloadPDF("quote-preview", `quote-${editing.quote_number}`)}><Download className="h-4 w-4 mr-1" /> Download PDF</Button>
+        <div className="flex gap-2 flex-wrap">
+          <Button variant="outline" size="sm" onClick={() => setPreviewing(false)}>
+            <ArrowLeft className="h-4 w-4 mr-1" /> Back
+          </Button>
+          <Button size="sm" onClick={() => downloadPDF("quote-preview", `quote-${editing.quote_number}`)}>
+            <Download className="h-4 w-4 mr-1" /> Download PDF
+          </Button>
+          {editing.client_email && (
+            <Button size="sm" variant="outline">
+              <Send className="h-4 w-4 mr-1" /> Send to {editing.client_email}
+            </Button>
+          )}
         </div>
-        <div id="quote-preview" className="bg-white text-black p-8 rounded-lg max-w-3xl mx-auto" style={{ fontFamily: "Inter, sans-serif" }}>
-          <div className="flex justify-between items-start mb-8">
-            <div>
-              {profile?.logo_url && <img src={profile.logo_url} alt="Logo" className="h-16 mb-2" />}
-              <h2 className="text-xl font-bold">{profile?.company_name || "Your Company"}</h2>
-              <p className="text-sm text-gray-600">{profile?.company_address}</p>
-              <p className="text-sm text-gray-600">{profile?.company_email} {profile?.company_phone && `• ${profile.company_phone}`}</p>
-            </div>
-            <div className="text-right">
-              <h1 className="text-3xl font-bold text-gray-900">QUOTE</h1>
-              <p className="text-sm text-gray-600 mt-1">#{editing.quote_number}</p>
-              <p className="text-sm text-gray-600">Date: {editing.date}</p>
-              <span className={`text-xs px-2 py-0.5 rounded-full ${editing.status === 'accepted' ? 'bg-green-100 text-green-700' : editing.status === 'declined' ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-700'}`}>{editing.status}</span>
-            </div>
-          </div>
-          <div className="mb-6">
-            <h3 className="text-sm font-semibold text-gray-500 uppercase mb-1">Quote For</h3>
-            <p className="font-medium">{editing.client_name}</p>
-            <p className="text-sm text-gray-600">{editing.client_email}</p>
-            <p className="text-sm text-gray-600 whitespace-pre-line">{editing.client_address}</p>
-          </div>
-          <table className="w-full mb-6">
-            <thead><tr className="border-b-2 border-gray-200">
-              <th className="text-left py-2 text-sm font-semibold text-gray-600">Description</th>
-              <th className="text-right py-2 text-sm font-semibold text-gray-600">Qty</th>
-              <th className="text-right py-2 text-sm font-semibold text-gray-600">Rate</th>
-              <th className="text-right py-2 text-sm font-semibold text-gray-600">Amount</th>
-            </tr></thead>
-            <tbody>{editing.items.map((item, i) => (
-              <tr key={i} className="border-b border-gray-100">
-                <td className="py-2 text-sm">{item.description}</td>
-                <td className="py-2 text-sm text-right">{item.quantity}</td>
-                <td className="py-2 text-sm text-right">R{Number(item.rate).toFixed(2)}</td>
-                <td className="py-2 text-sm text-right">R{Number(item.amount).toFixed(2)}</td>
-              </tr>
-            ))}</tbody>
-          </table>
-          <div className="flex justify-end">
-            <div className="w-64 space-y-1">
-              <div className="flex justify-between text-sm"><span>Subtotal</span><span>R{subtotal.toFixed(2)}</span></div>
-              <div className="flex justify-between text-sm"><span>Tax ({editing.tax_rate}%)</span><span>R{taxAmount.toFixed(2)}</span></div>
-              <div className="flex justify-between font-bold text-lg border-t border-gray-300 pt-2"><span>Total</span><span>R{total.toFixed(2)}</span></div>
-            </div>
-          </div>
-          {editing.notes && <div className="mt-6 text-sm text-gray-600"><p className="font-semibold">Notes</p><p>{editing.notes}</p></div>}
+        <div className="rounded-lg overflow-hidden border border-border shadow-lg">
+          <DocumentPreview
+            id="quote-preview"
+            templateStyle={profile?.template_style}
+            type="quote"
+            profile={profile}
+            documentNumber={editing.quote_number}
+            date={editing.date}
+            clientName={editing.client_name}
+            clientEmail={editing.client_email}
+            clientAddress={editing.client_address}
+            items={editing.items}
+            taxRate={editing.tax_rate}
+            notes={editing.notes}
+            status={editing.status}
+          />
         </div>
       </div>
     );
   }
 
+  // Edit
   if (editing) {
     const { subtotal, taxAmount, total } = calculateTotals(editing.items, editing.tax_rate);
     return (
@@ -219,7 +201,7 @@ const QuotesPage = () => {
             <p className="text-lg font-bold">Total: R{total.toFixed(2)}</p>
           </div>
         </div>
-        <div className="space-y-2"><Label>Notes</Label><Textarea value={editing.notes} onChange={e => setEditing({ ...editing, notes: e.target.value })} className="bg-secondary" rows={2} /></div>
+        <div className="space-y-2"><Label>Notes / Terms</Label><Textarea value={editing.notes} onChange={e => setEditing({ ...editing, notes: e.target.value })} className="bg-secondary" rows={3} placeholder="Payment terms, thank you message, etc." /></div>
         <div className="flex gap-2">
           <Button onClick={saveQuote}><Save className="h-4 w-4 mr-1" /> Save</Button>
           <Button variant="outline" onClick={() => setPreviewing(true)}>Preview & Download</Button>
@@ -228,6 +210,7 @@ const QuotesPage = () => {
     );
   }
 
+  // List
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
