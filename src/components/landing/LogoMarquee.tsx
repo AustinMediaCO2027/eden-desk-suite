@@ -29,7 +29,7 @@ export const LogoMarquee = () => {
             <div key={setIndex} className="flex shrink-0 items-center gap-16 px-8">
               {logos.map((logo) => (
                 <div key={`${setIndex}-${logo.name}`} className="flex items-center justify-center opacity-40 hover:opacity-70 transition-opacity shrink-0">
-                  <img src={logo.src} alt={logo.name} className="h-8 w-auto object-contain" />
+                  <img src={logo.src} alt={logo.name} className="h-12 w-auto object-contain" />
                 </div>
               ))}
             </div>
