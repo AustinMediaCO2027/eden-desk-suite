@@ -66,7 +66,7 @@ const Auth = () => {
       <div className="w-full max-w-sm space-y-8">
         <div className="text-center">
           <Link to="/">
-            <img src={logoFull} alt="Eden Desk" className="h-8 mx-auto invert mb-8" />
+            <img src={logoFull} alt="Eden Desk" className="h-14 mx-auto invert mb-8" />
           </Link>
           <h1 className="text-2xl font-bold">
             {mode === "forgot" ? "Reset password" : mode === "signup" ? "Create your account" : "Welcome back"}
