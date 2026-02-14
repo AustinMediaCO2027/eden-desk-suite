@@ -128,7 +128,7 @@ const AIAgentPage = () => {
                   }`}
                 >
                   {msg.role === "assistant" ? (
-                    <div className="prose prose-sm dark:prose-invert max-w-none">
+                    <div className="prose prose-sm dark:prose-invert max-w-none prose-headings:font-bold prose-headings:mt-4 prose-headings:mb-2 prose-p:my-2 prose-ul:my-2 prose-ol:my-2 prose-li:my-0.5 prose-hr:my-4 prose-strong:text-foreground [&>*:first-child]:mt-0">
                       <ReactMarkdown>{msg.content}</ReactMarkdown>
                     </div>
                   ) : (
