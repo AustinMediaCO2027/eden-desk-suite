@@ -1,6 +1,7 @@
 import { Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import abstractBg from "@/assets/abstract-bg.jpg";
 
 const plans = [
   {
@@ -42,8 +43,14 @@ const plans = [
 
 export const LandingPricing = () => {
   return (
-    <section id="pricing" className="py-28 md:py-36 border-t border-border/30">
-      <div className="container mx-auto px-6">
+    <section id="pricing" className="relative py-28 md:py-36 border-t border-border/30 overflow-hidden">
+      {/* Abstract background */}
+      <div className="absolute inset-0 pointer-events-none">
+        <img src={abstractBg} alt="" className="absolute inset-0 w-full h-full object-cover opacity-70" />
+        <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-transparent to-background/80" />
+      </div>
+
+      <div className="container mx-auto px-6 relative z-10">
         <div className="text-center mb-20">
           <p className="text-[10px] text-muted-foreground uppercase tracking-[0.2em] mb-4">Pricing</p>
           <h2 className="text-3xl md:text-5xl lg:text-6xl font-extrabold mb-5">
