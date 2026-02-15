@@ -9,6 +9,7 @@ import CreativeTemplate from "./CreativeTemplate";
 import FreelancerTemplate from "./FreelancerTemplate";
 import AccounteerTemplate from "./AccounteerTemplate";
 import CorporateDetailTemplate from "./CorporateDetailTemplate";
+import SidebarTemplate from "./SidebarTemplate";
 import type { TemplateProps } from "./ClassicTemplate";
 
 export const TEMPLATE_OPTIONS = [
@@ -21,6 +22,7 @@ export const TEMPLATE_OPTIONS = [
   { value: "freelancer", label: "Freelancer", desc: "Clean Mular-style layout. Green accents. Professional freelancer feel." },
   { value: "accounteer", label: "Accounteer", desc: "Circle bullets. Client details with dates. Account details & note footer." },
   { value: "corporate-detail", label: "Corporate Detail", desc: "Centered logo. Client info & details boxes. Detailed items with descriptions." },
+  { value: "sidebar", label: "Sidebar", desc: "Vertical colored sidebar. Invoice details prominent. Bill To & Client Details split." },
 ];
 
 export const COLOR_OPTIONS = [
@@ -63,6 +65,7 @@ const DocumentPreview = ({ id, templateStyle, colorOverride, ...rest }: Document
       case "freelancer": return <FreelancerTemplate {...props} />;
       case "accounteer": return <AccounteerTemplate {...props} />;
       case "corporate-detail": return <CorporateDetailTemplate {...props} />;
+      case "sidebar": return <SidebarTemplate {...props} />;
       default: return <ClassicTemplate {...props} />;
     }
   };

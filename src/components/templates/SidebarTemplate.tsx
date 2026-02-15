@@ -1,7 +1,7 @@
 import { calculateTotals } from "@/lib/document-utils";
 import type { TemplateProps } from "./ClassicTemplate";
 
-const CorporateDetailTemplate = ({
+const SidebarTemplate = ({
   type,
   profile,
   documentNumber,
@@ -17,80 +17,70 @@ const CorporateDetailTemplate = ({
 }: TemplateProps) => {
   const { subtotal, taxAmount, total } = calculateTotals(items, taxRate);
   const brandColor = colorOverride || profile?.brand_color || "#29B6F6";
-  const cellStyle = "py-2 px-3 text-xs border border-gray-200";
+  const title = type === "invoice" ? "INVOICE" : "QUOTE";
 
   return (
     <div
       className="bg-white text-black max-w-[210mm] mx-auto flex flex-col"
       style={{ fontFamily: "'Inter', 'Helvetica Neue', sans-serif", minHeight: "297mm" }}
     >
-      <div className="px-10 pt-10 pb-6 flex-1">
-        {/* Centered Header */}
-        <div className="text-center mb-10">
-          {profile?.logo_url && (
-            <img src={profile.logo_url} alt="Logo" className="h-14 mx-auto mb-3 object-contain" />
-          )}
-          <p className="text-sm text-gray-700">{profile?.company_name || "Your Company"}</p>
-          {profile?.company_address && (
-            <p className="text-xs text-gray-500 mt-0.5">{profile.company_address}</p>
-          )}
-          {profile?.company_email && <p className="text-xs text-gray-500">{profile.company_email}</p>}
+      {/* Top section: Sidebar + Invoice details */}
+      <div className="flex">
+        {/* Vertical colored sidebar with rotated text */}
+        <div
+          className="w-10 flex-shrink-0 flex items-center justify-center relative"
+          style={{ backgroundColor: brandColor, minHeight: "120px" }}
+        >
+          <span
+            className="text-white text-xs font-bold tracking-[0.3em] uppercase"
+            style={{
+              writingMode: "vertical-rl",
+              transform: "rotate(180deg)",
+              letterSpacing: "0.3em",
+            }}
+          >
+            {title}
+          </span>
         </div>
 
-        {/* Client Information + Details - bordered table cells */}
-        <div className="flex justify-between gap-8 mb-10">
-          {/* CLIENT INFORMATION */}
-          <div className="flex-1">
-            <p className="text-[10px] font-medium uppercase tracking-widest text-gray-400 mb-2">
-              CLIENT INFORMATION
-            </p>
-            <table className="w-full border-collapse">
-              <tbody>
-                <tr>
-                  <td className={`${cellStyle} font-bold text-gray-800 w-24`}>Name:</td>
-                  <td className={`${cellStyle} text-gray-800 font-semibold`}>{clientName}</td>
-                </tr>
-                <tr>
-                  <td className={`${cellStyle} font-bold text-gray-800 align-top`}>Address:</td>
-                  <td className={`${cellStyle} text-gray-700 whitespace-pre-line`}>
-                    {clientAddress || "—"}
-                  </td>
-                </tr>
-                {clientEmail && (
-                  <tr>
-                    <td className={`${cellStyle} font-bold text-gray-800`}>Email:</td>
-                    <td className={`${cellStyle} text-gray-700`}>{clientEmail}</td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
+        {/* Invoice details next to sidebar */}
+        <div className="py-6 px-6 text-xs space-y-1.5">
+          <div className="flex gap-6">
+            <span className="text-gray-500 w-24">{title}</span>
+            <span style={{ color: brandColor }}>N° {documentNumber}</span>
           </div>
+          <div className="flex gap-6">
+            <span className="text-gray-500 w-24">{type === "invoice" ? "INVOICE DATE" : "QUOTE DATE"}</span>
+            <span style={{ color: brandColor }}>{date}</span>
+          </div>
+          {type === "invoice" && dueDate && (
+            <div className="flex gap-6">
+              <span className="text-gray-500 w-24">Due Date</span>
+              <span style={{ color: brandColor }}>{dueDate}</span>
+            </div>
+          )}
+        </div>
+      </div>
 
-          {/* DETAILS */}
-          <div className="w-64">
-            <p className="text-[10px] font-medium uppercase tracking-widest text-gray-400 mb-2">DETAILS</p>
-            <table className="w-full border-collapse">
-              <tbody>
-                <tr>
-                  <td className={`${cellStyle} font-bold text-gray-800`}>
-                    {type === "invoice" ? "Invoice No:" : "Quote No:"}
-                  </td>
-                  <td className={`${cellStyle} text-gray-700`}>N° {documentNumber}</td>
-                </tr>
-                <tr>
-                  <td className={`${cellStyle} font-bold text-gray-800`}>
-                    {type === "invoice" ? "Invoice Date:" : "Quote Date:"}
-                  </td>
-                  <td className={`${cellStyle} text-gray-700`}>{date}</td>
-                </tr>
-                {type === "invoice" && dueDate && (
-                  <tr>
-                    <td className={`${cellStyle} font-bold text-gray-800`}>Due Date:</td>
-                    <td className={`${cellStyle} text-gray-700`}>{dueDate}</td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
+      <div className="px-10 pt-6 pb-6 flex-1">
+        {/* Bill To + Client Details side by side */}
+        <div className="flex justify-between gap-8 mb-8">
+          <div className="flex-1">
+            <p className="text-[10px] text-gray-400 mb-3">Bill To</p>
+            {profile?.logo_url && (
+              <img src={profile.logo_url} alt="Logo" className="h-12 mb-3 object-contain" />
+            )}
+            <p className="text-sm text-gray-700">{profile?.company_name || "Your Company"}</p>
+            {profile?.company_address && (
+              <p className="text-xs text-gray-500 whitespace-pre-line mt-0.5">{profile.company_address}</p>
+            )}
+            {profile?.company_email && <p className="text-xs text-gray-500">{profile.company_email}</p>}
+          </div>
+          <div>
+            <p className="text-[10px] text-gray-400 mb-3">Client Details</p>
+            <p className="text-sm font-bold text-gray-900">{clientName}</p>
+            {clientAddress && <p className="text-xs text-gray-500 whitespace-pre-line mt-0.5">{clientAddress}</p>}
+            {clientEmail && <p className="text-xs text-gray-500">{clientEmail}</p>}
           </div>
         </div>
 
@@ -102,7 +92,7 @@ const CorporateDetailTemplate = ({
           <thead>
             <tr>
               <th className="w-8"></th>
-              <th className="text-left py-2 px-2 font-normal text-gray-400 text-xs">Item/Description</th>
+              <th className="text-left py-2 px-2 font-normal text-gray-400 text-xs">Description</th>
               <th className="text-center py-2 px-2 font-normal text-gray-400 text-xs w-14">Qty</th>
               <th className="text-right py-2 px-2 font-normal text-gray-400 text-xs w-24">Unit Price</th>
               <th className="text-right py-2 px-2 font-normal text-gray-400 text-xs w-24">Amount</th>
@@ -213,4 +203,4 @@ const CorporateDetailTemplate = ({
   );
 };
 
-export default CorporateDetailTemplate;
+export default SidebarTemplate;
