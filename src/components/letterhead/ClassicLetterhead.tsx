@@ -39,7 +39,7 @@ const ClassicLetterhead = ({ profile, recipientName, recipientTitle, recipientCo
 
         {/* Greeting */}
         {recipientName && (
-          <p className="text-sm text-gray-800 mb-1">Hello {recipientCompany || recipientName},</p>
+          <p className="text-sm text-gray-800 mb-1">{recipientCompany ? `Hello ${recipientCompany},` : `Dear ${recipientName},`}</p>
         )}
 
         {/* Recipient details (subtle) */}
