@@ -1,9 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 const plans = [
   {
@@ -41,53 +42,58 @@ const plans = [
   },
 ];
 
-const PAYFAST_URL = "https://www.payfast.co.za/eng/process";
-
 const BillingPage = () => {
   const { user } = useAuth();
   const { profile } = useProfile();
   const { toast } = useToast();
+  const [loading, setLoading] = useState<string | null>(null);
 
-  const handleSubscribe = (plan: typeof plans[0]) => {
+  const handleSubscribe = async (plan: typeof plans[0]) => {
     if (!user) {
       toast({ title: "Please log in first", variant: "destructive" });
       return;
     }
 
-    // Build PayFast form and submit
-    const form = document.createElement("form");
-    form.method = "POST";
-    form.action = PAYFAST_URL;
+    setLoading(plan.planId);
 
-    const params: Record<string, string> = {
-      merchant_id: "10000100", // Replace with your PayFast merchant ID
-      merchant_key: "46f0cd694581a", // Replace with your PayFast merchant key
-      return_url: `${window.location.origin}/dashboard/billing?status=success`,
-      cancel_url: `${window.location.origin}/dashboard/billing?status=cancelled`,
-      notify_url: `${window.location.origin}/dashboard/billing`, // Replace with your webhook
-      name_first: profile?.company_name || user.email?.split("@")[0] || "",
-      email_address: user.email || "",
-      amount: plan.payfastAmount,
-      item_name: `Eden Desk ${plan.name} Plan`,
-      item_description: `${plan.name} subscription - ${plan.period}`,
-      custom_str1: user.id,
-      custom_str2: plan.planId,
-      subscription_type: plan.planId === "yearly" ? "1" : "1",
-      recurring_amount: plan.payfastAmount,
-      frequency: plan.planId === "yearly" ? "6" : "3",
-      cycles: "0",
-    };
+    try {
+      const { data, error } = await supabase.functions.invoke("payfast-checkout", {
+        body: {
+          planName: plan.name,
+          planId: plan.planId,
+          amount: plan.payfastAmount,
+          period: plan.period,
+          userEmail: user.email,
+          userId: user.id,
+          companyName: profile?.company_name,
+          returnUrl: `${window.location.origin}/dashboard/billing?status=success`,
+          cancelUrl: `${window.location.origin}/dashboard/billing?status=cancelled`,
+        },
+      });
 
-    Object.entries(params).forEach(([key, value]) => {
-      const input = document.createElement("input");
-      input.type = "hidden";
-      input.name = key;
-      input.value = value;
-      form.appendChild(input);
-    });
+      if (error) throw error;
 
-    document.body.appendChild(form);
-    form.submit();
+      // Build and submit form
+      const form = document.createElement("form");
+      form.method = "POST";
+      form.action = data.paymentUrl;
+
+      Object.entries(data.params as Record<string, string>).forEach(([key, value]) => {
+        const input = document.createElement("input");
+        input.type = "hidden";
+        input.name = key;
+        input.value = value;
+        form.appendChild(input);
+      });
+
+      document.body.appendChild(form);
+      form.submit();
+    } catch (err: any) {
+      console.error("PayFast error:", err);
+      toast({ title: "Payment error", description: err.message || "Something went wrong", variant: "destructive" });
+    } finally {
+      setLoading(null);
+    }
   };
 
   return (
@@ -122,8 +128,9 @@ const BillingPage = () => {
               variant={plan.highlighted ? "default" : "outline"}
               className="w-full"
               onClick={() => handleSubscribe(plan)}
+              disabled={loading === plan.planId}
             >
-              Subscribe via PayFast
+              {loading === plan.planId ? "Processing..." : "Subscribe via PayFast"}
             </Button>
           </div>
         ))}
