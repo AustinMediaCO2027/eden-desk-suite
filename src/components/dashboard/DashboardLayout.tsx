@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link, useLocation, Outlet } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
@@ -54,13 +54,7 @@ export const DashboardLayout = () => {
   const { theme, toggleTheme } = useTheme();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const isHome = location.pathname === "/dashboard";
-  const [collapsed, setCollapsed] = useState(!isHome);
-
-  // Auto-expand on dashboard home, auto-collapse on subpages
-  useEffect(() => {
-    setCollapsed(!isHome);
-  }, [isHome]);
+  const [collapsed, setCollapsed] = useState(false);
 
   const userInitials = profile?.company_name
     ? profile.company_name.slice(0, 2).toUpperCase()
@@ -146,9 +140,9 @@ export const DashboardLayout = () => {
       {/* Sidebar */}
       <TooltipProvider delayDuration={0}>
         <aside
-          className={`fixed lg:static inset-y-0 left-0 z-50 flex flex-col shrink-0 transform transition-all duration-300 lg:translate-x-0 bg-sidebar overflow-hidden relative ${
-            collapsed ? "w-[60px]" : "w-[220px]"
-          } ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
+        className={`fixed lg:static inset-y-0 left-0 z-50 flex flex-col shrink-0 transform transition-all duration-300 lg:translate-x-0 bg-sidebar overflow-hidden relative ${
+          collapsed ? "w-[60px]" : "w-[200px]"
+        } ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
         >
           {/* Aurora background effect */}
           <div className="absolute inset-0 pointer-events-none overflow-hidden">
