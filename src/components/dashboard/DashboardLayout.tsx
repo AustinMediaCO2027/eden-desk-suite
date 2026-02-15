@@ -65,23 +65,23 @@ export const DashboardLayout = () => {
         to={to}
         onClick={() => setSidebarOpen(false)}
         title={collapsed ? label : undefined}
-        className={`group flex items-center gap-3 rounded-xl text-sm transition-all duration-200 ${
-          collapsed ? "justify-center p-2.5" : "px-3 py-2.5"
+        className={`group flex items-center gap-2.5 rounded-lg text-[13px] transition-all duration-200 ${
+          collapsed ? "justify-center p-2" : "px-2.5 py-1.5"
         } ${
           isActive
             ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
             : "text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent/40"
         }`}
       >
-        <Icon className={`h-[18px] w-[18px] shrink-0 ${isActive ? "text-sidebar-primary" : ""}`} />
+        <Icon className={`h-4 w-4 shrink-0 ${isActive ? "text-sidebar-primary" : ""}`} />
         {!collapsed && <span>{label}</span>}
       </Link>
     );
   };
 
   const renderGroupLabel = (label: string) => (
-    <p className={`text-[10px] font-semibold uppercase tracking-[0.15em] mb-2 mt-6 first:mt-0 text-[hsl(var(--sidebar-group-label))] ${
-      collapsed ? "text-center px-0" : "px-3"
+    <p className={`text-[9px] font-semibold uppercase tracking-[0.15em] mb-1 mt-3 first:mt-0 text-[hsl(var(--sidebar-group-label))] ${
+      collapsed ? "text-center px-0" : "px-2.5"
     }`}>
       {collapsed ? label.slice(0, 1) : label}
     </p>
@@ -97,7 +97,7 @@ export const DashboardLayout = () => {
       {/* Sidebar */}
       <aside
         className={`fixed lg:static inset-y-0 left-0 z-50 flex flex-col transform transition-all duration-300 lg:translate-x-0 bg-sidebar overflow-hidden relative ${
-          collapsed ? "w-[72px]" : "w-[250px]"
+          collapsed ? "w-[60px]" : "w-[220px]"
         } ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
       >
         {/* Aurora background effect */}
@@ -108,9 +108,9 @@ export const DashboardLayout = () => {
           <div className="absolute -bottom-10 -right-10 w-36 h-36 rounded-full bg-[hsl(200_60%_30%/0.08)] blur-[50px]" />
         </div>
         {/* User profile section at top */}
-        <div className={`relative z-10 pt-5 pb-4 border-b border-sidebar-border ${collapsed ? "px-3" : "px-4"}`}>
-          <div className={`flex items-center ${collapsed ? "justify-center" : "gap-3"}`}>
-            <Avatar className="h-10 w-10 shrink-0 ring-2 ring-sidebar-primary/30 ring-offset-2 ring-offset-sidebar">
+        <div className={`relative z-10 pt-3 pb-3 border-b border-sidebar-border ${collapsed ? "px-2" : "px-3"}`}>
+          <div className={`flex items-center ${collapsed ? "justify-center" : "gap-2.5"}`}>
+            <Avatar className="h-8 w-8 shrink-0 ring-2 ring-sidebar-primary/30 ring-offset-1 ring-offset-sidebar">
               <AvatarFallback className="bg-sidebar-accent text-sidebar-primary text-xs font-bold">
                 {userInitials}
               </AvatarFallback>
@@ -127,7 +127,7 @@ export const DashboardLayout = () => {
             )}
             <button
               onClick={() => setCollapsed(!collapsed)}
-              className="hidden lg:flex items-center justify-center h-6 w-6 rounded-full bg-sidebar-accent hover:bg-sidebar-accent/80 text-sidebar-foreground/60 hover:text-sidebar-foreground transition-colors"
+              className="hidden lg:flex items-center justify-center h-5 w-5 rounded-full bg-sidebar-accent hover:bg-sidebar-accent/80 text-sidebar-foreground/60 hover:text-sidebar-foreground transition-colors"
             >
               {collapsed ? <ChevronRight className="h-3.5 w-3.5" /> : <ChevronLeft className="h-3.5 w-3.5" />}
             </button>
@@ -139,7 +139,7 @@ export const DashboardLayout = () => {
         </div>
 
         {/* Navigation */}
-        <nav className={`relative z-10 flex-1 pt-4 overflow-y-auto sidebar-scroll space-y-0.5 ${collapsed ? "px-2" : "px-3"}`}>
+        <nav className={`relative z-10 flex-1 pt-2 overflow-y-auto sidebar-scroll space-y-0.5 ${collapsed ? "px-1.5" : "px-2"}`}>
           {renderGroupLabel("Documents")}
           <div className="space-y-0.5">
             {mainNav.map(renderNavItem)}
@@ -156,27 +156,27 @@ export const DashboardLayout = () => {
             <button
               onClick={toggleTheme}
               title={collapsed ? (theme === "dark" ? "Light Mode" : "Dark Mode") : undefined}
-              className={`flex items-center gap-3 rounded-xl text-sm text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent/40 w-full transition-all duration-200 ${
-                collapsed ? "justify-center p-2.5" : "px-3 py-2.5"
+              className={`flex items-center gap-2.5 rounded-lg text-[13px] text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent/40 w-full transition-all duration-200 ${
+                collapsed ? "justify-center p-2" : "px-2.5 py-1.5"
               }`}
             >
-              {theme === "dark" ? <Sun className="h-[18px] w-[18px]" /> : <Moon className="h-[18px] w-[18px]" />}
+              {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
               {!collapsed && <span>{theme === "dark" ? "Light Mode" : "Dark Mode"}</span>}
             </button>
           </div>
         </nav>
 
         {/* Bottom section */}
-        <div className={`relative z-10 p-3 ${collapsed ? "px-2" : ""}`}>
+        <div className={`relative z-10 p-2 ${collapsed ? "px-1.5" : ""}`}>
           {!collapsed && (
-            <div className="rounded-xl bg-sidebar-accent/60 border border-sidebar-border p-4 mb-3">
-              <p className="text-sm font-semibold text-sidebar-foreground mb-1">Let's start!</p>
-              <p className="text-[11px] text-sidebar-foreground/50 leading-relaxed mb-3">
+            <div className="rounded-lg bg-sidebar-accent/60 border border-sidebar-border p-3 mb-2">
+              <p className="text-xs font-semibold text-sidebar-foreground mb-0.5">Let's start!</p>
+              <p className="text-[10px] text-sidebar-foreground/50 leading-relaxed mb-2">
                 Creating or adding new tasks couldn't be easier
               </p>
               <Link
                 to="/dashboard/tasks"
-                className="flex items-center justify-center gap-1.5 w-full rounded-lg bg-sidebar-primary text-sidebar-primary-foreground py-2 text-xs font-semibold hover:opacity-90 transition-opacity"
+                className="flex items-center justify-center gap-1.5 w-full rounded-md bg-sidebar-primary text-sidebar-primary-foreground py-1.5 text-[11px] font-semibold hover:opacity-90 transition-opacity"
               >
                 + Add New Task
               </Link>
@@ -185,11 +185,11 @@ export const DashboardLayout = () => {
           <button
             onClick={signOut}
             title={collapsed ? "Logout" : undefined}
-            className={`flex items-center gap-3 rounded-xl text-sm text-sidebar-foreground/40 hover:text-destructive w-full transition-colors ${
-              collapsed ? "justify-center p-2.5" : "px-3 py-2.5"
+            className={`flex items-center gap-2.5 rounded-lg text-[13px] text-sidebar-foreground/40 hover:text-destructive w-full transition-colors ${
+              collapsed ? "justify-center p-2" : "px-2.5 py-1.5"
             }`}
           >
-            <LogOut className="h-[18px] w-[18px]" />
+            <LogOut className="h-4 w-4" />
             {!collapsed && <span>Logout</span>}
           </button>
         </div>
