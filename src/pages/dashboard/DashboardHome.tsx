@@ -243,7 +243,7 @@ const DashboardHome = () => {
       </Dialog>
 
       {/* Header */}
-      <div className="px-4 lg:px-6 pt-5 pb-1">
+      <div className="pb-1">
         <div className="flex items-start justify-between">
           <div>
             <h1 className="text-xl font-bold tracking-tight">
@@ -262,7 +262,7 @@ const DashboardHome = () => {
         </div>
       </div>
 
-      <div className="px-4 lg:px-6 py-4 space-y-4">
+      <div className="py-4 space-y-4">
         {/* Quick Actions */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
           {quickActions.map(({ label, icon: Icon, to, color }) => (
