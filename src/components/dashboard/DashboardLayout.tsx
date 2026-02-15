@@ -96,7 +96,7 @@ export const DashboardLayout = () => {
 
       {/* Sidebar */}
       <aside
-        className={`fixed lg:static inset-y-0 left-0 z-50 flex flex-col transform transition-all duration-300 lg:translate-x-0 bg-sidebar border-r border-sidebar-border ${
+        className={`fixed lg:static inset-y-0 left-0 z-50 flex flex-col transform transition-all duration-300 lg:translate-x-0 bg-sidebar ${
           collapsed ? "w-[72px]" : "w-[250px]"
         } ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
       >
@@ -132,7 +132,7 @@ export const DashboardLayout = () => {
         </div>
 
         {/* Navigation */}
-        <nav className={`flex-1 pt-4 overflow-y-auto space-y-0.5 ${collapsed ? "px-2" : "px-3"}`}>
+        <nav className={`flex-1 pt-4 overflow-y-auto sidebar-scroll space-y-0.5 ${collapsed ? "px-2" : "px-3"}`}>
           {renderGroupLabel("Documents")}
           <div className="space-y-0.5">
             {mainNav.map(renderNavItem)}
