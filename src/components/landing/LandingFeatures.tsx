@@ -1,5 +1,6 @@
 import { Receipt, FileText, CalendarDays, Bot, Mail, Shield, Zap, Globe } from "lucide-react";
 import featureIconX from "@/assets/feature-icon-x.jpeg";
+import abstractBg from "@/assets/abstract-bg.jpg";
 
 const features = [
   {
@@ -46,8 +47,14 @@ const features = [
 
 export const LandingFeatures = () => {
   return (
-    <section id="features" className="py-20 md:py-32">
-      <div className="container mx-auto px-6">
+    <section id="features" className="relative py-20 md:py-32 overflow-hidden">
+      {/* Abstract background */}
+      <div className="absolute inset-0 pointer-events-none">
+        <img src={abstractBg} alt="" className="absolute inset-0 w-full h-full object-cover opacity-70" />
+        <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-transparent to-background/80" />
+      </div>
+
+      <div className="container mx-auto px-6 relative z-10">
         {/* Stats bar */}
         <div className="mb-20 md:mb-28 rounded-3xl border border-border/40 bg-gradient-to-b from-card/40 to-card/10 p-8 md:p-12 lg:p-16">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 text-center">
