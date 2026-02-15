@@ -2,14 +2,14 @@ import fiverrLogo from "@/assets/logos/fiverr.png";
 import upworkLogo from "@/assets/logos/upwork.png";
 import bookingLogo from "@/assets/logos/booking-white.webp";
 import airbnbLogo from "@/assets/logos/airbnb-white.png";
-import radissonLogo from "@/assets/logos/radisson-blu.jpeg";
+
 
 const logos = [
   { name: "Fiverr", src: fiverrLogo, className: "h-10 md:h-12", invert: true },
   { name: "Upwork", src: upworkLogo, className: "h-10 md:h-12", invert: true },
   { name: "Booking.com", src: bookingLogo, className: "h-8 md:h-10", invert: false },
   { name: "Airbnb", src: airbnbLogo, className: "h-8 md:h-10", invert: false },
-  { name: "Radisson Blu", src: radissonLogo, className: "h-10 md:h-12", invert: false },
+  
 ];
 
 export const LogoMarquee = () => {
@@ -33,7 +33,7 @@ export const LogoMarquee = () => {
                     src={logo.src}
                     alt={logo.name}
                     className={`${logo.className} w-auto object-contain`}
-                    style={{ filter: logo.invert ? "brightness(0) invert(1)" : "none", opacity: 1, mixBlendMode: logo.name === "Radisson Blu" ? "lighten" : undefined }}
+                    style={{ filter: logo.invert ? "brightness(0) invert(1)" : "none", opacity: 1 }}
                   />
                 </div>
               ))}
