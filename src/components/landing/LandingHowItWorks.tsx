@@ -1,4 +1,5 @@
 import { Building2, Palette, Send } from "lucide-react";
+import abstractBg from "@/assets/abstract-bg.jpg";
 
 const steps = [
   {
@@ -23,8 +24,15 @@ const steps = [
 
 export const LandingHowItWorks = () => {
   return (
-    <section id="how-it-works" className="py-28 md:py-40 border-t border-border/20">
-      <div className="container mx-auto px-6">
+    <section id="how-it-works" className="relative py-28 md:py-40 overflow-hidden">
+      {/* Abstract background */}
+      <div className="absolute inset-0 pointer-events-none">
+        <img src={abstractBg} alt="" className="absolute inset-0 w-full h-full object-cover opacity-30" />
+        <div className="absolute inset-0 bg-gradient-to-b from-background via-background/40 to-background" />
+        <div className="absolute inset-0 bg-gradient-to-r from-background/60 via-transparent to-background/60" />
+      </div>
+
+      <div className="container mx-auto px-6 relative z-10">
         <div className="text-center mb-20">
           <p className="text-[10px] text-muted-foreground uppercase tracking-[0.25em] mb-5 font-medium">How It Works</p>
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-5">
@@ -35,14 +43,14 @@ export const LandingHowItWorks = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 max-w-5xl mx-auto">
           {steps.map(({ num, icon: Icon, title, description }, i) => (
             <div key={num} className="relative group">
               {i < steps.length - 1 && (
                 <div className="hidden md:block absolute top-14 left-[60%] w-[80%] h-[1px] bg-gradient-to-r from-border/40 to-transparent" />
               )}
               
-              <div className="rounded-2xl border border-border/40 bg-gradient-to-b from-card/30 to-transparent p-9 transition-all duration-300 hover:from-card/60 hover:border-border/70 hover:-translate-y-2 hover:shadow-[0_20px_60px_-20px_rgba(255,255,255,0.06)]">
+              <div className="rounded-2xl border border-border/40 bg-background/60 backdrop-blur-sm p-8 md:p-9 transition-all duration-300 hover:bg-background/80 hover:border-border/70 hover:-translate-y-2 hover:shadow-[0_20px_60px_-20px_rgba(255,255,255,0.06)]">
                 <div className="flex items-center gap-5 mb-7">
                   <span className="text-4xl font-extrabold text-foreground/10">{num}</span>
                   <div className="h-12 w-12 rounded-2xl border border-border/40 bg-card/40 flex items-center justify-center group-hover:border-foreground/15 group-hover:bg-card/60 transition-all duration-300">
