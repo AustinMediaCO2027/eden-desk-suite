@@ -1,11 +1,7 @@
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Check, Lock, ArrowRight } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "@/hooks/useAuth";
-import { supabase } from "@/integrations/supabase/client";
-import { useProfile } from "@/hooks/useProfile";
-import { useState } from "react";
+import { Link } from "react-router-dom";
 
 interface PaywallDialogProps {
   open: boolean;
@@ -20,56 +16,6 @@ const features = [
 ];
 
 const PaywallDialog = ({ open, onOpenChange }: PaywallDialogProps) => {
-  const { user } = useAuth();
-  const { profile } = useProfile();
-  const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
-
-  const handleStartTrial = async () => {
-    if (!user) {
-      navigate("/auth?mode=signup&redirect=trial");
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const { data, error } = await supabase.functions.invoke("payfast-checkout", {
-        body: {
-          planName: "Silver",
-          planId: "silver",
-          amount: "59.99",
-          period: "/month",
-          userEmail: user.email,
-          userId: user.id,
-          companyName: profile?.company_name,
-          returnUrl: `${window.location.origin}/dashboard?payment=success&plan=silver`,
-          cancelUrl: `${window.location.origin}/dashboard/billing?status=cancelled`,
-        },
-      });
-
-      if (error) throw error;
-
-      const form = document.createElement("form");
-      form.method = "POST";
-      form.action = data.paymentUrl;
-
-      Object.entries(data.params as Record<string, string>).forEach(([key, value]) => {
-        const input = document.createElement("input");
-        input.type = "hidden";
-        input.name = key;
-        input.value = value;
-        form.appendChild(input);
-      });
-
-      document.body.appendChild(form);
-      form.submit();
-    } catch (err: any) {
-      console.error("PayFast error:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="bg-card border-border p-0 overflow-hidden max-w-md">
@@ -78,10 +24,10 @@ const PaywallDialog = ({ open, onOpenChange }: PaywallDialogProps) => {
           <div className="h-14 w-14 rounded-2xl bg-muted flex items-center justify-center mb-6">
             <Lock className="h-7 w-7 text-muted-foreground" />
           </div>
-          <h2 className="text-2xl font-bold tracking-tight mb-2">Free Generation Used</h2>
+          <h2 className="text-2xl font-bold tracking-tight mb-2">Free Usage Exhausted</h2>
           <p className="text-sm text-muted-foreground leading-relaxed max-w-xs">
             You've used your <span className="text-foreground font-medium">1 free document generation</span>. 
-            Start a <span className="text-foreground font-medium">7-day free trial</span> to continue creating documents.
+            Subscribe to a plan to continue creating documents.
           </p>
           <div className="w-full mt-6 space-y-2.5">
             {features.map((feature) => (
@@ -93,22 +39,15 @@ const PaywallDialog = ({ open, onOpenChange }: PaywallDialogProps) => {
               </div>
             ))}
           </div>
-          <Button
-            className="w-full mt-8 h-11 text-sm font-medium gap-2"
-            onClick={handleStartTrial}
-            disabled={loading}
-          >
-            {loading ? "Processing..." : "Start 7-Day Free Trial — R59.99/mo"}
-            <ArrowRight className="h-4 w-4" />
-          </Button>
           <Link to="/dashboard/billing" className="w-full">
-            <Button variant="ghost" className="w-full mt-2 text-xs text-muted-foreground">
-              View All Plans
+            <Button className="w-full mt-8 h-11 text-sm font-medium gap-2">
+              View Plans & Subscribe
+              <ArrowRight className="h-4 w-4" />
             </Button>
           </Link>
           <button
             onClick={() => onOpenChange(false)}
-            className="mt-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
+            className="mt-3 text-xs text-muted-foreground hover:text-foreground transition-colors"
           >
             Maybe later
           </button>
