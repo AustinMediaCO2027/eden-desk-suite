@@ -1,7 +1,7 @@
 import type { LetterheadTemplateProps } from "./LetterheadTypes";
 
 /** Executive — Figma-inspired: Dark header band with logo, clean content, structured footer */
-const ExecutiveLetterhead = ({ profile, recipientName, recipientTitle, recipientCompany, recipientAddress, recipientPhone, recipientEmail, date, subject, body, closing, senderName, senderTitle, colorOverride }: LetterheadTemplateProps) => {
+const ExecutiveLetterhead = ({ profile, recipientName, recipientTitle, recipientCompany, recipientAddress, recipientPhone, recipientEmail, date, subject, body, closing, senderName, senderTitle, colorOverride, signatureUrl }: LetterheadTemplateProps) => {
   const brandColor = colorOverride || profile?.brand_color || "#1A1A1A";
 
   return (
@@ -53,6 +53,7 @@ const ExecutiveLetterhead = ({ profile, recipientName, recipientTitle, recipient
         {/* Closing */}
         <div className="mb-16">
           <p className="text-sm text-gray-800 mb-1">{closing}</p>
+          {signatureUrl && <img src={signatureUrl} alt="Signature" className="h-14 object-contain my-2" />}
           <p className="text-sm font-bold text-gray-900">{senderName || profile?.company_name}</p>
           {senderTitle && <p className="text-xs text-gray-600">{senderTitle}</p>}
         </div>

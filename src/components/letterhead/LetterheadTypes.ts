@@ -15,6 +15,7 @@ export interface LetterheadTemplateProps {
   senderName: string;
   senderTitle: string;
   colorOverride?: string;
+  signatureUrl?: string;
 }
 
 export const LETTERHEAD_TEMPLATES = [

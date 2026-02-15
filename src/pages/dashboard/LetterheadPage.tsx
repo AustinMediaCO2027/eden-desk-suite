@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Plus, Trash2, Download, Save, ArrowLeft, X, Bot, Send, Palette, Mail, FileText } from "lucide-react";
 import LogoUploadWidget from "@/components/dashboard/LogoUploadWidget";
+import SignatureUploadWidget from "@/components/dashboard/SignatureUploadWidget";
 import { downloadPDF } from "@/lib/pdf";
 import LetterheadPreview from "@/components/letterhead/LetterheadPreview";
 import { LETTERHEAD_TEMPLATES, LETTERHEAD_COLORS } from "@/components/letterhead/LetterheadTypes";
@@ -31,6 +32,7 @@ interface LetterheadForm {
   closing: string;
   sender_name: string;
   sender_title: string;
+  signature_url: string;
 }
 
 const emptyLetterhead = (): LetterheadForm => ({
@@ -47,6 +49,7 @@ const emptyLetterhead = (): LetterheadForm => ({
   closing: "Sincerely,",
   sender_name: "",
   sender_title: "",
+  signature_url: "",
 });
 
 const LetterheadPage = () => {
@@ -91,6 +94,7 @@ const LetterheadPage = () => {
       closing: editing.closing,
       sender_name: editing.sender_name,
       sender_title: editing.sender_title,
+      signature_url: editing.signature_url,
     };
     let error;
     if (editing.id) {
@@ -128,6 +132,7 @@ const LetterheadPage = () => {
       closing: l.closing || "Sincerely,",
       sender_name: l.sender_name || "",
       sender_title: l.sender_title || "",
+      signature_url: l.signature_url || "",
     });
   };
 
@@ -285,6 +290,7 @@ const LetterheadPage = () => {
             senderName={editing.sender_name}
             senderTitle={editing.sender_title}
             colorOverride={previewColor || undefined}
+            signatureUrl={editing.signature_url || undefined}
           />
         </div>
       </div>
@@ -367,7 +373,13 @@ const LetterheadPage = () => {
           <div className="space-y-2">
             <Label>Sender Name</Label>
             <Input value={editing.sender_name} onChange={e => setEditing({ ...editing, sender_name: e.target.value })} className="bg-secondary" placeholder="Your name" />
-          </div>
+        </div>
+
+        <SignatureUploadWidget
+          signatureUrl={editing.signature_url || null}
+          onUploaded={(url) => setEditing({ ...editing, signature_url: url })}
+          onRemoved={() => setEditing({ ...editing, signature_url: "" })}
+        />
           <div className="space-y-2">
             <Label>Sender Title</Label>
             <Input value={editing.sender_title} onChange={e => setEditing({ ...editing, sender_title: e.target.value })} className="bg-secondary" placeholder="e.g. CEO" />

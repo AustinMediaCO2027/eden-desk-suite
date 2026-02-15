@@ -122,6 +122,7 @@ export type Database = {
           recipient_title: string | null
           sender_name: string | null
           sender_title: string | null
+          signature_url: string | null
           subject: string | null
           title: string | null
           updated_at: string | null
@@ -141,6 +142,7 @@ export type Database = {
           recipient_title?: string | null
           sender_name?: string | null
           sender_title?: string | null
+          signature_url?: string | null
           subject?: string | null
           title?: string | null
           updated_at?: string | null
@@ -160,6 +162,7 @@ export type Database = {
           recipient_title?: string | null
           sender_name?: string | null
           sender_title?: string | null
+          signature_url?: string | null
           subject?: string | null
           title?: string | null
           updated_at?: string | null
