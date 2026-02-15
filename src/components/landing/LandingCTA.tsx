@@ -2,11 +2,18 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import moonBg from "@/assets/moon-bg.jpg";
+import abstractBg from "@/assets/abstract-bg.jpg";
 
 export const LandingCTA = () => {
   return (
-    <section className="py-28 md:py-40 border-t border-border/20">
-      <div className="container mx-auto px-6">
+    <section className="relative py-28 md:py-40 border-t border-border/20 overflow-hidden">
+      {/* Abstract background — same as How It Works */}
+      <div className="absolute inset-0 pointer-events-none">
+        <img src={abstractBg} alt="" className="absolute inset-0 w-full h-full object-cover opacity-70" />
+        <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-transparent to-background/80" />
+      </div>
+
+      <div className="container mx-auto px-6 relative z-10">
         <div className="relative rounded-3xl border border-border/30 overflow-hidden py-24 md:py-32 px-8 text-center">
           {/* Moon background */}
           <img src={moonBg} alt="" className="absolute inset-0 w-full h-full object-cover opacity-30" />
