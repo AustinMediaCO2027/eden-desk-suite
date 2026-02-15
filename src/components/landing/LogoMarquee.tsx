@@ -33,7 +33,7 @@ export const LogoMarquee = () => {
                     src={logo.src}
                     alt={logo.name}
                     className={`${logo.className} w-auto object-contain`}
-                    style={{ filter: logo.invert ? "brightness(0) invert(1)" : "none", opacity: 1 }}
+                    style={{ filter: logo.invert ? "brightness(0) invert(1)" : "none", opacity: 1, mixBlendMode: logo.name === "Radisson Blu" ? "lighten" : undefined }}
                   />
                 </div>
               ))}
