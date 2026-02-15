@@ -1,9 +1,7 @@
-import pepsicoLogo from "@/assets/logos/pepsico.png";
 import fiverrLogo from "@/assets/logos/fiverr.png";
 import upworkLogo from "@/assets/logos/upwork.png";
 
 const logos = [
-  { name: "PepsiCo", src: pepsicoLogo, className: "h-14 md:h-18" },
   { name: "Fiverr", src: fiverrLogo, className: "h-10 md:h-12" },
   { name: "Upwork", src: upworkLogo, className: "h-10 md:h-12" },
 ];
