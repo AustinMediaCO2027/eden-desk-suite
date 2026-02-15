@@ -96,7 +96,7 @@ export const DashboardLayout = () => {
 
       {/* Sidebar */}
       <aside
-        className={`fixed lg:static inset-y-0 left-0 z-50 flex flex-col transform transition-all duration-300 lg:translate-x-0 bg-sidebar overflow-hidden relative ${
+        className={`fixed lg:static inset-y-0 left-0 z-50 flex flex-col shrink-0 transform transition-all duration-300 lg:translate-x-0 bg-sidebar overflow-hidden relative ${
           collapsed ? "w-[60px]" : "w-[220px]"
         } ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
       >
@@ -196,7 +196,7 @@ export const DashboardLayout = () => {
       </aside>
 
       {/* Main content */}
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="flex-1 flex flex-col overflow-hidden min-w-0">
         {/* Mobile header */}
         <header className="lg:hidden h-12 border-b border-border flex items-center px-4">
           <button onClick={() => setSidebarOpen(true)}>
@@ -208,7 +208,7 @@ export const DashboardLayout = () => {
           </div>
         </header>
 
-        <main className="flex-1 overflow-y-auto">
+        <main className="flex-1 overflow-y-auto p-4 lg:p-6">
           <Outlet />
         </main>
       </div>
