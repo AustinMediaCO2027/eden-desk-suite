@@ -18,7 +18,7 @@ const plans = [
     period: "/month",
     description: "For growing businesses",
     features: [
-      "Everything in Standard",
+      "Send Invoice / Quotes",
       "Create & send letterheads",
       "AI drafting assistant",
       "5 AI prompts per day",
