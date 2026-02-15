@@ -96,12 +96,19 @@ export const DashboardLayout = () => {
 
       {/* Sidebar */}
       <aside
-        className={`fixed lg:static inset-y-0 left-0 z-50 flex flex-col transform transition-all duration-300 lg:translate-x-0 bg-sidebar ${
+        className={`fixed lg:static inset-y-0 left-0 z-50 flex flex-col transform transition-all duration-300 lg:translate-x-0 bg-sidebar overflow-hidden relative ${
           collapsed ? "w-[72px]" : "w-[250px]"
         } ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
       >
+        {/* Aurora background effect */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          <div className="absolute -top-20 -left-20 w-60 h-60 rounded-full bg-[hsl(15_80%_40%/0.15)] blur-[80px]" />
+          <div className="absolute top-1/3 -right-10 w-40 h-40 rounded-full bg-[hsl(210_70%_35%/0.1)] blur-[60px]" />
+          <div className="absolute bottom-20 left-1/4 w-48 h-48 rounded-full bg-[hsl(25_90%_45%/0.08)] blur-[70px]" />
+          <div className="absolute -bottom-10 -right-10 w-36 h-36 rounded-full bg-[hsl(200_60%_30%/0.08)] blur-[50px]" />
+        </div>
         {/* User profile section at top */}
-        <div className={`pt-5 pb-4 border-b border-sidebar-border ${collapsed ? "px-3" : "px-4"}`}>
+        <div className={`relative z-10 pt-5 pb-4 border-b border-sidebar-border ${collapsed ? "px-3" : "px-4"}`}>
           <div className={`flex items-center ${collapsed ? "justify-center" : "gap-3"}`}>
             <Avatar className="h-10 w-10 shrink-0 ring-2 ring-sidebar-primary/30 ring-offset-2 ring-offset-sidebar">
               <AvatarFallback className="bg-sidebar-accent text-sidebar-primary text-xs font-bold">
@@ -132,7 +139,7 @@ export const DashboardLayout = () => {
         </div>
 
         {/* Navigation */}
-        <nav className={`flex-1 pt-4 overflow-y-auto sidebar-scroll space-y-0.5 ${collapsed ? "px-2" : "px-3"}`}>
+        <nav className={`relative z-10 flex-1 pt-4 overflow-y-auto sidebar-scroll space-y-0.5 ${collapsed ? "px-2" : "px-3"}`}>
           {renderGroupLabel("Documents")}
           <div className="space-y-0.5">
             {mainNav.map(renderNavItem)}
@@ -160,7 +167,7 @@ export const DashboardLayout = () => {
         </nav>
 
         {/* Bottom section */}
-        <div className={`p-3 ${collapsed ? "px-2" : ""}`}>
+        <div className={`relative z-10 p-3 ${collapsed ? "px-2" : ""}`}>
           {!collapsed && (
             <div className="rounded-xl bg-sidebar-accent/60 border border-sidebar-border p-4 mb-3">
               <p className="text-sm font-semibold text-sidebar-foreground mb-1">Let's start!</p>
