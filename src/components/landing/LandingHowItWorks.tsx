@@ -27,9 +27,8 @@ export const LandingHowItWorks = () => {
     <section id="how-it-works" className="relative py-28 md:py-40 overflow-hidden">
       {/* Abstract background */}
       <div className="absolute inset-0 pointer-events-none">
-        <img src={abstractBg} alt="" className="absolute inset-0 w-full h-full object-cover opacity-30" />
-        <div className="absolute inset-0 bg-gradient-to-b from-background via-background/40 to-background" />
-        <div className="absolute inset-0 bg-gradient-to-r from-background/60 via-transparent to-background/60" />
+        <img src={abstractBg} alt="" className="absolute inset-0 w-full h-full object-cover opacity-70" />
+        <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-transparent to-background/80" />
       </div>
 
       <div className="container mx-auto px-6 relative z-10">
