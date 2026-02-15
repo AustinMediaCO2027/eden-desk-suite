@@ -48,7 +48,7 @@ export const DashboardLayout = () => {
   const { theme, toggleTheme } = useTheme();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(true);
 
   const userInitials = profile?.company_name
     ? profile.company_name.slice(0, 2).toUpperCase()
