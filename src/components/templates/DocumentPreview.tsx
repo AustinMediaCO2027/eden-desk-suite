@@ -6,6 +6,7 @@ import MinimalTemplate from "./MinimalTemplate";
 import BoldTemplate from "./BoldTemplate";
 import ElegantTemplate from "./ElegantTemplate";
 import CreativeTemplate from "./CreativeTemplate";
+import FreelancerTemplate from "./FreelancerTemplate";
 import type { TemplateProps } from "./ClassicTemplate";
 
 export const TEMPLATE_OPTIONS = [
@@ -15,6 +16,7 @@ export const TEMPLATE_OPTIONS = [
   { value: "bold", label: "Bold", desc: "Full-width colored header. High contrast. Strong brand." },
   { value: "elegant", label: "Elegant", desc: "Serif accents. Refined borders. Sophisticated feel." },
   { value: "creative", label: "Creative", desc: "Side accent bar. Asymmetric layout. Standout design." },
+  { value: "freelancer", label: "Freelancer", desc: "Clean Mular-style layout. Green accents. Professional freelancer feel." },
 ];
 
 export const COLOR_OPTIONS = [
@@ -54,6 +56,7 @@ const DocumentPreview = ({ id, templateStyle, colorOverride, ...rest }: Document
       case "bold": return <BoldTemplate {...props} />;
       case "elegant": return <ElegantTemplate {...props} />;
       case "creative": return <CreativeTemplate {...props} />;
+      case "freelancer": return <FreelancerTemplate {...props} />;
       default: return <ClassicTemplate {...props} />;
     }
   };
