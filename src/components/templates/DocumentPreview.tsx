@@ -7,6 +7,8 @@ import BoldTemplate from "./BoldTemplate";
 import ElegantTemplate from "./ElegantTemplate";
 import CreativeTemplate from "./CreativeTemplate";
 import FreelancerTemplate from "./FreelancerTemplate";
+import AccounteerTemplate from "./AccounteerTemplate";
+import CorporateDetailTemplate from "./CorporateDetailTemplate";
 import type { TemplateProps } from "./ClassicTemplate";
 
 export const TEMPLATE_OPTIONS = [
@@ -17,6 +19,8 @@ export const TEMPLATE_OPTIONS = [
   { value: "elegant", label: "Elegant", desc: "Serif accents. Refined borders. Sophisticated feel." },
   { value: "creative", label: "Creative", desc: "Side accent bar. Asymmetric layout. Standout design." },
   { value: "freelancer", label: "Freelancer", desc: "Clean Mular-style layout. Green accents. Professional freelancer feel." },
+  { value: "accounteer", label: "Accounteer", desc: "Circle bullets. Client details with dates. Account details & note footer." },
+  { value: "corporate-detail", label: "Corporate Detail", desc: "Centered logo. Client info & details boxes. Detailed items with descriptions." },
 ];
 
 export const COLOR_OPTIONS = [
@@ -57,6 +61,8 @@ const DocumentPreview = ({ id, templateStyle, colorOverride, ...rest }: Document
       case "elegant": return <ElegantTemplate {...props} />;
       case "creative": return <CreativeTemplate {...props} />;
       case "freelancer": return <FreelancerTemplate {...props} />;
+      case "accounteer": return <AccounteerTemplate {...props} />;
+      case "corporate-detail": return <CorporateDetailTemplate {...props} />;
       default: return <ClassicTemplate {...props} />;
     }
   };
