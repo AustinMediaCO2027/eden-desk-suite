@@ -47,6 +47,39 @@ export type Database = {
         }
         Relationships: []
       }
+      goals: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          progress_percentage: number | null
+          target_date: string | null
+          title: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          progress_percentage?: number | null
+          target_date?: string | null
+          title: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          progress_percentage?: number | null
+          target_date?: string | null
+          title?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       invoices: {
         Row: {
           client_address: string | null
@@ -165,6 +198,60 @@ export type Database = {
           signature_url?: string | null
           subject?: string | null
           title?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      meetings: {
+        Row: {
+          client_name: string | null
+          created_at: string | null
+          date: string
+          duration: number | null
+          id: string
+          location_type: string | null
+          meeting_link: string | null
+          notes: string | null
+          reminder_enabled: boolean | null
+          reminder_sent: boolean | null
+          reminder_time: string | null
+          time: string
+          title: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          client_name?: string | null
+          created_at?: string | null
+          date?: string
+          duration?: number | null
+          id?: string
+          location_type?: string | null
+          meeting_link?: string | null
+          notes?: string | null
+          reminder_enabled?: boolean | null
+          reminder_sent?: boolean | null
+          reminder_time?: string | null
+          time?: string
+          title: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          client_name?: string | null
+          created_at?: string | null
+          date?: string
+          duration?: number | null
+          id?: string
+          location_type?: string | null
+          meeting_link?: string | null
+          notes?: string | null
+          reminder_enabled?: boolean | null
+          reminder_sent?: boolean | null
+          reminder_time?: string | null
+          time?: string
+          title?: string
           updated_at?: string | null
           user_id?: string
         }
@@ -310,36 +397,74 @@ export type Database = {
       }
       tasks: {
         Row: {
+          category: string | null
           created_at: string | null
           date: string | null
           description: string | null
+          due_date: string | null
+          due_time: string | null
+          goal_id: string | null
           id: string
+          priority: string | null
+          recurring: string | null
+          reminder_enabled: boolean | null
+          reminder_sent: boolean | null
+          reminder_time: string | null
+          start_date: string | null
           status: string | null
           title: string
           updated_at: string | null
           user_id: string
         }
         Insert: {
+          category?: string | null
           created_at?: string | null
           date?: string | null
           description?: string | null
+          due_date?: string | null
+          due_time?: string | null
+          goal_id?: string | null
           id?: string
+          priority?: string | null
+          recurring?: string | null
+          reminder_enabled?: boolean | null
+          reminder_sent?: boolean | null
+          reminder_time?: string | null
+          start_date?: string | null
           status?: string | null
           title: string
           updated_at?: string | null
           user_id: string
         }
         Update: {
+          category?: string | null
           created_at?: string | null
           date?: string | null
           description?: string | null
+          due_date?: string | null
+          due_time?: string | null
+          goal_id?: string | null
           id?: string
+          priority?: string | null
+          recurring?: string | null
+          reminder_enabled?: boolean | null
+          reminder_sent?: boolean | null
+          reminder_time?: string | null
+          start_date?: string | null
           status?: string | null
           title?: string
           updated_at?: string | null
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "tasks_goal_id_fkey"
+            columns: ["goal_id"]
+            isOneToOne: false
+            referencedRelation: "goals"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {

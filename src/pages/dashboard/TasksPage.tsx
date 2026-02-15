@@ -1,153 +1,233 @@
 import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import { useToast } from "@/hooks/use-toast";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Plus, Check, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
+import { useProfile } from "@/hooks/useProfile";
+import { useTasks, useMeetings, useGoals } from "@/hooks/useTasks";
+import type { Task, Meeting, Goal } from "@/hooks/useTasks";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { TodayView } from "@/components/tasks/TodayView";
+import { CalendarView } from "@/components/tasks/CalendarView";
+import { TodoListView } from "@/components/tasks/TodoListView";
+import { GoalsView } from "@/components/tasks/GoalsView";
+import { MeetingsView } from "@/components/tasks/MeetingsView";
+import { CreateTaskDialog } from "@/components/tasks/CreateTaskDialog";
+import { CreateMeetingDialog } from "@/components/tasks/CreateMeetingDialog";
+import { CreateGoalDialog } from "@/components/tasks/CreateGoalDialog";
+import PaywallDialog from "@/components/PaywallDialog";
+import { CalendarDays, ListTodo, Target, Users, LayoutGrid } from "lucide-react";
 
 const TasksPage = () => {
-  const { user } = useAuth();
-  const { toast } = useToast();
-  const [tasks, setTasks] = useState<any[]>([]);
-  const [newTask, setNewTask] = useState("");
-  const [selectedDate, setSelectedDate] = useState(new Date());
-  const [view, setView] = useState<"today" | "week">("today");
+  const { profile } = useProfile();
+  const { tasks, createTask, updateTask, deleteTask } = useTasks();
+  const { meetings, createMeeting, updateMeeting, deleteMeeting } = useMeetings();
+  const { goals, createGoal, updateGoal, deleteGoal } = useGoals();
 
-  const fetchTasks = async () => {
-    if (!user) return;
-    const { data } = await supabase.from("tasks").select("*").eq("user_id", user.id).order("date", { ascending: true });
-    if (data) setTasks(data);
-  };
+  const [activeTab, setActiveTab] = useState("today");
+  const [taskDialogOpen, setTaskDialogOpen] = useState(false);
+  const [meetingDialogOpen, setMeetingDialogOpen] = useState(false);
+  const [goalDialogOpen, setGoalDialogOpen] = useState(false);
+  const [editingTask, setEditingTask] = useState<Task | null>(null);
+  const [editingMeeting, setEditingMeeting] = useState<Meeting | null>(null);
+  const [editingGoal, setEditingGoal] = useState<Goal | null>(null);
+  const [initialTaskDate, setInitialTaskDate] = useState<string | undefined>();
+  const [showPaywall, setShowPaywall] = useState(false);
 
-  useEffect(() => { fetchTasks(); }, [user]);
+  const plan = profile?.subscription_plan || "trial";
+  const hasTaskAccess = ["silver", "premium", "yearly", "trial"].includes(plan);
+  const hasMeetingAccess = ["silver", "premium", "yearly", "trial"].includes(plan);
+  const hasGoalAccess = ["premium", "yearly"].includes(plan);
+  const hasAIAccess = ["premium", "yearly"].includes(plan);
 
-  const addTask = async () => {
-    if (!newTask.trim() || !user) return;
-    const { error } = await supabase.from("tasks").insert({
-      user_id: user.id,
-      title: newTask,
-      date: selectedDate.toISOString().split("T")[0],
+  // Auto-mark overdue
+  useEffect(() => {
+    const today = new Date().toISOString().split("T")[0];
+    tasks.forEach(t => {
+      if (t.due_date && t.due_date < today && t.status !== "completed" && t.status !== "overdue" && t.status !== "cancelled") {
+        updateTask(t.id, { status: "overdue" });
+      }
     });
-    if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
-    else { setNewTask(""); fetchTasks(); }
+  }, [tasks]);
+
+  if (!hasTaskAccess) {
+    return (
+      <div className="p-6 md:p-8">
+        <div className="max-w-lg mx-auto text-center py-20">
+          <CalendarDays className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+          <h2 className="text-xl font-bold mb-2">Task Management</h2>
+          <p className="text-muted-foreground text-sm mb-6">
+            Upgrade to Silver plan or higher to access task management, meetings, and more.
+          </p>
+          <PaywallDialog open={true} onOpenChange={() => {}} />
+        </div>
+      </div>
+    );
+  }
+
+  const handleToggleTask = async (id: string, currentStatus: string) => {
+    const newStatus = currentStatus === "completed" ? "not_started" : "completed";
+    await updateTask(id, { status: newStatus });
   };
 
-  const toggleTask = async (id: string, currentStatus: string) => {
-    await supabase.from("tasks").update({ status: currentStatus === "completed" ? "pending" : "completed" }).eq("id", id);
-    fetchTasks();
+  const handleAddTask = (date?: string) => {
+    setEditingTask(null);
+    setInitialTaskDate(date);
+    setTaskDialogOpen(true);
   };
 
-  const deleteTask = async (id: string) => {
-    await supabase.from("tasks").delete().eq("id", id);
-    fetchTasks();
+  const handleEditTask = (task: Task) => {
+    setEditingTask(task);
+    setInitialTaskDate(undefined);
+    setTaskDialogOpen(true);
   };
 
-  const formatDate = (d: Date) => d.toISOString().split("T")[0];
-  const today = formatDate(selectedDate);
-
-  const getWeekDates = () => {
-    const start = new Date(selectedDate);
-    start.setDate(start.getDate() - start.getDay() + 1);
-    return Array.from({ length: 7 }, (_, i) => {
-      const d = new Date(start);
-      d.setDate(d.getDate() + i);
-      return d;
-    });
+  const handleTaskSubmit = async (data: Partial<Task>) => {
+    if (editingTask) {
+      return updateTask(editingTask.id, data);
+    }
+    return createTask(data);
   };
 
-  const filteredTasks = view === "today"
-    ? tasks.filter(t => t.date === today)
-    : tasks.filter(t => {
-        const week = getWeekDates();
-        return t.date >= formatDate(week[0]) && t.date <= formatDate(week[6]);
-      });
+  const handleAddMeeting = () => {
+    setEditingMeeting(null);
+    setMeetingDialogOpen(true);
+  };
 
-  const dayNames = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+  const handleMeetingSubmit = async (data: Partial<Meeting>) => {
+    if (editingMeeting) {
+      return updateMeeting(editingMeeting.id, data);
+    }
+    return createMeeting(data);
+  };
+
+  const handleAddGoal = () => {
+    if (!hasGoalAccess) {
+      setShowPaywall(true);
+      return;
+    }
+    setEditingGoal(null);
+    setGoalDialogOpen(true);
+  };
+
+  const handleGoalSubmit = async (data: Partial<Goal>) => {
+    if (editingGoal) {
+      return updateGoal(editingGoal.id, data);
+    }
+    return createGoal(data);
+  };
+
+  const tabItems = [
+    { value: "today", label: "Today", icon: LayoutGrid },
+    { value: "calendar", label: "Calendar", icon: CalendarDays },
+    { value: "todo", label: "To-Do List", icon: ListTodo },
+    { value: "goals", label: "Goals", icon: Target, premium: true },
+    { value: "meetings", label: "Meetings", icon: Users },
+  ];
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between flex-wrap gap-4">
-        <h1 className="text-2xl font-bold">Tasks</h1>
-        <div className="flex items-center gap-2">
-          <Button variant={view === "today" ? "default" : "outline"} size="sm" onClick={() => setView("today")}>Today</Button>
-          <Button variant={view === "week" ? "default" : "outline"} size="sm" onClick={() => setView("week")}>Week</Button>
-        </div>
+    <div className="p-4 md:p-6 lg:p-8 max-w-7xl mx-auto">
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold tracking-tight">Tasks</h1>
+        <p className="text-sm text-muted-foreground mt-1">Manage your tasks, meetings, and goals.</p>
       </div>
 
-      {/* Date navigation */}
-      <div className="flex items-center gap-3">
-        <Button variant="ghost" size="sm" onClick={() => {
-          const d = new Date(selectedDate);
-          d.setDate(d.getDate() - (view === "week" ? 7 : 1));
-          setSelectedDate(d);
-        }}><ChevronLeft className="h-4 w-4" /></Button>
-        <span className="text-sm font-medium">
-          {view === "today"
-            ? selectedDate.toLocaleDateString("en-ZA", { weekday: "long", year: "numeric", month: "long", day: "numeric" })
-            : `Week of ${getWeekDates()[0].toLocaleDateString("en-ZA", { month: "short", day: "numeric" })} - ${getWeekDates()[6].toLocaleDateString("en-ZA", { month: "short", day: "numeric" })}`}
-        </span>
-        <Button variant="ghost" size="sm" onClick={() => {
-          const d = new Date(selectedDate);
-          d.setDate(d.getDate() + (view === "week" ? 7 : 1));
-          setSelectedDate(d);
-        }}><ChevronRight className="h-4 w-4" /></Button>
-        <Button variant="ghost" size="sm" onClick={() => setSelectedDate(new Date())}>Today</Button>
-      </div>
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
+        <TabsList className="bg-secondary/50 h-10 p-1 mb-6 w-full sm:w-auto overflow-x-auto">
+          {tabItems.map(tab => (
+            <TabsTrigger
+              key={tab.value}
+              value={tab.value}
+              className="gap-1.5 text-xs data-[state=active]:bg-background"
+              onClick={() => {
+                if (tab.premium && !hasGoalAccess) {
+                  setShowPaywall(true);
+                }
+              }}
+              disabled={tab.premium && !hasGoalAccess}
+            >
+              <tab.icon className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">{tab.label}</span>
+              {tab.premium && !hasGoalAccess && (
+                <span className="text-[9px] bg-foreground text-background rounded px-1 py-0.5 font-bold ml-0.5">PRO</span>
+              )}
+            </TabsTrigger>
+          ))}
+        </TabsList>
 
-      {/* Add task */}
-      <div className="flex gap-2">
-        <Input placeholder="Add a new task..." value={newTask} onChange={e => setNewTask(e.target.value)} onKeyDown={e => e.key === "Enter" && addTask()} className="bg-secondary" />
-        {view === "today" || (
-          <Input type="date" value={formatDate(selectedDate)} onChange={e => setSelectedDate(new Date(e.target.value))} className="bg-secondary w-40" />
-        )}
-        <Button onClick={addTask}><Plus className="h-4 w-4" /></Button>
-      </div>
+        <TabsContent value="today">
+          <TodayView
+            tasks={tasks}
+            onToggle={handleToggleTask}
+            onDelete={deleteTask}
+            onEdit={handleEditTask}
+            onAdd={() => handleAddTask()}
+          />
+        </TabsContent>
 
-      {/* Tasks list */}
-      {view === "today" ? (
-        <div className="space-y-2">
-          {filteredTasks.length === 0 ? (
-            <div className="rounded-xl border border-border bg-card p-8 text-center"><p className="text-muted-foreground">No tasks for this day.</p></div>
-          ) : (
-            filteredTasks.map(task => (
-              <div key={task.id} className="rounded-xl border border-border bg-card p-4 flex items-center justify-between eden-card-hover">
-                <div className="flex items-center gap-3">
-                  <button onClick={() => toggleTask(task.id, task.status)} className={`h-5 w-5 rounded-md border flex items-center justify-center transition-colors ${task.status === "completed" ? "bg-foreground border-foreground" : "border-muted-foreground"}`}>
-                    {task.status === "completed" && <Check className="h-3 w-3 text-background" />}
-                  </button>
-                  <span className={`text-sm ${task.status === "completed" ? "line-through text-muted-foreground" : ""}`}>{task.title}</span>
-                </div>
-                <Button variant="ghost" size="sm" onClick={() => deleteTask(task.id)}><Trash2 className="h-4 w-4" /></Button>
-              </div>
-            ))
+        <TabsContent value="calendar">
+          <CalendarView
+            tasks={tasks}
+            meetings={meetings}
+            onAddTask={handleAddTask}
+            onEditTask={handleEditTask}
+            onToggleTask={handleToggleTask}
+          />
+        </TabsContent>
+
+        <TabsContent value="todo">
+          <TodoListView
+            tasks={tasks}
+            onToggle={handleToggleTask}
+            onDelete={deleteTask}
+            onEdit={handleEditTask}
+            onAdd={() => handleAddTask()}
+          />
+        </TabsContent>
+
+        <TabsContent value="goals">
+          {hasGoalAccess && (
+            <GoalsView
+              goals={goals}
+              tasks={tasks}
+              onAdd={handleAddGoal}
+              onEdit={g => { setEditingGoal(g); setGoalDialogOpen(true); }}
+              onDelete={deleteGoal}
+            />
           )}
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-7 gap-3">
-          {getWeekDates().map((date, i) => {
-            const dateStr = formatDate(date);
-            const dayTasks = tasks.filter(t => t.date === dateStr);
-            const isToday = dateStr === formatDate(new Date());
-            return (
-              <div key={i} className={`rounded-xl border p-3 min-h-[200px] ${isToday ? "border-foreground/30 bg-secondary" : "border-border bg-card"}`}>
-                <div className="text-xs font-medium text-muted-foreground mb-1">{dayNames[i]}</div>
-                <div className={`text-lg font-bold mb-3 ${isToday ? "" : "text-muted-foreground"}`}>{date.getDate()}</div>
-                <div className="space-y-1">
-                  {dayTasks.map(task => (
-                    <div key={task.id} className="flex items-center gap-1.5">
-                      <button onClick={() => toggleTask(task.id, task.status)} className={`h-3.5 w-3.5 rounded border shrink-0 flex items-center justify-center ${task.status === "completed" ? "bg-foreground border-foreground" : "border-muted-foreground"}`}>
-                        {task.status === "completed" && <Check className="h-2 w-2 text-background" />}
-                      </button>
-                      <span className={`text-xs truncate ${task.status === "completed" ? "line-through text-muted-foreground" : ""}`}>{task.title}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      )}
+        </TabsContent>
+
+        <TabsContent value="meetings">
+          <MeetingsView
+            meetings={meetings}
+            onAdd={handleAddMeeting}
+            onEdit={m => { setEditingMeeting(m); setMeetingDialogOpen(true); }}
+            onDelete={deleteMeeting}
+          />
+        </TabsContent>
+      </Tabs>
+
+      <CreateTaskDialog
+        open={taskDialogOpen}
+        onOpenChange={setTaskDialogOpen}
+        onSubmit={handleTaskSubmit}
+        goals={goals}
+        initialDate={initialTaskDate}
+        editTask={editingTask}
+      />
+
+      <CreateMeetingDialog
+        open={meetingDialogOpen}
+        onOpenChange={setMeetingDialogOpen}
+        onSubmit={handleMeetingSubmit}
+        editMeeting={editingMeeting}
+      />
+
+      <CreateGoalDialog
+        open={goalDialogOpen}
+        onOpenChange={setGoalDialogOpen}
+        onSubmit={handleGoalSubmit}
+        editGoal={editingGoal}
+      />
+
+      <PaywallDialog open={showPaywall} onOpenChange={setShowPaywall} />
     </div>
   );
 };
