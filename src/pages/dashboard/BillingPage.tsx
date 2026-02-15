@@ -6,6 +6,8 @@ import { useProfile } from "@/hooks/useProfile";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
+import { useSubscription } from "@/hooks/useSubscription";
+
 const plans = [
   {
     name: "Standard",
@@ -20,7 +22,7 @@ const plans = [
     price: "R59.99",
     period: "/month",
     payfastAmount: "59.99",
-    features: ["Everything in Standard", "Letterheads", "AI drafting (5/day)", "Email sending"],
+    features: ["Send Invoice / Quotes", "Letterheads", "AI drafting (5/day)", "Email sending"],
     highlighted: true,
     planId: "silver",
   },
@@ -46,6 +48,7 @@ const BillingPage = () => {
   const { user } = useAuth();
   const { profile } = useProfile();
   const { toast } = useToast();
+  const { planDisplayName, isTrialActive, trialDaysRemaining, isTrialExpired, currentPlan } = useSubscription();
   const [loading, setLoading] = useState<string | null>(null);
 
   const handleSubscribe = async (plan: typeof plans[0]) => {
@@ -101,12 +104,17 @@ const BillingPage = () => {
       <h1 className="text-2xl font-bold">Billing</h1>
       <p className="text-muted-foreground text-sm">Manage your subscription and payment method.</p>
 
-      {profile?.subscription_plan && profile.subscription_plan !== "free" && profile.subscription_plan !== "trial" && (
-        <div className="rounded-xl border border-border bg-card p-6">
-          <h3 className="font-semibold mb-1">Current Plan</h3>
-          <p className="text-sm text-muted-foreground capitalize">{profile.subscription_plan} — Active</p>
-        </div>
-      )}
+      {/* Current Plan Display */}
+      <div className="rounded-xl border border-border bg-card p-6">
+        <h3 className="font-semibold mb-1">Current Plan</h3>
+        <p className="text-sm text-muted-foreground">
+          <span className="capitalize font-medium text-foreground">{planDisplayName}</span>
+          {isTrialActive && ` — Trial ends in ${trialDaysRemaining} day${trialDaysRemaining !== 1 ? "s" : ""}`}
+          {isTrialExpired && <span className="text-destructive"> — Trial expired. Choose a plan below.</span>}
+          {currentPlan !== "free" && !isTrialActive && !isTrialExpired && " — Active"}
+          {currentPlan === "free" && !isTrialExpired && " — Choose a plan to get started"}
+        </p>
+      </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {plans.map(plan => (

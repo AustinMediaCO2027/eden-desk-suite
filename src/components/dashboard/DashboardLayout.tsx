@@ -62,7 +62,10 @@ export const DashboardLayout = () => {
     : user?.email?.slice(0, 2).toUpperCase() || "ED";
 
   const displayName = profile?.company_name || user?.email?.split("@")[0] || "User";
-  const displayRole = profile?.subscription_plan === "trial" ? "Free Trial" : "Admin";
+  const planLabel = profile?.subscription_plan;
+  const displayRole = planLabel === "trial" ? "Free Trial" 
+    : planLabel && planLabel !== "free" ? `${planLabel.charAt(0).toUpperCase() + planLabel.slice(1)} Plan` 
+    : "Free";
 
   const renderNavItem = ({ to, icon: Icon, label }: typeof mainNav[0]) => {
     const isActive = location.pathname === to;

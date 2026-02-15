@@ -16,6 +16,8 @@ import { LETTERHEAD_TEMPLATES, LETTERHEAD_COLORS } from "@/components/letterhead
 import ClientSelector from "@/components/dashboard/ClientSelector";
 import { useGenerationLimit } from "@/hooks/useGenerationLimit";
 import PaywallDialog from "@/components/PaywallDialog";
+import { useSubscription } from "@/hooks/useSubscription";
+import UpgradeDialog from "@/components/UpgradeDialog";
 
 interface LetterheadForm {
   id?: string;
@@ -57,6 +59,8 @@ const LetterheadPage = () => {
   const { profile } = useProfile();
   const { toast } = useToast();
   const { showPaywall, setShowPaywall, checkAndProceed } = useGenerationLimit();
+  const { canUseFeature } = useSubscription();
+  const [showUpgrade, setShowUpgrade] = useState(false);
   const [letterheads, setLetterheads] = useState<any[]>([]);
   const [editing, setEditing] = useState<LetterheadForm | null>(null);
   const [previewing, setPreviewing] = useState(false);
@@ -405,6 +409,24 @@ const LetterheadPage = () => {
           <Button variant="outline" onClick={() => setPreviewing(true)}>Preview & Download</Button>
         </div>
         <PaywallDialog open={showPaywall} onOpenChange={setShowPaywall} />
+      </div>
+    );
+  }
+
+  // Feature lock check
+  if (!canUseFeature("letterheads")) {
+    return (
+      <div className="space-y-6">
+        <h1 className="text-2xl font-bold">Letterheads</h1>
+        <div className="rounded-xl border border-border bg-card p-12 text-center">
+          <Mail className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+          <h2 className="text-lg font-bold mb-2">Letterheads require Silver plan or higher</h2>
+          <p className="text-sm text-muted-foreground mb-6 max-w-xs mx-auto">
+            Upgrade to create professional branded letterheads with AI drafting.
+          </p>
+          <Button onClick={() => setShowUpgrade(true)}>Upgrade Plan</Button>
+        </div>
+        <UpgradeDialog open={showUpgrade} onOpenChange={setShowUpgrade} feature="Letterheads" requiredPlan="Silver" />
       </div>
     );
   }

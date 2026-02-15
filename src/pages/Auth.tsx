@@ -13,6 +13,7 @@ import { Link } from "react-router-dom";
 const Auth = () => {
   const [searchParams] = useSearchParams();
   const isSignUp = searchParams.get("mode") === "signup";
+  const redirectTarget = searchParams.get("redirect");
   const [mode, setMode] = useState<"login" | "signup" | "forgot">(isSignUp ? "signup" : "login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -20,7 +21,10 @@ const Auth = () => {
   const { toast } = useToast();
   const { user } = useAuth();
 
-  if (user) return <Navigate to="/dashboard" replace />;
+  if (user) {
+    const dest = redirectTarget === "trial" ? "/dashboard/billing" : "/dashboard";
+    return <Navigate to={dest} replace />;
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

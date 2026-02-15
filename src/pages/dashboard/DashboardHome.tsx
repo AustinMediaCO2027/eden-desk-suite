@@ -27,7 +27,8 @@ import {
   DialogContent,
 } from "@/components/ui/dialog";
 import edenIcon from "@/assets/eden_desk_icon.png";
-import { format } from "date-fns";
+import { format, differenceInDays } from "date-fns";
+import { useSubscription } from "@/hooks/useSubscription";
 
 interface Invoice {
   id: string;
@@ -48,6 +49,7 @@ interface Task {
 const DashboardHome = () => {
   const { user } = useAuth();
   const { profile } = useProfile();
+  const { currentPlan, planDisplayName, isTrialActive, trialDaysRemaining, isTrialExpired } = useSubscription();
   const [stats, setStats] = useState({
     outstanding: 0,
     dueSoon: 0,
@@ -241,6 +243,33 @@ const DashboardHome = () => {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Plan Badge & Trial Countdown */}
+      {(currentPlan !== "free" || isTrialExpired) && (
+        <div className="flex items-center gap-3 flex-wrap">
+          <span className={`inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full ${
+            currentPlan === "premium" || currentPlan === "yearly"
+              ? "bg-foreground text-background"
+              : currentPlan === "silver" || currentPlan === "trial"
+              ? "bg-foreground/10 text-foreground border border-border"
+              : "bg-secondary text-muted-foreground"
+          }`}>
+            {planDisplayName} Plan
+          </span>
+          {isTrialActive && (
+            <span className="text-xs text-muted-foreground">
+              Trial ends in <span className="text-foreground font-medium">{trialDaysRemaining} day{trialDaysRemaining !== 1 ? "s" : ""}</span>
+            </span>
+          )}
+          {isTrialExpired && (
+            <Link to="/dashboard/billing">
+              <span className="text-xs text-destructive font-medium hover:underline">
+                Trial expired — Choose a plan to continue
+              </span>
+            </Link>
+          )}
+        </div>
+      )}
 
       {/* Header */}
       <div className="pb-1">
