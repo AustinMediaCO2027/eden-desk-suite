@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { LandingHero } from "@/components/landing/LandingHero";
 import { LogoMarquee } from "@/components/landing/LogoMarquee";
 import { LandingFeatures } from "@/components/landing/LandingFeatures";
@@ -9,25 +9,33 @@ import { LandingCTA } from "@/components/landing/LandingCTA";
 import { LandingFAQ } from "@/components/landing/LandingFAQ";
 import { LandingFooter } from "@/components/landing/LandingFooter";
 import { LandingNav } from "@/components/landing/LandingNav";
+import { useTheme } from "@/hooks/useTheme";
 import edenDarkIcon from "@/assets/eden_dark_icon.png";
 
 const Index = () => {
-  const [showSplash, setShowSplash] = useState(() => {
-    document.documentElement.classList.add("dark");
-    document.documentElement.classList.remove("light");
-    return true;
-  });
+  const { theme, toggleTheme } = useTheme();
+  const prevThemeRef = useRef(theme);
+  const [showSplash, setShowSplash] = useState(true);
 
-  useLayoutEffect(() => {
-    const root = document.documentElement;
-    const previousTheme = localStorage.getItem("eden-theme") || "light";
-    root.classList.add("dark");
-    root.classList.remove("light");
-    localStorage.setItem("eden-theme", "dark");
+  // Force dark theme on landing page
+  useEffect(() => {
+    prevThemeRef.current = theme;
+    if (theme !== "dark") {
+      toggleTheme();
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Restore previous theme on unmount
+  useEffect(() => {
     return () => {
-      localStorage.setItem("eden-theme", previousTheme);
-      root.classList.remove("light", "dark");
-      root.classList.add(previousTheme);
+      if (prevThemeRef.current === "light") {
+        // Restore light theme when leaving landing page
+        const root = document.documentElement;
+        root.classList.remove("dark");
+        root.classList.add("light");
+        localStorage.setItem("eden-theme", "light");
+      }
     };
   }, []);
 
