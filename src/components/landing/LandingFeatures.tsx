@@ -11,7 +11,7 @@ const features = [
   {
     icon: FileText,
     title: "Create Letterhead",
-    description: "Design branded letterheads with your company logo, details, and rich editable content. Multiple professional templates included.",
+    description: "Create and send letterhead with your company logo, details, and rich editable content. Multiple professional templates included.",
   },
   {
     icon: CalendarDays,
