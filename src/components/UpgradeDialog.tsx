@@ -2,24 +2,20 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Check, Lock, ArrowRight } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
+import edenIcon from "@/assets/eden_dark_icon.png";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { useProfile } from "@/hooks/useProfile";
 import { useState } from "react";
 
-interface PaywallDialogProps {
+interface UpgradeDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  feature?: string;
+  requiredPlan?: string;
 }
 
-const features = [
-  "Unlimited invoices, quotes & letterheads",
-  "AI drafting assistant",
-  "PDF download & email sending",
-  "Task management",
-];
-
-const PaywallDialog = ({ open, onOpenChange }: PaywallDialogProps) => {
+const UpgradeDialog = ({ open, onOpenChange, feature, requiredPlan }: UpgradeDialogProps) => {
   const { user } = useAuth();
   const { profile } = useProfile();
   const navigate = useNavigate();
@@ -78,18 +74,26 @@ const PaywallDialog = ({ open, onOpenChange }: PaywallDialogProps) => {
           <div className="h-14 w-14 rounded-2xl bg-muted flex items-center justify-center mb-6">
             <Lock className="h-7 w-7 text-muted-foreground" />
           </div>
-          <h2 className="text-2xl font-bold tracking-tight mb-2">Free Generation Used</h2>
+          <h2 className="text-2xl font-bold tracking-tight mb-2">
+            {feature ? `Upgrade to Access ${feature}` : "Upgrade Your Plan"}
+          </h2>
           <p className="text-sm text-muted-foreground leading-relaxed max-w-xs">
-            You've used your <span className="text-foreground font-medium">1 free document generation</span>. 
-            Start a <span className="text-foreground font-medium">7-day free trial</span> to continue creating documents.
+            {requiredPlan
+              ? `This feature requires the ${requiredPlan} plan or higher.`
+              : "Start a 7-day free trial to unlock more features."}
           </p>
           <div className="w-full mt-6 space-y-2.5">
-            {features.map((feature) => (
-              <div key={feature} className="flex items-center gap-3 text-sm text-muted-foreground">
+            {[
+              "Create invoices & quotes",
+              "Letterheads with AI drafting",
+              "PDF download & email sending",
+              "5 AI prompts per day",
+            ].map((f) => (
+              <div key={f} className="flex items-center gap-3 text-sm text-muted-foreground">
                 <div className="h-5 w-5 rounded-full bg-foreground/10 flex items-center justify-center shrink-0">
                   <Check className="h-3 w-3 text-foreground" />
                 </div>
-                <span>{feature}</span>
+                <span>{f}</span>
               </div>
             ))}
           </div>
@@ -99,7 +103,7 @@ const PaywallDialog = ({ open, onOpenChange }: PaywallDialogProps) => {
             disabled={loading}
           >
             {loading ? "Processing..." : "Start 7-Day Free Trial — R59.99/mo"}
-            <ArrowRight className="h-4 w-4" />
+            {!loading && <ArrowRight className="h-4 w-4" />}
           </Button>
           <Link to="/dashboard/billing" className="w-full">
             <Button variant="ghost" className="w-full mt-2 text-xs text-muted-foreground">
@@ -118,4 +122,4 @@ const PaywallDialog = ({ open, onOpenChange }: PaywallDialogProps) => {
   );
 };
 
-export default PaywallDialog;
+export default UpgradeDialog;

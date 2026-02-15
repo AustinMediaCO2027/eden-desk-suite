@@ -92,7 +92,7 @@ export const LandingPricing = () => {
                   </li>
                 ))}
               </ul>
-              <Link to="/auth?mode=signup">
+              <Link to="/auth?mode=signup&redirect=trial">
                 <Button
                   className={`w-full rounded-xl h-11 ${
                     plan.highlighted
