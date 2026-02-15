@@ -48,7 +48,7 @@ const BillingPage = () => {
   const { user } = useAuth();
   const { profile } = useProfile();
   const { toast } = useToast();
-  const { planDisplayName, isTrialActive, trialDaysRemaining, isTrialExpired, currentPlan } = useSubscription();
+  const { planDisplayName, currentPlan } = useSubscription();
   const [loading, setLoading] = useState<string | null>(null);
 
   const handleSubscribe = async (plan: typeof plans[0]) => {
@@ -109,10 +109,8 @@ const BillingPage = () => {
         <h3 className="font-semibold mb-1">Current Plan</h3>
         <p className="text-sm text-muted-foreground">
           <span className="capitalize font-medium text-foreground">{planDisplayName}</span>
-          {isTrialActive && ` — Trial ends in ${trialDaysRemaining} day${trialDaysRemaining !== 1 ? "s" : ""}`}
-          {isTrialExpired && <span className="text-destructive"> — Trial expired. Choose a plan below.</span>}
-          {currentPlan !== "free" && !isTrialActive && !isTrialExpired && " — Active"}
-          {currentPlan === "free" && !isTrialExpired && " — Choose a plan to get started"}
+          {currentPlan !== "free" && " — Active"}
+          {currentPlan === "free" && " — Choose a plan to get started"}
         </p>
       </div>
 
@@ -138,7 +136,7 @@ const BillingPage = () => {
               onClick={() => handleSubscribe(plan)}
               disabled={loading === plan.planId}
             >
-              {loading === plan.planId ? "Processing..." : "Subscribe via PayFast"}
+              {loading === plan.planId ? "Processing..." : "Get started"}
             </Button>
           </div>
         ))}

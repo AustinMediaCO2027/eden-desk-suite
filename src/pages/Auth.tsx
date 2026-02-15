@@ -79,7 +79,7 @@ const Auth = () => {
             {mode === "forgot"
               ? "Enter your email to receive a reset link"
               : mode === "signup"
-              ? "Start your 7-day free trial"
+              ? "Start creating invoices, quotes & more"
               : "Sign in to your Eden Desk account"}
           </p>
         </div>
