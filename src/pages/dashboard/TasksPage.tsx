@@ -169,6 +169,9 @@ const TasksPage = () => {
             onAddTask={handleAddTask}
             onEditTask={handleEditTask}
             onToggleTask={handleToggleTask}
+            onRescheduleTask={async (id, newDate) => {
+              await updateTask(id, { due_date: newDate, date: newDate });
+            }}
           />
         </TabsContent>
 
