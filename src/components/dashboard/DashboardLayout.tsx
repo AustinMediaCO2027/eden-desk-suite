@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation, Outlet } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
@@ -22,6 +22,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import edenLogo from "@/assets/eden_desk_icon.png";
 
 const mainNav = [
@@ -48,7 +49,13 @@ export const DashboardLayout = () => {
   const { theme, toggleTheme } = useTheme();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [collapsed, setCollapsed] = useState(true);
+  const isHome = location.pathname === "/dashboard";
+  const [collapsed, setCollapsed] = useState(!isHome);
+
+  // Auto-expand on dashboard home, auto-collapse on subpages
+  useEffect(() => {
+    setCollapsed(!isHome);
+  }, [isHome]);
 
   const userInitials = profile?.company_name
     ? profile.company_name.slice(0, 2).toUpperCase()
@@ -59,12 +66,11 @@ export const DashboardLayout = () => {
 
   const renderNavItem = ({ to, icon: Icon, label }: typeof mainNav[0]) => {
     const isActive = location.pathname === to;
-    return (
+    const link = (
       <Link
         key={to}
         to={to}
         onClick={() => setSidebarOpen(false)}
-        title={collapsed ? label : undefined}
         className={`group flex items-center gap-2.5 rounded-lg text-[13px] transition-all duration-200 ${
           collapsed ? "justify-center p-2" : "px-2.5 py-1.5"
         } ${
@@ -77,6 +83,18 @@ export const DashboardLayout = () => {
         {!collapsed && <span>{label}</span>}
       </Link>
     );
+
+    if (collapsed) {
+      return (
+        <Tooltip key={to} delayDuration={0}>
+          <TooltipTrigger asChild>{link}</TooltipTrigger>
+          <TooltipContent side="right" className="text-xs">
+            {label}
+          </TooltipContent>
+        </Tooltip>
+      );
+    }
+    return link;
   };
 
   const renderGroupLabel = (label: string) => (
@@ -95,6 +113,7 @@ export const DashboardLayout = () => {
       )}
 
       {/* Sidebar */}
+      <TooltipProvider>
       <aside
         className={`fixed lg:static inset-y-0 left-0 z-50 flex flex-col shrink-0 transform transition-all duration-300 lg:translate-x-0 bg-sidebar overflow-hidden relative ${
           collapsed ? "w-[60px]" : "w-[220px]"
@@ -153,16 +172,29 @@ export const DashboardLayout = () => {
           {renderGroupLabel("Account")}
           <div className="space-y-0.5">
             {accountNav.map(renderNavItem)}
-            <button
-              onClick={toggleTheme}
-              title={collapsed ? (theme === "dark" ? "Light Mode" : "Dark Mode") : undefined}
-              className={`flex items-center gap-2.5 rounded-lg text-[13px] text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent/40 w-full transition-all duration-200 ${
-                collapsed ? "justify-center p-2" : "px-2.5 py-1.5"
-              }`}
-            >
-              {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-              {!collapsed && <span>{theme === "dark" ? "Light Mode" : "Dark Mode"}</span>}
-            </button>
+            {collapsed ? (
+              <Tooltip delayDuration={0}>
+                <TooltipTrigger asChild>
+                  <button
+                    onClick={toggleTheme}
+                    className="flex items-center gap-2.5 rounded-lg text-[13px] text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent/40 w-full transition-all duration-200 justify-center p-2"
+                  >
+                    {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent side="right" className="text-xs">
+                  {theme === "dark" ? "Light Mode" : "Dark Mode"}
+                </TooltipContent>
+              </Tooltip>
+            ) : (
+              <button
+                onClick={toggleTheme}
+                className="flex items-center gap-2.5 rounded-lg text-[13px] text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent/40 w-full transition-all duration-200 px-2.5 py-1.5"
+              >
+                {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+                <span>{theme === "dark" ? "Light Mode" : "Dark Mode"}</span>
+              </button>
+            )}
           </div>
         </nav>
 
@@ -182,18 +214,30 @@ export const DashboardLayout = () => {
               </Link>
             </div>
           )}
-          <button
-            onClick={signOut}
-            title={collapsed ? "Logout" : undefined}
-            className={`flex items-center gap-2.5 rounded-lg text-[13px] text-sidebar-foreground/40 hover:text-destructive w-full transition-colors ${
-              collapsed ? "justify-center p-2" : "px-2.5 py-1.5"
-            }`}
-          >
-            <LogOut className="h-4 w-4" />
-            {!collapsed && <span>Logout</span>}
-          </button>
+          {collapsed ? (
+            <Tooltip delayDuration={0}>
+              <TooltipTrigger asChild>
+                <button
+                  onClick={signOut}
+                  className="flex items-center gap-2.5 rounded-lg text-[13px] text-sidebar-foreground/40 hover:text-destructive w-full transition-colors justify-center p-2"
+                >
+                  <LogOut className="h-4 w-4" />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent side="right" className="text-xs">Logout</TooltipContent>
+            </Tooltip>
+          ) : (
+            <button
+              onClick={signOut}
+              className="flex items-center gap-2.5 rounded-lg text-[13px] text-sidebar-foreground/40 hover:text-destructive w-full transition-colors px-2.5 py-1.5"
+            >
+              <LogOut className="h-4 w-4" />
+              <span>Logout</span>
+            </button>
+          )}
         </div>
       </aside>
+      </TooltipProvider>
 
       {/* Main content */}
       <div className="flex-1 flex flex-col overflow-hidden min-w-0">
