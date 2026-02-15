@@ -1,39 +1,46 @@
+import sarahImg from "@/assets/testimonials/sarah.jpg";
+import jamesImg from "@/assets/testimonials/james.jpg";
+import lindaImg from "@/assets/testimonials/linda.jpg";
+import davidImg from "@/assets/testimonials/david.jpg";
+import priyaImg from "@/assets/testimonials/priya.jpg";
+import michaelImg from "@/assets/testimonials/michael.jpg";
+
 const testimonials = [
   {
     quote: "Eden Desk completely replaced our clunky invoicing tool. Everything is now in one place and our clients love the professional documents.",
     name: "Sarah M.",
     role: "Freelance Designer",
-    initials: "SM",
+    photo: sarahImg,
   },
   {
     quote: "The AI drafting feature alone saves me hours every week. I can generate letterheads and proposals in seconds.",
     name: "James K.",
     role: "Agency Owner",
-    initials: "JK",
+    photo: jamesImg,
   },
   {
     quote: "Simple, clean, and powerful. We switched our entire team to Eden Desk and haven't looked back since.",
     name: "Linda T.",
     role: "Operations Manager",
-    initials: "LT",
+    photo: lindaImg,
   },
   {
     quote: "The best invoicing platform I've used in 10 years of freelancing. The PDF exports look incredibly professional.",
     name: "David R.",
     role: "Consultant",
-    initials: "DR",
+    photo: davidImg,
   },
   {
     quote: "We manage 50+ clients and Eden Desk handles it all flawlessly. Task management keeps our team on track every day.",
     name: "Priya N.",
     role: "Project Manager",
-    initials: "PN",
+    photo: priyaImg,
   },
   {
     quote: "From quote to invoice to payment — the entire workflow is seamless. Our revenue collection improved by 40%.",
     name: "Michael B.",
     role: "Small Business Owner",
-    initials: "MB",
+    photo: michaelImg,
   },
 ];
 
@@ -69,9 +76,11 @@ export const LandingTestimonials = () => {
                 "{t.quote}"
               </p>
               <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-full bg-card border border-border/50 flex items-center justify-center text-xs font-bold text-foreground/70">
-                  {t.initials}
-                </div>
+                <img
+                  src={t.photo}
+                  alt={t.name}
+                  className="h-10 w-10 rounded-full object-cover border border-border/50"
+                />
                 <div>
                   <p className="text-sm font-semibold">{t.name}</p>
                   <p className="text-xs text-muted-foreground">{t.role}</p>
