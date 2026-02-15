@@ -243,86 +243,86 @@ const DashboardHome = () => {
       </Dialog>
 
       {/* Header */}
-      <div className="px-6 lg:px-8 pt-8 pb-2">
+      <div className="px-4 lg:px-6 pt-5 pb-1">
         <div className="flex items-start justify-between">
           <div>
-            <h1 className="text-2xl font-bold tracking-tight">
+            <h1 className="text-xl font-bold tracking-tight">
               Good {new Date().getHours() < 12 ? "morning" : new Date().getHours() < 17 ? "afternoon" : "evening"}, {profile?.company_name || user?.email?.split("@")[0] || "there"} 👋
             </h1>
-            <p className="text-sm text-muted-foreground mt-1">
+            <p className="text-xs text-muted-foreground mt-0.5">
               Here's what's happening with your business today.
             </p>
           </div>
           <Link to="/dashboard/invoices">
-            <Button size="sm" className="text-xs shadow-sm">
-              <Plus className="h-3.5 w-3.5 mr-1.5" />
+            <Button size="sm" className="text-xs shadow-sm h-8">
+              <Plus className="h-3.5 w-3.5 mr-1" />
               Create Invoice
             </Button>
           </Link>
         </div>
       </div>
 
-      <div className="px-6 lg:px-8 py-6 space-y-6">
+      <div className="px-4 lg:px-6 py-4 space-y-4">
         {/* Quick Actions */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
           {quickActions.map(({ label, icon: Icon, to, color }) => (
             <Link
               key={label}
               to={to}
-              className="group flex items-center gap-3 p-4 rounded-2xl border border-border bg-card hover:shadow-md hover:-translate-y-0.5 transition-all duration-200"
+              className="group flex items-center gap-2.5 p-3 rounded-xl border border-border bg-card hover:shadow-md hover:-translate-y-0.5 transition-all duration-200"
             >
-              <div className={`h-10 w-10 rounded-xl ${color} flex items-center justify-center shrink-0`}>
-                <Icon className="h-5 w-5" />
+              <div className={`h-8 w-8 rounded-lg ${color} flex items-center justify-center shrink-0`}>
+                <Icon className="h-4 w-4" />
               </div>
               <div className="min-w-0">
-                <p className="text-sm font-medium truncate">{label}</p>
-                <p className="text-[11px] text-muted-foreground">Create new</p>
+                <p className="text-xs font-medium truncate">{label}</p>
+                <p className="text-[10px] text-muted-foreground">Create new</p>
               </div>
             </Link>
           ))}
         </div>
 
         {/* Analytics Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 xl:grid-cols-4 gap-3">
           {analyticsCards.map(({ title, value, label, icon: Icon, iconColor, bgColor }) => (
             <div
               key={title}
-              className="rounded-2xl border border-border bg-card p-5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200"
+              className="rounded-xl border border-border bg-card p-3.5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200"
             >
-              <div className="flex items-center justify-between mb-4">
-                <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">{title}</span>
-                <div className={`h-8 w-8 rounded-lg ${bgColor} flex items-center justify-center`}>
-                  <Icon className={`h-4 w-4 ${iconColor}`} />
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">{title}</span>
+                <div className={`h-7 w-7 rounded-md ${bgColor} flex items-center justify-center`}>
+                  <Icon className={`h-3.5 w-3.5 ${iconColor}`} />
                 </div>
               </div>
-              <p className="text-2xl font-bold tracking-tight">{value}</p>
-              <p className="text-[11px] text-muted-foreground mt-1">{label}</p>
+              <p className="text-lg font-bold tracking-tight">{value}</p>
+              <p className="text-[10px] text-muted-foreground mt-0.5">{label}</p>
             </div>
           ))}
         </div>
 
-        <div className="flex flex-col xl:flex-row gap-6">
+        <div className="flex flex-col xl:flex-row gap-4">
           {/* Recent Invoices */}
-          <div className="flex-1 rounded-2xl border border-border bg-card overflow-hidden">
-            <div className="px-6 py-4 border-b border-border flex items-center justify-between">
-              <h2 className="text-base font-semibold">Recent Invoices</h2>
+          <div className="flex-1 rounded-xl border border-border bg-card overflow-hidden">
+            <div className="px-4 py-3 border-b border-border flex items-center justify-between">
+              <h2 className="text-sm font-semibold">Recent Invoices</h2>
               <Link to="/dashboard/invoices">
-                <Button variant="ghost" size="sm" className="text-xs text-muted-foreground gap-1">
-                  View all <ArrowUpRight className="h-3.5 w-3.5" />
+                <Button variant="ghost" size="sm" className="text-[11px] text-muted-foreground gap-1 h-7">
+                  View all <ArrowUpRight className="h-3 w-3" />
                 </Button>
               </Link>
             </div>
 
             {invoices.length === 0 ? (
-              <div className="p-16 text-center">
-                <div className="w-14 h-14 rounded-2xl bg-muted/50 flex items-center justify-center mx-auto mb-4">
-                  <Receipt className="h-7 w-7 text-muted-foreground" />
+              <div className="p-8 text-center">
+                <div className="w-10 h-10 rounded-xl bg-muted/50 flex items-center justify-center mx-auto mb-3">
+                  <Receipt className="h-5 w-5 text-muted-foreground" />
                 </div>
-                <p className="text-sm font-medium mb-1">No invoices yet</p>
-                <p className="text-xs text-muted-foreground mb-4">Create your first invoice to start tracking payments.</p>
+                <p className="text-xs font-medium mb-1">No invoices yet</p>
+                <p className="text-[10px] text-muted-foreground mb-3">Create your first invoice to start tracking.</p>
                 <Link to="/dashboard/invoices">
-                  <Button size="sm" className="text-xs">
-                    <Plus className="h-3.5 w-3.5 mr-1" />
+                  <Button size="sm" className="text-[11px] h-7">
+                    <Plus className="h-3 w-3 mr-1" />
                     Create Invoice
                   </Button>
                 </Link>
@@ -333,20 +333,20 @@ const DashboardHome = () => {
                   <Link
                     key={inv.id}
                     to="/dashboard/invoices"
-                    className="flex items-center justify-between px-6 py-3.5 hover:bg-accent/40 transition-colors"
+                    className="flex items-center justify-between px-4 py-2.5 hover:bg-accent/40 transition-colors"
                   >
-                    <div className="flex items-center gap-4 min-w-0">
-                      <div className="h-9 w-9 rounded-lg bg-muted/50 flex items-center justify-center shrink-0">
-                        <Receipt className="h-4 w-4 text-muted-foreground" />
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="h-7 w-7 rounded-md bg-muted/50 flex items-center justify-center shrink-0">
+                        <Receipt className="h-3.5 w-3.5 text-muted-foreground" />
                       </div>
                       <div className="min-w-0">
-                        <p className="text-sm font-medium truncate">{inv.invoice_number}</p>
-                        <p className="text-[11px] text-muted-foreground truncate">{inv.client_name}</p>
+                        <p className="text-xs font-medium truncate">{inv.invoice_number}</p>
+                        <p className="text-[10px] text-muted-foreground truncate">{inv.client_name}</p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-4 shrink-0">
+                    <div className="flex items-center gap-3 shrink-0">
                       {getStatusBadge(inv.status)}
-                      <span className="text-sm font-semibold tabular-nums w-28 text-right">
+                      <span className="text-xs font-semibold tabular-nums w-24 text-right">
                         {inv.total ? formatCurrency(inv.total) : "—"}
                       </span>
                     </div>
@@ -357,34 +357,34 @@ const DashboardHome = () => {
           </div>
 
           {/* Upcoming Tasks */}
-          <div className="hidden xl:flex xl:flex-col w-80 shrink-0 rounded-2xl border border-border bg-card overflow-hidden">
-            <div className="px-6 py-4 border-b border-border flex items-center justify-between">
-              <h2 className="text-base font-semibold">Upcoming Tasks</h2>
+          <div className="hidden xl:flex xl:flex-col w-72 shrink-0 rounded-xl border border-border bg-card overflow-hidden">
+            <div className="px-4 py-3 border-b border-border flex items-center justify-between">
+              <h2 className="text-sm font-semibold">Upcoming Tasks</h2>
               <Link to="/dashboard/tasks">
-                <Button variant="ghost" size="sm" className="text-xs text-muted-foreground gap-1">
-                  View all <ArrowUpRight className="h-3.5 w-3.5" />
+                <Button variant="ghost" size="sm" className="text-[11px] text-muted-foreground gap-1 h-7">
+                  View all <ArrowUpRight className="h-3 w-3" />
                 </Button>
               </Link>
             </div>
             {tasks.length === 0 ? (
-              <div className="flex-1 flex flex-col items-center justify-center p-8 text-center">
-                <div className="w-12 h-12 rounded-2xl bg-muted/50 flex items-center justify-center mb-3">
-                  <CalendarDays className="h-6 w-6 text-muted-foreground" />
+              <div className="flex-1 flex flex-col items-center justify-center p-6 text-center">
+                <div className="w-10 h-10 rounded-xl bg-muted/50 flex items-center justify-center mb-2">
+                  <CalendarDays className="h-5 w-5 text-muted-foreground" />
                 </div>
-                <p className="text-sm font-medium mb-1">All caught up!</p>
-                <p className="text-xs text-muted-foreground">No pending tasks right now.</p>
+                <p className="text-xs font-medium mb-0.5">All caught up!</p>
+                <p className="text-[10px] text-muted-foreground">No pending tasks right now.</p>
               </div>
             ) : (
-              <div className="flex-1 p-3 space-y-1">
+              <div className="flex-1 p-2 space-y-0.5">
                 {tasks.map((task) => (
                   <div
                     key={task.id}
-                    className="flex items-start gap-3 px-3 py-3 rounded-xl hover:bg-accent/40 transition-colors"
+                    className="flex items-start gap-2.5 px-2.5 py-2 rounded-lg hover:bg-accent/40 transition-colors"
                   >
-                    <Checkbox className="mt-0.5 h-4 w-4 rounded border-border" />
+                    <Checkbox className="mt-0.5 h-3.5 w-3.5 rounded border-border" />
                     <div className="min-w-0 flex-1">
-                      <p className="text-sm font-medium truncate">{task.title}</p>
-                      <p className="text-[11px] text-muted-foreground">
+                      <p className="text-xs font-medium truncate">{task.title}</p>
+                      <p className="text-[10px] text-muted-foreground">
                         {task.date ? format(new Date(task.date), "dd MMM yyyy") : "No date"}
                       </p>
                     </div>
