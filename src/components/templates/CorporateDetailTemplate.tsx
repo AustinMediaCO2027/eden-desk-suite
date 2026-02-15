@@ -75,7 +75,7 @@ const CorporateDetailTemplate = ({
                   <td className={`${cellStyle} font-bold text-gray-800`}>
                     {type === "invoice" ? "Invoice No:" : "Quote No:"}
                   </td>
-                  <td className={`${cellStyle} text-gray-700`}>N° {documentNumber}</td>
+                  <td className={`${cellStyle} text-gray-700`}>{documentNumber}</td>
                 </tr>
                 <tr>
                   <td className={`${cellStyle} font-bold text-gray-800`}>

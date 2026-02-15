@@ -47,7 +47,7 @@ const SidebarTemplate = ({
         <div className="py-6 px-6 text-xs space-y-1.5">
           <div className="flex gap-6">
             <span className="text-gray-500 w-24">{title}</span>
-            <span style={{ color: brandColor }}>N° {documentNumber}</span>
+            <span style={{ color: brandColor }}>{documentNumber}</span>
           </div>
           <div className="flex gap-6">
             <span className="text-gray-500 w-24">{type === "invoice" ? "INVOICE DATE" : "QUOTE DATE"}</span>

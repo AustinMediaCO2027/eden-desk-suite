@@ -39,7 +39,7 @@ const AccounteerTemplate = ({
           </div>
           <p className="text-xs text-gray-400">
             {title}{" "}
-            <span style={{ color: brandColor }}>N° {documentNumber}</span>
+            <span style={{ color: brandColor }}>{documentNumber}</span>
           </p>
         </div>
 
