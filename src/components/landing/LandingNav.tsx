@@ -7,7 +7,7 @@ export const LandingNav = () => {
     <nav className="fixed top-0 left-0 right-0 z-50 border-b border-border/30" style={{ background: "rgba(0,0,0,0.75)", backdropFilter: "blur(24px)" }}>
       <div className="container mx-auto flex items-center justify-between h-16 px-6">
         <Link to="/" className="flex items-center gap-2">
-          <img src={edenDarkLogo} alt="Eden Desk" className="h-8 sm:h-10 md:h-12 w-auto" />
+          <img src={edenDarkLogo} alt="Eden Desk" className="h-10 sm:h-12 md:h-14 w-auto" />
         </Link>
 
         <div className="hidden md:flex items-center gap-8">
