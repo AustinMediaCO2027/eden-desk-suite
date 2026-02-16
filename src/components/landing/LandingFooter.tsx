@@ -34,7 +34,7 @@ export const LandingFooter = () => {
           <div>
             <h4 className="text-sm font-semibold mb-4">Company</h4>
             <div className="space-y-3">
-              <a href="mailto:support@edendesk.co" className="block text-sm text-muted-foreground hover:text-foreground transition-colors">Support</a>
+              <a href="mailto:support@edendesk.com" className="block text-sm text-muted-foreground hover:text-foreground transition-colors">support@edendesk.com</a>
               <a href="#" className="block text-sm text-muted-foreground hover:text-foreground transition-colors">Terms</a>
               <a href="#" className="block text-sm text-muted-foreground hover:text-foreground transition-colors">Privacy</a>
             </div>
@@ -45,7 +45,7 @@ export const LandingFooter = () => {
             © {new Date().getFullYear()} Eden Desk. All rights reserved.
           </p>
           <p className="text-xs text-muted-foreground">
-            Made with ❤️ for businesses everywhere
+            Made by Express Internet Dev Team
           </p>
         </div>
       </div>
