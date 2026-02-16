@@ -85,7 +85,7 @@ const Auth = () => {
               <img
                 alt="Eden Desk"
                 className="h-14 dark:invert"
-                src="/lovable-uploads/e5b36e1a-b25d-4ded-b52c-669db38a1b31.png"
+                src="https://image2url.com/r2/default/images/1771261408836-86b77128-c46f-4241-b257-ff931b7f243c.png"
               />
             </Link>
           </div>
