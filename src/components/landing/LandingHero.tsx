@@ -39,9 +39,9 @@ export const LandingHero = () => {
         </p>
 
         <div className="flex flex-col sm:flex-row items-center gap-4 animate-fade-in" style={{ animationDelay: "0.3s" }}>
-          <Link to="/auth?mode=signup&redirect=trial">
+          <Link to="/auth?mode=signup">
             <Button size="lg" className="text-base px-10 h-14 gap-2.5 bg-foreground text-background hover:bg-foreground/90 rounded-xl font-semibold shadow-[0_0_40px_rgba(255,255,255,0.1)] hover:shadow-[0_0_60px_rgba(255,255,255,0.15)] transition-all duration-300">
-              Start 7-Day Trial
+              Get Started (for free)
               <ArrowRight className="h-4 w-4" />
             </Button>
           </Link>
@@ -63,7 +63,7 @@ export const LandingHero = () => {
               />
             ))}
           </div>
-          <span className="text-sm text-muted-foreground">Trusted by <span className="text-foreground font-bold">1,200+</span> businesses</span>
+          <span className="text-sm text-muted-foreground">Trusted by <span className="text-foreground font-bold">17,000+</span> businesses</span>
         </div>
       </div>
 

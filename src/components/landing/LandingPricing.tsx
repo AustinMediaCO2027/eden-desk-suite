@@ -57,7 +57,7 @@ export const LandingPricing = () => {
             Plans that grow with you
           </h2>
           <p className="text-muted-foreground text-lg">
-            Start with a 7-day free trial. No credit card required.
+            Get started for free. No credit card required.
           </p>
         </div>
 
@@ -92,7 +92,7 @@ export const LandingPricing = () => {
                   </li>
                 ))}
               </ul>
-              <Link to="/auth?mode=signup&redirect=trial">
+              <Link to="/auth?mode=signup">
                 <Button
                   className={`w-full rounded-xl h-11 ${
                     plan.highlighted
@@ -101,7 +101,7 @@ export const LandingPricing = () => {
                   }`}
                   variant={plan.highlighted ? "default" : "outline"}
                 >
-                  Start Free Trial
+                  Get Started
                 </Button>
               </Link>
             </div>

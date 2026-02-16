@@ -26,7 +26,7 @@ const PaywallDialog = ({ open, onOpenChange }: PaywallDialogProps) => {
           </div>
           <h2 className="text-2xl font-bold tracking-tight mb-2">Free Usage Exhausted</h2>
           <p className="text-sm text-muted-foreground leading-relaxed max-w-xs">
-            You've used your <span className="text-foreground font-medium">1 free document generation</span>. 
+            You've used your <span className="text-foreground font-medium">1 free document generation</span>.
             Subscribe to a plan to continue creating documents.
           </p>
           <div className="w-full mt-6 space-y-2.5">

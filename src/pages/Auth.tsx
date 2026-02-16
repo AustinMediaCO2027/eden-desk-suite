@@ -3,12 +3,15 @@ import { useSearchParams, Navigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import logoFull from "@/assets/eden_desk_logo_full.png";
+import authBg from "@/assets/auth-bg.jpg";
 import { Link } from "react-router-dom";
+import { Eye, EyeOff } from "lucide-react";
 
 const Auth = () => {
   const [searchParams] = useSearchParams();
@@ -17,6 +20,7 @@ const Auth = () => {
   const [mode, setMode] = useState<"login" | "signup" | "forgot">(isSignUp ? "signup" : "login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
   const { user } = useAuth();
@@ -66,80 +70,125 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background px-6">
-      <div className="w-full max-w-sm space-y-8">
-        <div className="text-center">
-          <Link to="/">
-            <img src={logoFull} alt="Eden Desk" className="h-20 mx-auto invert mb-8" />
-          </Link>
-          <h1 className="text-2xl font-bold">
-            {mode === "forgot" ? "Reset password" : mode === "signup" ? "Create your account" : "Welcome back"}
-          </h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            {mode === "forgot"
-              ? "Enter your email to receive a reset link"
-              : mode === "signup"
-              ? "Start creating invoices, quotes & more"
-              : "Sign in to your Eden Desk account"}
-          </p>
-        </div>
+    <div className="min-h-screen flex bg-background">
+      {/* Left: Image panel */}
+      <div className="hidden lg:block lg:w-[55%] relative">
+        <img src={authBg} alt="" className="absolute inset-0 w-full h-full object-cover" />
+        <div className="absolute inset-0 bg-black/10" />
+      </div>
 
-        {mode !== "forgot" && (
-          <Button
-            variant="outline"
-            className="w-full h-11 gap-2 border-border text-foreground"
-            onClick={handleGoogleLogin}
-          >
-            <svg className="h-4 w-4" viewBox="0 0 24 24">
-              <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4" />
-              <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
-              <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
-              <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
-            </svg>
-            Continue with Google
-          </Button>
-        )}
-
-        {mode !== "forgot" && (
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t border-border" />
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background px-2 text-muted-foreground">or</span>
-            </div>
+      {/* Right: Form panel */}
+      <div className="flex-1 flex items-center justify-center px-6 py-12">
+        <div className="w-full max-w-md space-y-8">
+          <div className="text-center">
+            <Link to="/">
+              <img src={logoFull} alt="Eden Desk" className="h-16 mx-auto dark:invert mb-6" />
+            </Link>
+            <h1 className="text-2xl font-bold tracking-tight">
+              {mode === "forgot" ? "Reset password" : "Join Over 17 000 Businesses"}
+            </h1>
           </div>
-        )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input id="email" type="email" placeholder="you@company.com" value={email} onChange={(e) => setEmail(e.target.value)} required className="h-11 bg-secondary border-border" />
-          </div>
           {mode !== "forgot" && (
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input id="password" type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6} className="h-11 bg-secondary border-border" />
-            </div>
-          )}
-          <Button type="submit" className="w-full h-11" disabled={loading}>
-            {loading ? "Please wait..." : mode === "forgot" ? "Send Reset Link" : mode === "signup" ? "Create Account" : "Sign In"}
-          </Button>
-        </form>
+            <form onSubmit={handleSubmit} className="space-y-5">
+              <div className="space-y-1.5">
+                <Label htmlFor="email" className="text-sm font-medium">
+                  {mode === "login" ? "Login" : "Email"}
+                </Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="Email or phone number"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  className="h-12 bg-muted/50 border-border rounded-lg"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="password" className="text-sm font-medium">Password</Label>
+                <div className="relative">
+                  <Input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Enter password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    minLength={6}
+                    className="h-12 bg-muted/50 border-border rounded-lg pr-10"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  >
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
+              </div>
 
-        <div className="text-center text-sm text-muted-foreground space-y-2">
-          {mode === "login" && (
-            <>
-              <button onClick={() => setMode("forgot")} className="hover:text-foreground transition-colors">Forgot password?</button>
-              <p>Don't have an account?{" "}<button onClick={() => setMode("signup")} className="text-foreground font-medium hover:underline">Sign up</button></p>
-            </>
+              {mode === "login" && (
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Switch id="remember" />
+                    <Label htmlFor="remember" className="text-sm text-muted-foreground cursor-pointer">Remember me</Label>
+                  </div>
+                  <button type="button" onClick={() => setMode("forgot")} className="text-sm text-primary hover:underline font-medium">
+                    Forgot password?
+                  </button>
+                </div>
+              )}
+
+              <Button type="submit" className="w-full h-12 text-base font-semibold rounded-lg bg-[hsl(210,100%,50%)] hover:bg-[hsl(210,100%,45%)] text-white" disabled={loading}>
+                {loading ? "Please wait..." : mode === "signup" ? "Sign up" : "Sign in"}
+              </Button>
+            </form>
           )}
-          {mode === "signup" && (
-            <p>Already have an account?{" "}<button onClick={() => setMode("login")} className="text-foreground font-medium hover:underline">Sign in</button></p>
-          )}
+
           {mode === "forgot" && (
-            <button onClick={() => setMode("login")} className="text-foreground font-medium hover:underline">Back to sign in</button>
+            <form onSubmit={handleSubmit} className="space-y-5">
+              <div className="space-y-1.5">
+                <Label htmlFor="email">Email</Label>
+                <Input id="email" type="email" placeholder="you@company.com" value={email} onChange={(e) => setEmail(e.target.value)} required className="h-12 bg-muted/50 border-border rounded-lg" />
+              </div>
+              <Button type="submit" className="w-full h-12 text-base font-semibold rounded-lg" disabled={loading}>
+                {loading ? "Please wait..." : "Send Reset Link"}
+              </Button>
+            </form>
           )}
+
+          {mode !== "forgot" && (
+            <Button
+              variant="outline"
+              className="w-full h-12 gap-3 bg-muted/30 border-border text-foreground rounded-lg text-sm font-medium"
+              onClick={handleGoogleLogin}
+            >
+              <svg className="h-5 w-5" viewBox="0 0 24 24">
+                <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4" />
+                <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
+                <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
+                <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
+              </svg>
+              Or sign in with Google
+            </Button>
+          )}
+
+          <div className="text-center text-sm text-muted-foreground">
+            {mode === "login" && (
+              <p>Don't have an account?{" "}<button onClick={() => setMode("signup")} className="text-primary font-medium hover:underline">Sign up now</button></p>
+            )}
+            {mode === "signup" && (
+              <p>Already have an account?{" "}<button onClick={() => setMode("login")} className="text-primary font-medium hover:underline">Sign in</button></p>
+            )}
+            {mode === "forgot" && (
+              <button onClick={() => setMode("login")} className="text-primary font-medium hover:underline">Back to sign in</button>
+            )}
+          </div>
+
+          <p className="text-center text-xs text-muted-foreground">
+            Need help? <a href="mailto:support@edendesk.com" className="hover:underline">support@edendesk.com</a>
+          </p>
         </div>
       </div>
     </div>
