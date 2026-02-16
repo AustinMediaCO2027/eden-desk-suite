@@ -92,7 +92,7 @@ const Auth = () => {
 
           {/* Heading */}
           <h1 className="text-2xl font-bold tracking-tight text-center text-foreground">
-            {mode === "forgot" ? "Reset password" : "Join Over 17 000 Business Owners"}
+            {mode === "forgot" ? "Reset password" : "Join Over 17 000 Businesses"}
           </h1>
 
           {/* Login / Signup form */}
