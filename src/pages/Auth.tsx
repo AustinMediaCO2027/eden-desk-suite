@@ -70,29 +70,32 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen flex bg-background">
-      {/* Left: Image panel */}
-      <div className="hidden lg:block lg:w-[55%] relative">
+    <div className="min-h-screen flex bg-white dark:bg-background">
+      {/* Left: Full-bleed image panel */}
+      <div className="hidden lg:block lg:w-[55%] relative rounded-r-[2rem] overflow-hidden">
         <img src={authBg} alt="" className="absolute inset-0 w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-black/10" />
       </div>
 
       {/* Right: Form panel */}
-      <div className="flex-1 flex items-center justify-center px-6 py-12">
-        <div className="w-full max-w-md space-y-8">
-          <div className="text-center">
+      <div className="flex-1 flex items-center justify-center px-8 py-12">
+        <div className="w-full max-w-[380px] space-y-8">
+          {/* Logo */}
+          <div className="flex justify-center">
             <Link to="/">
-              <img src={logoFull} alt="Eden Desk" className="h-16 mx-auto dark:invert mb-6" />
+              <img src={logoFull} alt="Eden Desk" className="h-14 dark:invert" />
             </Link>
-            <h1 className="text-2xl font-bold tracking-tight">
-              {mode === "forgot" ? "Reset password" : "Join Over 17 000 Businesses"}
-            </h1>
           </div>
 
+          {/* Heading */}
+          <h1 className="text-2xl font-bold tracking-tight text-center text-foreground">
+            {mode === "forgot" ? "Reset password" : "Join Over 17 000 Businesses"}
+          </h1>
+
+          {/* Login / Signup form */}
           {mode !== "forgot" && (
             <form onSubmit={handleSubmit} className="space-y-5">
               <div className="space-y-1.5">
-                <Label htmlFor="email" className="text-sm font-medium">
+                <Label htmlFor="email" className="text-sm font-medium text-foreground">
                   {mode === "login" ? "Login" : "Email"}
                 </Label>
                 <Input
@@ -102,11 +105,11 @@ const Auth = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="h-12 bg-muted/50 border-border rounded-lg"
+                  className="h-12 bg-[hsl(0,0%,96%)] dark:bg-muted/50 border-0 rounded-lg text-sm placeholder:text-muted-foreground/60"
                 />
               </div>
               <div className="space-y-1.5">
-                <Label htmlFor="password" className="text-sm font-medium">Password</Label>
+                <Label htmlFor="password" className="text-sm font-medium text-foreground">Password</Label>
                 <div className="relative">
                   <Input
                     id="password"
@@ -116,7 +119,7 @@ const Auth = () => {
                     onChange={(e) => setPassword(e.target.value)}
                     required
                     minLength={6}
-                    className="h-12 bg-muted/50 border-border rounded-lg pr-10"
+                    className="h-12 bg-[hsl(0,0%,96%)] dark:bg-muted/50 border-0 rounded-lg text-sm pr-10 placeholder:text-muted-foreground/60"
                   />
                   <button
                     type="button"
@@ -134,34 +137,48 @@ const Auth = () => {
                     <Switch id="remember" />
                     <Label htmlFor="remember" className="text-sm text-muted-foreground cursor-pointer">Remember me</Label>
                   </div>
-                  <button type="button" onClick={() => setMode("forgot")} className="text-sm text-primary hover:underline font-medium">
+                  <button type="button" onClick={() => setMode("forgot")} className="text-sm text-[hsl(210,100%,50%)] hover:underline font-medium">
                     Forgot password?
                   </button>
                 </div>
               )}
 
-              <Button type="submit" className="w-full h-12 text-base font-semibold rounded-lg bg-[hsl(210,100%,50%)] hover:bg-[hsl(210,100%,45%)] text-white" disabled={loading}>
+              <Button
+                type="submit"
+                className="w-full h-12 text-base font-semibold rounded-lg bg-[hsl(210,100%,50%)] hover:bg-[hsl(210,100%,45%)] text-white"
+                disabled={loading}
+              >
                 {loading ? "Please wait..." : mode === "signup" ? "Sign up" : "Sign in"}
               </Button>
             </form>
           )}
 
+          {/* Forgot password form */}
           {mode === "forgot" && (
             <form onSubmit={handleSubmit} className="space-y-5">
               <div className="space-y-1.5">
-                <Label htmlFor="email">Email</Label>
-                <Input id="email" type="email" placeholder="you@company.com" value={email} onChange={(e) => setEmail(e.target.value)} required className="h-12 bg-muted/50 border-border rounded-lg" />
+                <Label htmlFor="email" className="text-sm font-medium">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="you@company.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  className="h-12 bg-[hsl(0,0%,96%)] dark:bg-muted/50 border-0 rounded-lg text-sm"
+                />
               </div>
-              <Button type="submit" className="w-full h-12 text-base font-semibold rounded-lg" disabled={loading}>
+              <Button type="submit" className="w-full h-12 text-base font-semibold rounded-lg bg-[hsl(210,100%,50%)] hover:bg-[hsl(210,100%,45%)] text-white" disabled={loading}>
                 {loading ? "Please wait..." : "Send Reset Link"}
               </Button>
             </form>
           )}
 
+          {/* Google sign-in */}
           {mode !== "forgot" && (
             <Button
               variant="outline"
-              className="w-full h-12 gap-3 bg-muted/30 border-border text-foreground rounded-lg text-sm font-medium"
+              className="w-full h-12 gap-3 bg-[hsl(0,0%,20%)] hover:bg-[hsl(0,0%,25%)] border-0 text-white rounded-lg text-sm font-medium"
               onClick={handleGoogleLogin}
             >
               <svg className="h-5 w-5" viewBox="0 0 24 24">
@@ -174,15 +191,16 @@ const Auth = () => {
             </Button>
           )}
 
+          {/* Toggle mode */}
           <div className="text-center text-sm text-muted-foreground">
             {mode === "login" && (
-              <p>Don't have an account?{" "}<button onClick={() => setMode("signup")} className="text-primary font-medium hover:underline">Sign up now</button></p>
+              <p>Don't have an account?{" "}<button onClick={() => setMode("signup")} className="text-[hsl(210,100%,50%)] font-medium hover:underline">Sign up now</button></p>
             )}
             {mode === "signup" && (
-              <p>Already have an account?{" "}<button onClick={() => setMode("login")} className="text-primary font-medium hover:underline">Sign in</button></p>
+              <p>Already have an account?{" "}<button onClick={() => setMode("login")} className="text-[hsl(210,100%,50%)] font-medium hover:underline">Sign in</button></p>
             )}
             {mode === "forgot" && (
-              <button onClick={() => setMode("login")} className="text-primary font-medium hover:underline">Back to sign in</button>
+              <button onClick={() => setMode("login")} className="text-[hsl(210,100%,50%)] font-medium hover:underline">Back to sign in</button>
             )}
           </div>
 
