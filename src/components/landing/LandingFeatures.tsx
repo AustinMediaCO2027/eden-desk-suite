@@ -60,7 +60,7 @@ export const LandingFeatures = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 text-center">
             <div>
               <p className="text-[10px] text-muted-foreground uppercase tracking-[0.25em] mb-3 font-medium">Active Users</p>
-              <p className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-foreground leading-none">+2M</p>
+              <p className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-foreground leading-none">17K+</p>
               <p className="text-xs md:text-sm text-muted-foreground mt-2">Across 120+ countries</p>
             </div>
             <div className="md:border-x border-border/20 md:px-8">
