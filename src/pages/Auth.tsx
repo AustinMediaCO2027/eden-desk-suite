@@ -82,7 +82,7 @@ const Auth = () => {
           {/* Logo */}
           <div className="flex justify-center">
             <Link to="/">
-              <img alt="Eden Desk" className="h-14 dark:invert" src="/lovable-uploads/01b1b447-1206-49b7-9840-d8fb8b463561.png" />
+              <img alt="Eden Desk" className="h-14 dark:invert" src="/lovable-uploads/e5b36e1a-b25d-4ded-b52c-669db38a1b31.png" />
             </Link>
           </div>
 
