@@ -16,6 +16,7 @@ import {
   Menu,
   X,
   Users,
+  FolderOpen,
 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import edenLogo from "@/assets/eden_desk_logo.png";
@@ -27,6 +28,7 @@ const navItems = [
   { to: "/dashboard/quotes", icon: FileText, label: "Quotes" },
   { to: "/dashboard/letterhead", icon: Mail, label: "Letterheads" },
   { to: "/dashboard/clients", icon: Users, label: "Clients" },
+  { to: "/dashboard/files", icon: FolderOpen, label: "Files" },
   { to: "/dashboard/tasks", icon: CalendarDays, label: "Tasks" },
   { to: "/dashboard/ai", icon: Bot, label: "AI Agent" },
   { to: "/dashboard/billing", icon: CreditCard, label: "Billing" },

@@ -18,6 +18,7 @@ import AIAgentPage from "./pages/dashboard/AIAgentPage";
 import BillingPage from "./pages/dashboard/BillingPage";
 import SettingsPage from "./pages/dashboard/SettingsPage";
 import ClientsPage from "./pages/dashboard/ClientsPage";
+import FilesPage from "./pages/dashboard/FilesPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -46,6 +47,7 @@ const App = () => (
               <Route path="quotes" element={<QuotesPage />} />
               <Route path="letterhead" element={<LetterheadPage />} />
               <Route path="clients" element={<ClientsPage />} />
+              <Route path="files" element={<FilesPage />} />
               <Route path="tasks" element={<TasksPage />} />
               <Route path="ai" element={<AIAgentPage />} />
               <Route path="billing" element={<BillingPage />} />

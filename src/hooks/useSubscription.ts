@@ -13,6 +13,7 @@ export interface PlanPermissions {
   goals: boolean;
   aiAgent: boolean;
   unlimitedAi: boolean;
+  fileManager: boolean;
   maxAiPromptsPerDay: number | null; // null = unlimited
 }
 
@@ -27,6 +28,7 @@ const PLAN_PERMISSIONS: Record<PlanName, PlanPermissions> = {
     goals: false,
     aiAgent: false,
     unlimitedAi: false,
+    fileManager: false,
     maxAiPromptsPerDay: 0,
   },
   trial: {
@@ -39,6 +41,7 @@ const PLAN_PERMISSIONS: Record<PlanName, PlanPermissions> = {
     goals: true,
     aiAgent: true,
     unlimitedAi: false,
+    fileManager: false,
     maxAiPromptsPerDay: 5,
   },
   standard: {
@@ -51,6 +54,7 @@ const PLAN_PERMISSIONS: Record<PlanName, PlanPermissions> = {
     goals: false,
     aiAgent: false,
     unlimitedAi: false,
+    fileManager: false,
     maxAiPromptsPerDay: 0,
   },
   silver: {
@@ -63,6 +67,7 @@ const PLAN_PERMISSIONS: Record<PlanName, PlanPermissions> = {
     goals: false,
     aiAgent: true,
     unlimitedAi: false,
+    fileManager: true,
     maxAiPromptsPerDay: 5,
   },
   premium: {
@@ -75,6 +80,7 @@ const PLAN_PERMISSIONS: Record<PlanName, PlanPermissions> = {
     goals: true,
     aiAgent: true,
     unlimitedAi: true,
+    fileManager: true,
     maxAiPromptsPerDay: null,
   },
   yearly: {
@@ -87,6 +93,7 @@ const PLAN_PERMISSIONS: Record<PlanName, PlanPermissions> = {
     goals: true,
     aiAgent: true,
     unlimitedAi: true,
+    fileManager: true,
     maxAiPromptsPerDay: null,
   },
 };

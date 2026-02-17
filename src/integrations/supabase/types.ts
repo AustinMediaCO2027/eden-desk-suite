@@ -47,6 +47,41 @@ export type Database = {
         }
         Relationships: []
       }
+      folders: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          parent_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          parent_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          parent_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "folders_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "folders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       goals: {
         Row: {
           created_at: string | null
@@ -259,6 +294,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          add_on_storage: number
           ai_prompts_reset_date: string | null
           ai_prompts_used_today: number | null
           bank_account_holder: string | null
@@ -277,6 +313,7 @@ export type Database = {
           id: string
           logo_url: string | null
           registration_number: string | null
+          storage_used: number
           subscription_plan: string | null
           template_style: string | null
           trial_ends_at: string | null
@@ -285,6 +322,7 @@ export type Database = {
           vat_number: string | null
         }
         Insert: {
+          add_on_storage?: number
           ai_prompts_reset_date?: string | null
           ai_prompts_used_today?: number | null
           bank_account_holder?: string | null
@@ -303,6 +341,7 @@ export type Database = {
           id?: string
           logo_url?: string | null
           registration_number?: string | null
+          storage_used?: number
           subscription_plan?: string | null
           template_style?: string | null
           trial_ends_at?: string | null
@@ -311,6 +350,7 @@ export type Database = {
           vat_number?: string | null
         }
         Update: {
+          add_on_storage?: number
           ai_prompts_reset_date?: string | null
           ai_prompts_used_today?: number | null
           bank_account_holder?: string | null
@@ -329,6 +369,7 @@ export type Database = {
           id?: string
           logo_url?: string | null
           registration_number?: string | null
+          storage_used?: number
           subscription_plan?: string | null
           template_style?: string | null
           trial_ends_at?: string | null
@@ -462,6 +503,56 @@ export type Database = {
             columns: ["goal_id"]
             isOneToOne: false
             referencedRelation: "goals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_files: {
+        Row: {
+          created_at: string
+          file_name: string
+          file_size: number
+          file_type: string
+          folder_id: string | null
+          id: string
+          share_expiry: string | null
+          share_token: string | null
+          storage_path: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          file_name: string
+          file_size?: number
+          file_type?: string
+          folder_id?: string | null
+          id?: string
+          share_expiry?: string | null
+          share_token?: string | null
+          storage_path: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          file_name?: string
+          file_size?: number
+          file_type?: string
+          folder_id?: string | null
+          id?: string
+          share_expiry?: string | null
+          share_token?: string | null
+          storage_path?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_files_folder_id_fkey"
+            columns: ["folder_id"]
+            isOneToOne: false
+            referencedRelation: "folders"
             referencedColumns: ["id"]
           },
         ]
