@@ -48,6 +48,7 @@ const UpgradeDialog = ({ open, onOpenChange, feature, requiredPlan }: UpgradeDia
       const form = document.createElement("form");
       form.method = "POST";
       form.action = data.paymentUrl;
+      form.target = "_top";
 
       Object.entries(data.params as Record<string, string>).forEach(([key, value]) => {
         const input = document.createElement("input");

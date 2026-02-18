@@ -77,10 +77,11 @@ const BillingPage = () => {
 
       if (error) throw error;
 
-      // Build and submit form
+      // Build and submit form - target _top to break out of iframe
       const form = document.createElement("form");
       form.method = "POST";
       form.action = data.paymentUrl;
+      form.target = "_top";
 
       Object.entries(data.params as Record<string, string>).forEach(([key, value]) => {
         const input = document.createElement("input");
