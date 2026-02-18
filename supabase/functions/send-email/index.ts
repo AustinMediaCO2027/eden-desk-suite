@@ -11,7 +11,7 @@ serve(async (req) => {
   }
 
   try {
-    const { to, subject, html, from_name, from_email } = await req.json();
+    const { to, subject, html, from_name, from_email, attachments } = await req.json();
 
     if (!to || !subject || !html) {
       return new Response(
@@ -32,18 +32,28 @@ serve(async (req) => {
       );
     }
 
+    const emailPayload: Record<string, unknown> = {
+      from: from_email ? `${from_name || "Eden Desk"} <${from_email}>` : "Eden Desk <onboarding@resend.dev>",
+      to: [to],
+      subject,
+      html,
+    };
+
+    // Add PDF attachment if provided
+    if (attachments && Array.isArray(attachments) && attachments.length > 0) {
+      emailPayload.attachments = attachments.map((att: { filename: string; content: string }) => ({
+        filename: att.filename,
+        content: att.content,
+      }));
+    }
+
     const res = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${RESEND_API_KEY}`,
       },
-      body: JSON.stringify({
-        from: from_email ? `${from_name || "Eden Desk"} <${from_email}>` : "Eden Desk <onboarding@resend.dev>",
-        to: [to],
-        subject,
-        html,
-      }),
+      body: JSON.stringify(emailPayload),
     });
 
     const data = await res.json();

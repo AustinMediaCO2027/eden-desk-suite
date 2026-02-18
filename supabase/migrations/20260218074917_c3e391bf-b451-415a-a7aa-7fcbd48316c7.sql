@@ -1,0 +1,1 @@
+UPDATE profiles SET subscription_plan = 'premium' WHERE user_id = '7bdfbb56-959d-4e6c-9532-73fc3bc52e87';

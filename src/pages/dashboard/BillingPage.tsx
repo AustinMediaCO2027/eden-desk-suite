@@ -69,7 +69,8 @@ const BillingPage = () => {
           userEmail: user.email,
           userId: user.id,
           companyName: profile?.company_name,
-          returnUrl: `${window.location.origin}/dashboard/billing?status=success`,
+          isTrial: true,
+          returnUrl: `${window.location.origin}/dashboard?payment=success&plan=${plan.planId}`,
           cancelUrl: `${window.location.origin}/dashboard/billing?status=cancelled`,
         },
       });
@@ -134,9 +135,9 @@ const BillingPage = () => {
               variant={plan.highlighted ? "default" : "outline"}
               className="w-full"
               onClick={() => handleSubscribe(plan)}
-              disabled={loading === plan.planId}
+              disabled={loading === plan.planId || currentPlan === plan.planId}
             >
-              {loading === plan.planId ? "Processing..." : "Get started"}
+              {loading === plan.planId ? "Processing..." : currentPlan === plan.planId ? "Current Plan" : "Start 7-Day Free Trial"}
             </Button>
           </div>
         ))}
