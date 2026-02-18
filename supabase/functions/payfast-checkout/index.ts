@@ -51,6 +51,7 @@ serve(async (req) => {
 
     return new Response(JSON.stringify({
       paymentUrl: "https://www.payfast.co.za/eng/process",
+      openInNewTab: true,
       params,
     }), {
       status: 200,
