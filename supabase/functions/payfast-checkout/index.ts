@@ -27,7 +27,7 @@ serve(async (req) => {
     }
 
     const body = await req.json();
-    const { planName, planId, amount, period, userEmail, userId, companyName } = body;
+    const { planName, planId, amount, period, userEmail, userId, companyName, isTrial } = body;
 
     // Build PayFast payment parameters
     const params: Record<string, string> = {

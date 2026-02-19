@@ -6,6 +6,7 @@ import edenIcon from "@/assets/eden_dark_icon.png";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { useProfile } from "@/hooks/useProfile";
+import { useCurrency } from "@/hooks/useCurrency";
 import { useState } from "react";
 
 interface UpgradeDialogProps {
@@ -18,6 +19,7 @@ interface UpgradeDialogProps {
 const UpgradeDialog = ({ open, onOpenChange, feature, requiredPlan }: UpgradeDialogProps) => {
   const { user } = useAuth();
   const { profile } = useProfile();
+  const { convert, currency } = useCurrency();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
@@ -33,7 +35,7 @@ const UpgradeDialog = ({ open, onOpenChange, feature, requiredPlan }: UpgradeDia
         body: {
           planName: "Silver",
           planId: "silver",
-          amount: "59.99",
+          amount: "75.99",
           period: "/month",
           userEmail: user.email,
           userId: user.id,
@@ -103,7 +105,7 @@ const UpgradeDialog = ({ open, onOpenChange, feature, requiredPlan }: UpgradeDia
             onClick={handleStartTrial}
             disabled={loading}
           >
-            {loading ? "Processing..." : "Get Started — R59.99/mo"}
+            {loading ? "Processing..." : `Get Started — ${convert(75.99)}/mo`}
             {!loading && <ArrowRight className="h-4 w-4" />}
           </Button>
           <Link to="/dashboard/billing" className="w-full">

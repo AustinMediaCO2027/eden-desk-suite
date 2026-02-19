@@ -2,11 +2,12 @@ import { Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import abstractBg from "@/assets/abstract-bg.jpg";
+import { useCurrency } from "@/hooks/useCurrency";
 
-const plans = [
+const planData = [
   {
     name: "Standard",
-    price: "R39.99",
+    zarPrice: 39.99,
     period: "/month",
     description: "Perfect for freelancers",
     features: ["Create invoices", "Create quotes", "Download PDF", "Email sending"],
@@ -14,13 +15,13 @@ const plans = [
   },
   {
     name: "Silver",
-    price: "R59.99",
+    zarPrice: 75.99,
     period: "/month",
     description: "For growing businesses",
     features: [
       "Send Invoice / Quotes",
       "Create & send letterheads",
-      "AI drafting assistant",
+      "Gemini AI drafting",
       "5 AI prompts per day",
     ],
     highlighted: true,
@@ -28,7 +29,7 @@ const plans = [
   },
   {
     name: "Premium",
-    price: "R99.99",
+    zarPrice: 99.99,
     period: "/month",
     description: "For power users",
     features: [
@@ -42,6 +43,8 @@ const plans = [
 ];
 
 export const LandingPricing = () => {
+  const { convert, currency } = useCurrency();
+
   return (
     <section id="pricing" className="relative py-28 md:py-36 border-t border-border/30 overflow-hidden">
       {/* Abstract background */}
@@ -62,7 +65,7 @@ export const LandingPricing = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-          {plans.map((plan) => (
+          {planData.map((plan) => (
             <div
               key={plan.name}
               className={`relative rounded-2xl border p-8 flex flex-col transition-all duration-300 hover:-translate-y-1 ${
@@ -81,8 +84,11 @@ export const LandingPricing = () => {
                 <p className="text-xs text-muted-foreground">{plan.description}</p>
               </div>
               <div className="mb-8">
-                <span className="text-4xl font-extrabold">{plan.price}</span>
+                <span className="text-4xl font-extrabold">{convert(plan.zarPrice)}</span>
                 <span className="text-muted-foreground text-sm ml-1">{plan.period}</span>
+                {currency.code !== "ZAR" && (
+                  <p className="text-[10px] text-muted-foreground mt-1">Billed in R{plan.zarPrice.toFixed(2)} ZAR</p>
+                )}
               </div>
               <ul className="space-y-3.5 mb-10 flex-1">
                 {plan.features.map((f) => (
@@ -107,6 +113,10 @@ export const LandingPricing = () => {
             </div>
           ))}
         </div>
+
+        <p className="text-center text-xs text-muted-foreground mt-8">
+          Billed securely in South African Rand (ZAR).
+        </p>
       </div>
     </section>
   );
