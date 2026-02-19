@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import { ThemeProvider } from "@/hooks/useTheme";
+import { CurrencyProvider } from "@/hooks/useCurrency";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import Index from "./pages/Index";
@@ -27,6 +28,7 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <ThemeProvider>
+    <CurrencyProvider>
     <AuthProvider>
       <TooltipProvider>
         <Toaster />
@@ -61,6 +63,7 @@ const App = () => (
         </BrowserRouter>
       </TooltipProvider>
     </AuthProvider>
+    </CurrencyProvider>
     </ThemeProvider>
   </QueryClientProvider>
 );

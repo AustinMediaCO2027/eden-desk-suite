@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import edenDarkLogo from "@/assets/eden_dark_logo.png";
+import { CurrencySwitcher } from "@/components/CurrencySwitcher";
 
 export const LandingNav = () => {
   return (
@@ -18,6 +19,7 @@ export const LandingNav = () => {
         </div>
 
         <div className="flex items-center gap-3">
+          <CurrencySwitcher />
           <Link to="/auth">
             <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
               Log in

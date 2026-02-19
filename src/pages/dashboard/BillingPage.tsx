@@ -6,13 +6,14 @@ import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-
 import { useSubscription } from "@/hooks/useSubscription";
+import { useCurrency } from "@/hooks/useCurrency";
+import { CurrencySwitcher } from "@/components/CurrencySwitcher";
 
 const plans = [
   {
     name: "Standard",
-    price: "R39.99",
+    zarPrice: 39.99,
     period: "/month",
     payfastAmount: "39.99",
     features: ["Create invoices", "Create quotes", "Download PDF", "Email sending"],
@@ -20,16 +21,16 @@ const plans = [
   },
   {
     name: "Silver",
-    price: "R59.99",
+    zarPrice: 75.99,
     period: "/month",
-    payfastAmount: "59.99",
-    features: ["Send Invoice / Quotes", "Letterheads", "AI drafting (5/day)", "Email sending"],
+    payfastAmount: "75.99",
+    features: ["Send Invoice / Quotes", "Letterheads", "Gemini AI (5/day)", "Email sending"],
     highlighted: true,
     planId: "silver",
   },
   {
     name: "Premium",
-    price: "R99.99",
+    zarPrice: 99.99,
     period: "/month",
     payfastAmount: "99.99",
     features: ["Everything in Silver", "Task manager", "Unlimited AI", "Priority support"],
@@ -37,7 +38,7 @@ const plans = [
   },
   {
     name: "Yearly",
-    price: "R985.99",
+    zarPrice: 985.99,
     period: "/year",
     payfastAmount: "985.99",
     features: ["Unlimited everything", "All features", "Unlimited AI", "Priority support"],
@@ -50,6 +51,7 @@ const BillingPage = () => {
   const { profile } = useProfile();
   const { toast } = useToast();
   const { planDisplayName, currentPlan } = useSubscription();
+  const { convert, currency } = useCurrency();
   const [loading, setLoading] = useState<string | null>(null);
 
   const handleSubscribe = async (plan: typeof plans[0]) => {
@@ -78,7 +80,6 @@ const BillingPage = () => {
 
       if (error) throw error;
 
-      // Build and submit form - target _top to break out of iframe
       const form = document.createElement("form");
       form.method = "POST";
       form.action = data.paymentUrl;
@@ -108,8 +109,13 @@ const BillingPage = () => {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Billing</h1>
-      <p className="text-muted-foreground text-sm">Manage your subscription and payment method.</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold">Billing</h1>
+          <p className="text-muted-foreground text-sm">Manage your subscription and payment method.</p>
+        </div>
+        <CurrencySwitcher />
+      </div>
 
       {/* Current Plan Summary */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -160,8 +166,11 @@ const BillingPage = () => {
           <div key={plan.name} className={`rounded-xl border p-6 flex flex-col ${plan.highlighted ? "border-foreground bg-foreground/5" : "border-border bg-card"} eden-card-hover`}>
             <h3 className="font-semibold mb-1">{plan.name}</h3>
             <div className="mb-4">
-              <span className="text-3xl font-bold">{plan.price}</span>
+              <span className="text-3xl font-bold">{convert(plan.zarPrice)}</span>
               <span className="text-muted-foreground text-sm">{plan.period}</span>
+              {currency.code !== "ZAR" && (
+                <p className="text-[10px] text-muted-foreground mt-1">Billed in R{plan.zarPrice.toFixed(2)} ZAR</p>
+              )}
             </div>
             <ul className="space-y-2 mb-6 flex-1">
               {plan.features.map(f => (
@@ -182,6 +191,10 @@ const BillingPage = () => {
           </div>
         ))}
       </div>
+
+      <p className="text-xs text-muted-foreground text-center">
+        Billed securely in South African Rand (ZAR).
+      </p>
 
       <div className="rounded-xl border border-border bg-card p-6">
         <h3 className="font-semibold mb-2">Payment Method</h3>
