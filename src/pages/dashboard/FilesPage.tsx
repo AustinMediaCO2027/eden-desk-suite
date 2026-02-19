@@ -50,6 +50,7 @@ import {
   Package,
   ArrowRight,
   Lock,
+  Eye,
 } from "lucide-react";
 
 const formatBytes = (bytes: number) => {
@@ -111,6 +112,8 @@ const FilesPage = () => {
   const [storageLimitDialog, setStorageLimitDialog] = useState(false);
   const [addonLoading, setAddonLoading] = useState<string | null>(null);
   const [dragOver, setDragOver] = useState(false);
+  const [previewFile, setPreviewFile] = useState<UserFile | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // If no access, show upgrade modal
@@ -185,9 +188,22 @@ const FilesPage = () => {
   };
 
   const handleCopyLink = (token: string) => {
-    const url = `${window.location.origin}/shared/${token}`;
+    const url = `https://eden-desk.com/share/${token}`;
     navigator.clipboard.writeText(url);
     toast({ title: "Link copied!" });
+  };
+
+  const handlePreview = async (file: UserFile) => {
+    setPreviewFile(file);
+    const { data } = await supabase.storage
+      .from("user-files")
+      .createSignedUrl(file.storage_path, 3600);
+    if (data?.signedUrl) setPreviewUrl(data.signedUrl);
+  };
+
+  const closePreview = () => {
+    setPreviewFile(null);
+    setPreviewUrl(null);
   };
 
   const handleAddonPurchase = async (addon: typeof STORAGE_ADDONS[0]) => {
@@ -399,10 +415,16 @@ const FilesPage = () => {
               <Card key={file.id} className="eden-card-hover">
                 <CardContent className="p-4 flex items-center gap-3">
                   {getFileIcon(file.file_type)}
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium truncate">{file.file_name}</p>
+                  <div
+                    className="flex-1 min-w-0 cursor-pointer"
+                    onClick={() => handlePreview(file)}
+                  >
+                    <p className="text-sm font-medium truncate hover:underline">{file.file_name}</p>
                     <p className="text-xs text-muted-foreground">{formatBytes(file.file_size)}</p>
                   </div>
+                  <Button size="sm" variant="ghost" className="shrink-0" onClick={() => handlePreview(file)}>
+                    <Eye className="h-4 w-4" />
+                  </Button>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <button className="p-1.5 rounded hover:bg-accent shrink-0">
@@ -483,7 +505,7 @@ const FilesPage = () => {
             <div className="space-y-3">
               <div className="flex items-center gap-2 p-2 rounded bg-muted">
                 <Link className="h-4 w-4 shrink-0 text-sidebar-primary" />
-                <span className="text-xs truncate flex-1">{`${window.location.origin}/shared/${shareDialog.token}`}</span>
+                <span className="text-xs truncate flex-1">{`https://eden-desk.com/share/${shareDialog.token}`}</span>
                 <Button size="sm" variant="ghost" onClick={() => handleCopyLink(shareDialog.token!)}>
                   <Copy className="h-3.5 w-3.5" />
                 </Button>
@@ -522,6 +544,38 @@ const FilesPage = () => {
           <DialogFooter>
             <Button variant="outline" onClick={() => setStorageLimitDialog(false)}>Close</Button>
           </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* File Preview Modal */}
+      <Dialog open={!!previewFile} onOpenChange={closePreview}>
+        <DialogContent className="max-w-4xl h-[85vh] p-0 overflow-hidden bg-background">
+          <div className="flex items-center justify-between px-4 py-3 border-b border-border">
+            <div className="flex items-center gap-2">
+              {previewFile && getFileIcon(previewFile.file_type)}
+              <span className="text-sm font-medium truncate">{previewFile?.file_name}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Button size="sm" variant="outline" onClick={() => previewFile && downloadFile(previewFile)}>
+                <Download className="h-4 w-4 mr-1.5" /> Download
+              </Button>
+            </div>
+          </div>
+          <div className="flex-1 flex items-center justify-center p-4 overflow-auto bg-black/30" style={{ height: 'calc(85vh - 60px)' }}>
+            {previewFile?.file_type === "application/pdf" && previewUrl ? (
+              <iframe src={previewUrl} className="w-full h-full rounded bg-white" />
+            ) : previewFile?.file_type?.startsWith("image/") && previewUrl ? (
+              <img src={previewUrl} alt={previewFile.file_name} className="max-w-full max-h-full object-contain rounded" />
+            ) : (
+              <div className="text-center space-y-3">
+                <FileText className="h-16 w-16 mx-auto text-muted-foreground" />
+                <p className="text-muted-foreground">Preview not available. Please download file.</p>
+                <Button onClick={() => previewFile && downloadFile(previewFile)}>
+                  <Download className="h-4 w-4 mr-1.5" /> Download
+                </Button>
+              </div>
+            )}
+          </div>
         </DialogContent>
       </Dialog>
     </div>

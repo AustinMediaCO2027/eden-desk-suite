@@ -28,12 +28,12 @@ export const LandingCTA = () => {
             your business?
           </h2>
           <p className="text-muted-foreground text-lg md:text-xl max-w-lg mx-auto mb-12 relative z-10">
-            Start your 7-day free trial today. No credit card required.
+            Get started today. Affordable plans for every business.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 relative z-10">
-            <Link to="/auth?mode=signup&redirect=trial">
+            <Link to="/auth?mode=signup">
               <Button size="lg" className="text-base px-12 h-14 gap-2.5 bg-foreground text-background hover:bg-foreground/90 rounded-xl font-semibold shadow-[0_0_40px_rgba(255,255,255,0.1)] hover:shadow-[0_0_60px_rgba(255,255,255,0.15)] transition-all duration-300">
-                Start 7-Day Trial
+                Get Started
                 <ArrowRight className="h-4 w-4" />
               </Button>
             </Link>
