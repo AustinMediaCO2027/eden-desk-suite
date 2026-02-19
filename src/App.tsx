@@ -20,6 +20,7 @@ import SettingsPage from "./pages/dashboard/SettingsPage";
 import ClientsPage from "./pages/dashboard/ClientsPage";
 import FilesPage from "./pages/dashboard/FilesPage";
 import NotFound from "./pages/NotFound";
+import SharedFilePage from "./pages/SharedFilePage";
 
 const queryClient = new QueryClient();
 
@@ -53,6 +54,8 @@ const App = () => (
               <Route path="billing" element={<BillingPage />} />
               <Route path="settings" element={<SettingsPage />} />
             </Route>
+            <Route path="/shared/:token" element={<SharedFilePage />} />
+            <Route path="/share/:token" element={<SharedFilePage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { Check } from "lucide-react";
+import { Check, Calendar, CreditCard, Package } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
 import { useToast } from "@/hooks/use-toast";
@@ -69,7 +70,7 @@ const BillingPage = () => {
           userEmail: user.email,
           userId: user.id,
           companyName: profile?.company_name,
-          isTrial: true,
+          isTrial: false,
           returnUrl: `${window.location.origin}/dashboard?payment=success&plan=${plan.planId}`,
           cancelUrl: `${window.location.origin}/dashboard/billing?status=cancelled`,
         },
@@ -101,19 +102,57 @@ const BillingPage = () => {
     }
   };
 
+  const isPaidPlan = ["standard", "silver", "premium", "yearly"].includes(currentPlan);
+  const billingCycle = currentPlan === "yearly" ? "Yearly" : "Monthly";
+  const addOnStorage = (profile as any)?.add_on_storage ?? 0;
+
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-bold">Billing</h1>
       <p className="text-muted-foreground text-sm">Manage your subscription and payment method.</p>
 
-      {/* Current Plan Display */}
-      <div className="rounded-xl border border-border bg-card p-6">
-        <h3 className="font-semibold mb-1">Current Plan</h3>
-        <p className="text-sm text-muted-foreground">
-          <span className="capitalize font-medium text-foreground">{planDisplayName}</span>
-          {currentPlan !== "free" && " — Active"}
-          {currentPlan === "free" && " — Choose a plan to get started"}
-        </p>
+      {/* Current Plan Summary */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <Card>
+          <CardContent className="p-5">
+            <div className="flex items-center gap-2 mb-2">
+              <CreditCard className="h-4 w-4 text-muted-foreground" />
+              <span className="text-xs text-muted-foreground uppercase tracking-wide">Current Plan</span>
+            </div>
+            <p className="text-lg font-bold capitalize">{planDisplayName}</p>
+            <p className="text-xs text-muted-foreground">{isPaidPlan ? "Active" : "Choose a plan to get started"}</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-5">
+            <div className="flex items-center gap-2 mb-2">
+              <Calendar className="h-4 w-4 text-muted-foreground" />
+              <span className="text-xs text-muted-foreground uppercase tracking-wide">Billing Cycle</span>
+            </div>
+            <p className="text-lg font-bold">{isPaidPlan ? billingCycle : "—"}</p>
+            <p className="text-xs text-muted-foreground">{isPaidPlan ? "Recurring via PayFast" : "No active subscription"}</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-5">
+            <div className="flex items-center gap-2 mb-2">
+              <Package className="h-4 w-4 text-muted-foreground" />
+              <span className="text-xs text-muted-foreground uppercase tracking-wide">Storage Add-On</span>
+            </div>
+            <p className="text-lg font-bold">{addOnStorage > 0 ? `${(addOnStorage / (1024 * 1024 * 1024)).toFixed(0)} GB` : "None"}</p>
+            <p className="text-xs text-muted-foreground">{addOnStorage > 0 ? "Active add-on" : "Available on Silver+"}</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-5">
+            <div className="flex items-center gap-2 mb-2">
+              <Calendar className="h-4 w-4 text-muted-foreground" />
+              <span className="text-xs text-muted-foreground uppercase tracking-wide">Trial Status</span>
+            </div>
+            <p className="text-lg font-bold">{(profile as any)?.trial_used ? "Used" : "Available"}</p>
+            <p className="text-xs text-muted-foreground">{(profile as any)?.trial_used ? "One-time trial completed" : "7-day free trial"}</p>
+          </CardContent>
+        </Card>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -138,7 +177,7 @@ const BillingPage = () => {
               onClick={() => handleSubscribe(plan)}
               disabled={loading === plan.planId || currentPlan === plan.planId}
             >
-              {loading === plan.planId ? "Processing..." : currentPlan === plan.planId ? "Current Plan" : "Start 7-Day Free Trial"}
+              {loading === plan.planId ? "Processing..." : currentPlan === plan.planId ? "Current Plan" : "Get Started"}
             </Button>
           </div>
         ))}

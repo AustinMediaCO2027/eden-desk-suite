@@ -137,6 +137,10 @@ export const useSubscription = () => {
     return new Date(profile.trial_ends_at) < new Date();
   }, [profile]);
 
+  const trialUsed = useMemo(() => {
+    return (profile as any)?.trial_used === true;
+  }, [profile]);
+
   const isPaid = useMemo(() => {
     return ["standard", "silver", "premium", "yearly"].includes(currentPlan);
   }, [currentPlan]);
@@ -160,6 +164,7 @@ export const useSubscription = () => {
     isTrialActive,
     trialDaysRemaining,
     isTrialExpired,
+    trialUsed,
     isPaid,
     canUseFeature,
     planDisplayName,

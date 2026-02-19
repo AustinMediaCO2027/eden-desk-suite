@@ -103,7 +103,7 @@ const UpgradeDialog = ({ open, onOpenChange, feature, requiredPlan }: UpgradeDia
             onClick={handleStartTrial}
             disabled={loading}
           >
-            {loading ? "Processing..." : "Start 7-Day Free Trial — R59.99/mo"}
+            {loading ? "Processing..." : "Get Started — R59.99/mo"}
             {!loading && <ArrowRight className="h-4 w-4" />}
           </Button>
           <Link to="/dashboard/billing" className="w-full">

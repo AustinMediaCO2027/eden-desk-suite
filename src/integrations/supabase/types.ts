@@ -316,7 +316,10 @@ export type Database = {
           storage_used: number
           subscription_plan: string | null
           template_style: string | null
+          trial_end_date: string | null
           trial_ends_at: string | null
+          trial_start_date: string | null
+          trial_used: boolean
           updated_at: string | null
           user_id: string
           vat_number: string | null
@@ -344,7 +347,10 @@ export type Database = {
           storage_used?: number
           subscription_plan?: string | null
           template_style?: string | null
+          trial_end_date?: string | null
           trial_ends_at?: string | null
+          trial_start_date?: string | null
+          trial_used?: boolean
           updated_at?: string | null
           user_id: string
           vat_number?: string | null
@@ -372,7 +378,10 @@ export type Database = {
           storage_used?: number
           subscription_plan?: string | null
           template_style?: string | null
+          trial_end_date?: string | null
           trial_ends_at?: string | null
+          trial_start_date?: string | null
+          trial_used?: boolean
           updated_at?: string | null
           user_id?: string
           vat_number?: string | null
