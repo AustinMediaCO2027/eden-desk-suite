@@ -20,10 +20,19 @@ import BillingPage from "./pages/dashboard/BillingPage";
 import SettingsPage from "./pages/dashboard/SettingsPage";
 import ClientsPage from "./pages/dashboard/ClientsPage";
 import FilesPage from "./pages/dashboard/FilesPage";
+import ReferralsPage from "./pages/dashboard/ReferralsPage";
+import AdminAffiliatesPage from "./pages/dashboard/AdminAffiliatesPage";
+import AffiliatePage from "./pages/AffiliatePage";
 import NotFound from "./pages/NotFound";
 import SharedFilePage from "./pages/SharedFilePage";
+import { useReferralTracking } from "./hooks/useReferralTracking";
 
 const queryClient = new QueryClient();
+
+const ReferralTracker = ({ children }: { children: React.ReactNode }) => {
+  useReferralTracking();
+  return <>{children}</>;
+};
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -34,9 +43,11 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
+          <ReferralTracker>
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
+            <Route path="/affiliate" element={<AffiliatePage />} />
             <Route
               path="/dashboard"
               element={
@@ -52,14 +63,17 @@ const App = () => (
               <Route path="clients" element={<ClientsPage />} />
               <Route path="files" element={<FilesPage />} />
               <Route path="tasks" element={<TasksPage />} />
+              <Route path="referrals" element={<ReferralsPage />} />
               <Route path="ai" element={<AIAgentPage />} />
               <Route path="billing" element={<BillingPage />} />
               <Route path="settings" element={<SettingsPage />} />
+              <Route path="admin/affiliates" element={<AdminAffiliatesPage />} />
             </Route>
             <Route path="/shared/:token" element={<SharedFilePage />} />
             <Route path="/share/:token" element={<SharedFilePage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
+          </ReferralTracker>
         </BrowserRouter>
       </TooltipProvider>
     </AuthProvider>
