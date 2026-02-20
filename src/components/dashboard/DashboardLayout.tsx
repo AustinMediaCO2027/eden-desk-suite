@@ -17,10 +17,13 @@ import {
   X,
   Users,
   FolderOpen,
+  Gift,
+  Shield,
 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import edenLogo from "@/assets/eden_desk_logo.png";
 import edenIcon from "@/assets/eden_desk_icon.png";
+import { useAffiliate } from "@/hooks/useAffiliate";
 
 const navItems = [
   { to: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
@@ -30,6 +33,7 @@ const navItems = [
   { to: "/dashboard/clients", icon: Users, label: "Clients" },
   { to: "/dashboard/files", icon: FolderOpen, label: "Files" },
   { to: "/dashboard/tasks", icon: CalendarDays, label: "Tasks" },
+  { to: "/dashboard/referrals", icon: Gift, label: "Referrals" },
   { to: "/dashboard/ai", icon: Bot, label: "AI Agent" },
   { to: "/dashboard/billing", icon: CreditCard, label: "Billing" },
   { to: "/dashboard/settings", icon: Settings, label: "Settings" },
@@ -39,8 +43,14 @@ export const DashboardLayout = () => {
   const { user, signOut } = useAuth();
   const { profile } = useProfile();
   const { theme, toggleTheme } = useTheme();
+  const { isAdmin } = useAffiliate();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  const allNavItems = [
+    ...navItems,
+    ...(isAdmin ? [{ to: "/dashboard/admin/affiliates", icon: Shield, label: "Admin Affiliates" }] : []),
+  ];
 
   return (
     <div className="flex h-screen bg-background overflow-hidden">
@@ -67,7 +77,7 @@ export const DashboardLayout = () => {
 
         {/* Navigation */}
         <nav className="flex-1 px-3 pt-2 overflow-y-auto space-y-1">
-          {navItems.map(({ to, icon: Icon, label }) => {
+          {allNavItems.map(({ to, icon: Icon, label }) => {
             const isActive = location.pathname === to;
             return (
               <Link

@@ -117,6 +117,12 @@ export const LandingPricing = () => {
         <p className="text-center text-xs text-muted-foreground mt-8">
           Billed securely in South African Rand (ZAR).
         </p>
+
+        <div className="text-center mt-6">
+          <Link to="/affiliate" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+            Earn recurring income promoting Eden Desk. <span className="underline font-medium">Join our affiliate program →</span>
+          </Link>
+        </div>
       </div>
     </section>
   );

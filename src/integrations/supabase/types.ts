@@ -14,6 +14,113 @@ export type Database = {
   }
   public: {
     Tables: {
+      affiliate_clicks: {
+        Row: {
+          affiliate_id: string
+          created_at: string
+          id: string
+          ip_hash: string | null
+          visitor_id: string | null
+        }
+        Insert: {
+          affiliate_id: string
+          created_at?: string
+          id?: string
+          ip_hash?: string | null
+          visitor_id?: string | null
+        }
+        Update: {
+          affiliate_id?: string
+          created_at?: string
+          id?: string
+          ip_hash?: string | null
+          visitor_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "affiliate_clicks_affiliate_id_fkey"
+            columns: ["affiliate_id"]
+            isOneToOne: false
+            referencedRelation: "affiliates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      affiliates: {
+        Row: {
+          affiliate_code: string | null
+          audience_type: string | null
+          bank_account_holder: string | null
+          bank_account_number: string | null
+          bank_branch_code: string | null
+          bank_country: string | null
+          bank_name: string | null
+          country: string | null
+          created_at: string
+          email: string
+          full_name: string
+          id: string
+          paid_earnings: number
+          payment_method: string | null
+          paypal_email: string | null
+          pending_balance: number
+          promotion_method: string | null
+          status: string
+          total_earnings: number
+          updated_at: string
+          user_id: string | null
+          website: string | null
+        }
+        Insert: {
+          affiliate_code?: string | null
+          audience_type?: string | null
+          bank_account_holder?: string | null
+          bank_account_number?: string | null
+          bank_branch_code?: string | null
+          bank_country?: string | null
+          bank_name?: string | null
+          country?: string | null
+          created_at?: string
+          email?: string
+          full_name?: string
+          id?: string
+          paid_earnings?: number
+          payment_method?: string | null
+          paypal_email?: string | null
+          pending_balance?: number
+          promotion_method?: string | null
+          status?: string
+          total_earnings?: number
+          updated_at?: string
+          user_id?: string | null
+          website?: string | null
+        }
+        Update: {
+          affiliate_code?: string | null
+          audience_type?: string | null
+          bank_account_holder?: string | null
+          bank_account_number?: string | null
+          bank_branch_code?: string | null
+          bank_country?: string | null
+          bank_name?: string | null
+          country?: string | null
+          created_at?: string
+          email?: string
+          full_name?: string
+          id?: string
+          paid_earnings?: number
+          payment_method?: string | null
+          paypal_email?: string | null
+          pending_balance?: number
+          promotion_method?: string | null
+          status?: string
+          total_earnings?: number
+          updated_at?: string
+          user_id?: string | null
+          website?: string | null
+        }
+        Relationships: []
+      }
       clients: {
         Row: {
           address: string | null
@@ -46,6 +153,54 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      commissions: {
+        Row: {
+          affiliate_id: string
+          amount: number
+          billing_cycle: string | null
+          created_at: string
+          id: string
+          plan: string | null
+          referral_id: string
+          status: string
+        }
+        Insert: {
+          affiliate_id: string
+          amount?: number
+          billing_cycle?: string | null
+          created_at?: string
+          id?: string
+          plan?: string | null
+          referral_id: string
+          status?: string
+        }
+        Update: {
+          affiliate_id?: string
+          amount?: number
+          billing_cycle?: string | null
+          created_at?: string
+          id?: string
+          plan?: string | null
+          referral_id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "commissions_affiliate_id_fkey"
+            columns: ["affiliate_id"]
+            isOneToOne: false
+            referencedRelation: "affiliates"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "commissions_referral_id_fkey"
+            columns: ["referral_id"]
+            isOneToOne: false
+            referencedRelation: "referrals"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       folders: {
         Row: {
@@ -292,6 +447,41 @@ export type Database = {
         }
         Relationships: []
       }
+      payouts: {
+        Row: {
+          affiliate_id: string
+          amount: number
+          created_at: string
+          id: string
+          paid_date: string | null
+          status: string
+        }
+        Insert: {
+          affiliate_id: string
+          amount?: number
+          created_at?: string
+          id?: string
+          paid_date?: string | null
+          status?: string
+        }
+        Update: {
+          affiliate_id?: string
+          amount?: number
+          created_at?: string
+          id?: string
+          paid_date?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payouts_affiliate_id_fkey"
+            columns: ["affiliate_id"]
+            isOneToOne: false
+            referencedRelation: "affiliates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           add_on_storage: number
@@ -312,6 +502,7 @@ export type Database = {
           free_generations_used: number
           id: string
           logo_url: string | null
+          referred_by_affiliate_id: string | null
           registration_number: string | null
           storage_used: number
           subscription_plan: string | null
@@ -343,6 +534,7 @@ export type Database = {
           free_generations_used?: number
           id?: string
           logo_url?: string | null
+          referred_by_affiliate_id?: string | null
           registration_number?: string | null
           storage_used?: number
           subscription_plan?: string | null
@@ -374,6 +566,7 @@ export type Database = {
           free_generations_used?: number
           id?: string
           logo_url?: string | null
+          referred_by_affiliate_id?: string | null
           registration_number?: string | null
           storage_used?: number
           subscription_plan?: string | null
@@ -386,7 +579,15 @@ export type Database = {
           user_id?: string
           vat_number?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "profiles_referred_by_affiliate_id_fkey"
+            columns: ["referred_by_affiliate_id"]
+            isOneToOne: false
+            referencedRelation: "affiliates"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       quotes: {
         Row: {
@@ -444,6 +645,41 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      referrals: {
+        Row: {
+          affiliate_id: string
+          created_at: string
+          id: string
+          is_active: boolean
+          referred_user_id: string
+          subscription_plan: string | null
+        }
+        Insert: {
+          affiliate_id: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          referred_user_id: string
+          subscription_plan?: string | null
+        }
+        Update: {
+          affiliate_id?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          referred_user_id?: string
+          subscription_plan?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "referrals_affiliate_id_fkey"
+            columns: ["affiliate_id"]
+            isOneToOne: false
+            referencedRelation: "affiliates"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       tasks: {
         Row: {
@@ -566,15 +802,39 @@ export type Database = {
           },
         ]
       }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "moderator" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -701,6 +961,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "moderator", "user"],
+    },
   },
 } as const

@@ -292,6 +292,20 @@ const DashboardHome = () => {
       </div>
 
       <div className="py-4 space-y-4">
+        {/* Referral CTA */}
+        <Link to="/dashboard/referrals" className="block">
+          <div className="rounded-xl border border-border bg-card p-4 hover:shadow-md transition-all duration-200 flex items-center gap-4">
+            <div className="h-10 w-10 rounded-lg bg-foreground/10 flex items-center justify-center shrink-0">
+              <span className="text-lg">🎁</span>
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-semibold">Invite businesses & earn monthly income</p>
+              <p className="text-xs text-muted-foreground">Share your referral link and earn recurring commissions with Eden Desk Referrals.</p>
+            </div>
+            <span className="text-xs font-medium text-foreground shrink-0">Learn more →</span>
+          </div>
+        </Link>
+
         {/* Quick Actions */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
           {quickActions.map(({ label, icon: Icon, to, color }) => (
