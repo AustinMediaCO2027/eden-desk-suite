@@ -20,6 +20,11 @@ export interface Affiliate {
   bank_account_number: string | null;
   bank_branch_code: string | null;
   bank_country: string | null;
+  instagram_url: string | null;
+  youtube_url: string | null;
+  tiktok_url: string | null;
+  linkedin_url: string | null;
+  audience_size: string | null;
   total_earnings: number;
   pending_balance: number;
   paid_earnings: number;

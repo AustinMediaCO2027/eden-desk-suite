@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { Check, X, Ban } from "lucide-react";
+import { Check, X, Ban, Users, DollarSign, Clock, TrendingUp } from "lucide-react";
 
 const AdminAffiliatesPage = () => {
   const { isAdmin } = useAffiliate();
@@ -14,59 +14,72 @@ const AdminAffiliatesPage = () => {
   const [applications, setApplications] = useState<any[]>([]);
   const [activeAffiliates, setActiveAffiliates] = useState<any[]>([]);
   const [payouts, setPayouts] = useState<any[]>([]);
+  const [summaryStats, setSummaryStats] = useState({ total: 0, approved: 0, pending: 0, totalCommissions: 0, totalReferrals: 0 });
 
   const fetchAll = async () => {
     const { data: apps } = await supabase
-      .from("affiliates" as any).select("*").eq("status", "pending").order("created_at", { ascending: false });
+      .from("affiliates").select("*").eq("status", "pending").order("created_at", { ascending: false });
     setApplications(apps || []);
 
     const { data: active } = await supabase
-      .from("affiliates" as any).select("*").eq("status", "approved").order("created_at", { ascending: false });
+      .from("affiliates").select("*").eq("status", "approved").order("created_at", { ascending: false });
     setActiveAffiliates(active || []);
 
     const { data: pays } = await supabase
-      .from("payouts" as any).select("*, affiliates(full_name, email)").order("created_at", { ascending: false });
+      .from("payouts").select("*, affiliates(full_name, email)").order("created_at", { ascending: false });
     setPayouts(pays || []);
+
+    // Summary stats
+    const { count: total } = await supabase.from("affiliates").select("*", { count: "exact", head: true });
+    const { count: referralCount } = await supabase.from("referrals").select("*", { count: "exact", head: true });
+    const { data: commData } = await supabase.from("commissions").select("amount");
+    const totalComm = commData?.reduce((s: number, c: any) => s + (c.amount || 0), 0) || 0;
+
+    setSummaryStats({
+      total: total || 0,
+      approved: active?.length || 0,
+      pending: apps?.length || 0,
+      totalCommissions: totalComm,
+      totalReferrals: referralCount || 0,
+    });
   };
 
   useEffect(() => { if (isAdmin) fetchAll(); }, [isAdmin]);
 
   const approve = async (id: string) => {
-    // Generate sequential affiliate code
     const { count } = await supabase
-      .from("affiliates" as any).select("*", { count: "exact", head: true });
+      .from("affiliates").select("*", { count: "exact", head: true });
     const code = `EDEN-AFF-${String((count || 0) + 1).padStart(4, "0")}`;
 
-    await supabase.from("affiliates" as any)
-      .update({ status: "approved", affiliate_code: code })
+    await supabase.from("affiliates")
+      .update({ status: "approved", affiliate_code: code } as any)
       .eq("id", id);
     toast({ title: `Approved with code ${code}` });
     fetchAll();
   };
 
   const reject = async (id: string) => {
-    await supabase.from("affiliates" as any).update({ status: "rejected" }).eq("id", id);
+    await supabase.from("affiliates").update({ status: "rejected" } as any).eq("id", id);
     toast({ title: "Application rejected" });
     fetchAll();
   };
 
   const suspend = async (id: string) => {
-    await supabase.from("affiliates" as any).update({ status: "suspended" }).eq("id", id);
+    await supabase.from("affiliates").update({ status: "suspended" } as any).eq("id", id);
     toast({ title: "Affiliate suspended" });
     fetchAll();
   };
 
   const markPaid = async (payout: any) => {
-    await supabase.from("payouts" as any)
-      .update({ status: "paid", paid_date: new Date().toISOString() })
+    await supabase.from("payouts")
+      .update({ status: "paid", paid_date: new Date().toISOString() } as any)
       .eq("id", payout.id);
 
-    // Update affiliate balances
-    await supabase.from("affiliates" as any)
+    await supabase.from("affiliates")
       .update({
         pending_balance: Math.max(0, (payout.affiliates?.pending_balance || payout.amount) - payout.amount),
         paid_earnings: (payout.affiliates?.paid_earnings || 0) + payout.amount,
-      })
+      } as any)
       .eq("id", payout.affiliate_id);
 
     toast({ title: "Payout marked as paid" });
@@ -77,11 +90,32 @@ const AdminAffiliatesPage = () => {
     return <div className="p-8 text-center text-sm text-muted-foreground">Access denied.</div>;
   }
 
+  const overviewCards = [
+    { label: "Total Affiliates", value: summaryStats.total, icon: Users },
+    { label: "Approved", value: summaryStats.approved, icon: Check },
+    { label: "Pending", value: summaryStats.pending, icon: Clock },
+    { label: "Total Referrals", value: summaryStats.totalReferrals, icon: TrendingUp },
+    { label: "Commissions Owed", value: `R${summaryStats.totalCommissions.toFixed(2)}`, icon: DollarSign },
+  ];
+
   return (
     <div className="space-y-6 max-w-5xl">
       <div>
         <h1 className="text-xl font-bold tracking-tight">Affiliate Management</h1>
         <p className="text-sm text-muted-foreground mt-1">Manage affiliate applications, active affiliates, and payouts.</p>
+      </div>
+
+      {/* Overview Stats */}
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
+        {overviewCards.map(({ label, value, icon: Icon }) => (
+          <Card key={label} className="p-4 border-border bg-card">
+            <div className="flex items-center gap-2 mb-1">
+              <Icon className="h-3.5 w-3.5 text-muted-foreground" />
+              <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">{label}</span>
+            </div>
+            <p className="text-lg font-bold">{value}</p>
+          </Card>
+        ))}
       </div>
 
       <Tabs defaultValue="applications">
@@ -102,6 +136,15 @@ const AdminAffiliatesPage = () => {
                   <p className="text-xs text-muted-foreground">{app.email}</p>
                   <p className="text-xs text-muted-foreground">{app.country} • {app.website || "No website"}</p>
                   <p className="text-xs text-muted-foreground">Method: {app.promotion_method || "—"} • Audience: {app.audience_type || "—"}</p>
+                  {(app.instagram_url || app.youtube_url || app.tiktok_url || app.linkedin_url) && (
+                    <div className="flex gap-2 mt-1">
+                      {app.instagram_url && <a href={app.instagram_url} target="_blank" rel="noopener" className="text-[10px] text-muted-foreground hover:text-foreground">IG</a>}
+                      {app.youtube_url && <a href={app.youtube_url} target="_blank" rel="noopener" className="text-[10px] text-muted-foreground hover:text-foreground">YT</a>}
+                      {app.tiktok_url && <a href={app.tiktok_url} target="_blank" rel="noopener" className="text-[10px] text-muted-foreground hover:text-foreground">TT</a>}
+                      {app.linkedin_url && <a href={app.linkedin_url} target="_blank" rel="noopener" className="text-[10px] text-muted-foreground hover:text-foreground">LI</a>}
+                    </div>
+                  )}
+                  {app.audience_size && <p className="text-[10px] text-muted-foreground">Audience: {app.audience_size}</p>}
                 </div>
                 <div className="flex gap-2 shrink-0">
                   <Button size="sm" onClick={() => approve(app.id)} className="gap-1 h-8">
@@ -131,6 +174,14 @@ const AdminAffiliatesPage = () => {
                   <p className="text-xs text-muted-foreground">
                     Earnings: R{aff.total_earnings?.toFixed(2)} • Pending: R{aff.pending_balance?.toFixed(2)} • Paid: R{aff.paid_earnings?.toFixed(2)}
                   </p>
+                  {(aff.instagram_url || aff.youtube_url || aff.tiktok_url || aff.linkedin_url) && (
+                    <div className="flex gap-2">
+                      {aff.instagram_url && <a href={aff.instagram_url} target="_blank" rel="noopener" className="text-[10px] text-muted-foreground hover:text-foreground">IG</a>}
+                      {aff.youtube_url && <a href={aff.youtube_url} target="_blank" rel="noopener" className="text-[10px] text-muted-foreground hover:text-foreground">YT</a>}
+                      {aff.tiktok_url && <a href={aff.tiktok_url} target="_blank" rel="noopener" className="text-[10px] text-muted-foreground hover:text-foreground">TT</a>}
+                      {aff.linkedin_url && <a href={aff.linkedin_url} target="_blank" rel="noopener" className="text-[10px] text-muted-foreground hover:text-foreground">LI</a>}
+                    </div>
+                  )}
                 </div>
                 <Button size="sm" variant="outline" onClick={() => suspend(aff.id)} className="gap-1 h-8 text-destructive">
                   <Ban className="h-3.5 w-3.5" /> Suspend
