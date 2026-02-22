@@ -49,6 +49,7 @@ export type Database = {
       affiliates: {
         Row: {
           affiliate_code: string | null
+          audience_size: string | null
           audience_type: string | null
           bank_account_holder: string | null
           bank_account_number: string | null
@@ -60,19 +61,24 @@ export type Database = {
           email: string
           full_name: string
           id: string
+          instagram_url: string | null
+          linkedin_url: string | null
           paid_earnings: number
           payment_method: string | null
           paypal_email: string | null
           pending_balance: number
           promotion_method: string | null
           status: string
+          tiktok_url: string | null
           total_earnings: number
           updated_at: string
           user_id: string | null
           website: string | null
+          youtube_url: string | null
         }
         Insert: {
           affiliate_code?: string | null
+          audience_size?: string | null
           audience_type?: string | null
           bank_account_holder?: string | null
           bank_account_number?: string | null
@@ -84,19 +90,24 @@ export type Database = {
           email?: string
           full_name?: string
           id?: string
+          instagram_url?: string | null
+          linkedin_url?: string | null
           paid_earnings?: number
           payment_method?: string | null
           paypal_email?: string | null
           pending_balance?: number
           promotion_method?: string | null
           status?: string
+          tiktok_url?: string | null
           total_earnings?: number
           updated_at?: string
           user_id?: string | null
           website?: string | null
+          youtube_url?: string | null
         }
         Update: {
           affiliate_code?: string | null
+          audience_size?: string | null
           audience_type?: string | null
           bank_account_holder?: string | null
           bank_account_number?: string | null
@@ -108,16 +119,20 @@ export type Database = {
           email?: string
           full_name?: string
           id?: string
+          instagram_url?: string | null
+          linkedin_url?: string | null
           paid_earnings?: number
           payment_method?: string | null
           paypal_email?: string | null
           pending_balance?: number
           promotion_method?: string | null
           status?: string
+          tiktok_url?: string | null
           total_earnings?: number
           updated_at?: string
           user_id?: string | null
           website?: string | null
+          youtube_url?: string | null
         }
         Relationships: []
       }
@@ -649,27 +664,36 @@ export type Database = {
       referrals: {
         Row: {
           affiliate_id: string
+          commission_expiry_date: string | null
+          commissions_paid: number | null
           created_at: string
           id: string
           is_active: boolean
           referred_user_id: string
           subscription_plan: string | null
+          subscription_start_date: string | null
         }
         Insert: {
           affiliate_id: string
+          commission_expiry_date?: string | null
+          commissions_paid?: number | null
           created_at?: string
           id?: string
           is_active?: boolean
           referred_user_id: string
           subscription_plan?: string | null
+          subscription_start_date?: string | null
         }
         Update: {
           affiliate_id?: string
+          commission_expiry_date?: string | null
+          commissions_paid?: number | null
           created_at?: string
           id?: string
           is_active?: boolean
           referred_user_id?: string
           subscription_plan?: string | null
+          subscription_start_date?: string | null
         }
         Relationships: [
           {

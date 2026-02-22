@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import {
   Copy, Users, DollarSign, TrendingUp, MousePointer,
-  CreditCard, Wallet, ExternalLink
+  CreditCard, Wallet, ExternalLink, Instagram, Youtube, Linkedin
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import {
@@ -25,10 +25,14 @@ const ReferralsPage = () => {
   const [referralCount, setReferralCount] = useState(0);
   const [activeCount, setActiveCount] = useState(0);
   const [commissions, setCommissions] = useState<any[]>([]);
+  const [referrals, setReferrals] = useState<any[]>([]);
   const [paymentMethod, setPaymentMethod] = useState("paypal");
   const [payoutForm, setPayoutForm] = useState({
     paypal_email: "", bank_name: "", bank_account_holder: "",
     bank_account_number: "", bank_branch_code: "", bank_country: "South Africa",
+  });
+  const [socialForm, setSocialForm] = useState({
+    instagram_url: "", youtube_url: "", tiktok_url: "", linkedin_url: "", audience_size: "",
   });
 
   const refCode = affiliate?.affiliate_code || (user?.id?.slice(0, 8).toUpperCase() || "");
@@ -38,17 +42,18 @@ const ReferralsPage = () => {
     if (!affiliate) return;
     const load = async () => {
       const { count: clicks } = await supabase
-        .from("affiliate_clicks" as any).select("*", { count: "exact", head: true })
+        .from("affiliate_clicks").select("*", { count: "exact", head: true })
         .eq("affiliate_id", affiliate.id);
       setClickCount(clicks || 0);
 
       const { data: refs } = await supabase
-        .from("referrals" as any).select("*").eq("affiliate_id", affiliate.id);
+        .from("referrals").select("*").eq("affiliate_id", affiliate.id);
       setReferralCount(refs?.length || 0);
       setActiveCount(refs?.filter((r: any) => r.is_active)?.length || 0);
+      setReferrals(refs || []);
 
       const { data: comms } = await supabase
-        .from("commissions" as any).select("*").eq("affiliate_id", affiliate.id)
+        .from("commissions").select("*").eq("affiliate_id", affiliate.id)
         .order("created_at", { ascending: false }).limit(20);
       setCommissions(comms || []);
 
@@ -60,6 +65,13 @@ const ReferralsPage = () => {
         bank_account_number: affiliate.bank_account_number || "",
         bank_branch_code: affiliate.bank_branch_code || "",
         bank_country: affiliate.bank_country || "South Africa",
+      });
+      setSocialForm({
+        instagram_url: (affiliate as any).instagram_url || "",
+        youtube_url: (affiliate as any).youtube_url || "",
+        tiktok_url: (affiliate as any).tiktok_url || "",
+        linkedin_url: (affiliate as any).linkedin_url || "",
+        audience_size: (affiliate as any).audience_size || "",
       });
     };
     load();
@@ -73,6 +85,12 @@ const ReferralsPage = () => {
   const handleSavePayout = async () => {
     await updatePayoutSettings({ payment_method: paymentMethod, ...payoutForm });
     toast({ title: "Payout settings saved" });
+  };
+
+  const handleSaveSocial = async () => {
+    if (!affiliate) return;
+    await supabase.from("affiliates").update(socialForm as any).eq("id", affiliate.id);
+    toast({ title: "Social profiles saved" });
   };
 
   const handleRequestPayout = async () => {
@@ -93,7 +111,7 @@ const ReferralsPage = () => {
     { label: "Total Clicks", value: clickCount, icon: MousePointer },
     { label: "Signups", value: referralCount, icon: Users },
     { label: "Active Subscribers", value: activeCount, icon: TrendingUp },
-    { label: "Monthly Earnings", value: `R${(affiliate?.total_earnings || 0).toFixed(2)}`, icon: DollarSign },
+    { label: "Total Earnings", value: `R${(affiliate?.total_earnings || 0).toFixed(2)}`, icon: DollarSign },
     { label: "Pending Payout", value: `R${(affiliate?.pending_balance || 0).toFixed(2)}`, icon: Wallet },
     { label: "Paid Earnings", value: `R${(affiliate?.paid_earnings || 0).toFixed(2)}`, icon: CreditCard },
   ] : [
@@ -105,11 +123,16 @@ const ReferralsPage = () => {
 
   return (
     <div className="space-y-6 max-w-4xl">
-      <div>
-        <h1 className="text-xl font-bold tracking-tight">Referrals</h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          Share your link and earn recurring commissions on every paying subscriber you refer.
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-xl font-bold tracking-tight">Referrals</h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            Share your link and earn recurring commissions for the first 3 months per subscriber.
+          </p>
+        </div>
+        {isApproved && (
+          <Badge className="bg-foreground text-background text-[10px]">Approved Affiliate</Badge>
+        )}
       </div>
 
       {/* Referral Link */}
@@ -151,6 +174,44 @@ const ReferralsPage = () => {
         ))}
       </div>
 
+      {/* Referred Subscribers (approved only) */}
+      {isApproved && referrals.length > 0 && (
+        <Card className="border-border bg-card overflow-hidden">
+          <div className="px-5 py-3 border-b border-border">
+            <h2 className="text-sm font-semibold">Referred Subscribers</h2>
+          </div>
+          <div className="divide-y divide-border">
+            {referrals.map((r: any) => {
+              const commsPaid = r.commissions_paid || 0;
+              const remaining = Math.max(0, 3 - commsPaid);
+              const expiryDate = r.commission_expiry_date ? new Date(r.commission_expiry_date) : null;
+              const isExpired = expiryDate ? expiryDate < new Date() : false;
+              return (
+                <div key={r.id} className="flex items-center justify-between px-5 py-3">
+                  <div className="space-y-0.5">
+                    <p className="text-xs font-medium">
+                      {r.subscription_plan || "Free"} plan
+                    </p>
+                    <p className="text-[10px] text-muted-foreground">
+                      Signed up {new Date(r.created_at).toLocaleDateString()}
+                      {r.subscription_start_date && ` • Started ${new Date(r.subscription_start_date).toLocaleDateString()}`}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Badge variant={r.is_active ? "default" : "outline"} className="text-[10px]">
+                      {r.is_active ? "Active" : "Cancelled"}
+                    </Badge>
+                    <span className="text-[10px] text-muted-foreground">
+                      {isExpired || commsPaid >= 3 ? "Complete (3/3)" : `${commsPaid}/3 months paid`}
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </Card>
+      )}
+
       {/* Commission History (approved only) */}
       {isApproved && (
         <Card className="border-border bg-card overflow-hidden">
@@ -177,6 +238,36 @@ const ReferralsPage = () => {
               ))}
             </div>
           )}
+        </Card>
+      )}
+
+      {/* Social Media Profiles (approved only) */}
+      {isApproved && (
+        <Card className="p-5 border-border bg-card space-y-4">
+          <h2 className="text-sm font-semibold">Social Media Profiles</h2>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <Label className="text-xs">Instagram URL</Label>
+              <Input value={socialForm.instagram_url} onChange={e => setSocialForm(p => ({ ...p, instagram_url: e.target.value }))} placeholder="https://instagram.com/..." />
+            </div>
+            <div>
+              <Label className="text-xs">YouTube Channel</Label>
+              <Input value={socialForm.youtube_url} onChange={e => setSocialForm(p => ({ ...p, youtube_url: e.target.value }))} placeholder="https://youtube.com/..." />
+            </div>
+            <div>
+              <Label className="text-xs">TikTok Profile</Label>
+              <Input value={socialForm.tiktok_url} onChange={e => setSocialForm(p => ({ ...p, tiktok_url: e.target.value }))} placeholder="https://tiktok.com/@..." />
+            </div>
+            <div>
+              <Label className="text-xs">LinkedIn Profile</Label>
+              <Input value={socialForm.linkedin_url} onChange={e => setSocialForm(p => ({ ...p, linkedin_url: e.target.value }))} placeholder="https://linkedin.com/in/..." />
+            </div>
+            <div>
+              <Label className="text-xs">Audience Size</Label>
+              <Input value={socialForm.audience_size} onChange={e => setSocialForm(p => ({ ...p, audience_size: e.target.value }))} placeholder="e.g. 10k followers" />
+            </div>
+          </div>
+          <Button size="sm" onClick={handleSaveSocial}>Save Social Profiles</Button>
         </Card>
       )}
 
