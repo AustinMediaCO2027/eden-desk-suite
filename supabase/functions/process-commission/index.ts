@@ -12,7 +12,7 @@ const COMMISSION_MAP: Record<string, number> = {
   yearly: 30,
 };
 
-const MAX_COMMISSIONS = 3; // Only first 3 months
+const MAX_COMMISSIONS = 3;
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -20,6 +20,26 @@ Deno.serve(async (req) => {
   }
 
   try {
+    // Auth validation - require authenticated user or admin
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    const anonClient = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_ANON_KEY")!,
+      { global: { headers: { Authorization: authHeader } } }
+    );
+    const token = authHeader.replace("Bearer ", "");
+    const { data: claimsData, error: claimsError } = await anonClient.auth.getClaims(token);
+    if (claimsError || !claimsData?.claims) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     const { user_id, plan } = await req.json();
     if (!user_id || !plan) {
       return new Response(JSON.stringify({ error: "Missing user_id or plan" }), {
@@ -33,6 +53,7 @@ Deno.serve(async (req) => {
       });
     }
 
+    // Use service role for data operations
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
@@ -53,7 +74,6 @@ Deno.serve(async (req) => {
 
     const affiliateId = profile.referred_by_affiliate_id;
 
-    // Check affiliate is approved and not self-referral
     const { data: affiliate } = await supabase
       .from("affiliates")
       .select("id, user_id, pending_balance, total_earnings")
@@ -73,7 +93,6 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Find referral record
     const { data: referral } = await supabase
       .from("referrals")
       .select("id, commissions_paid, commission_expiry_date, subscription_start_date")
@@ -87,7 +106,6 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Check 3-month commission limit
     const commissionsPaid = referral.commissions_paid || 0;
     if (commissionsPaid >= MAX_COMMISSIONS) {
       return new Response(JSON.stringify({ skipped: true, reason: "Commission limit reached (3 months)" }), {
@@ -95,7 +113,6 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Check expiry date
     if (referral.commission_expiry_date && new Date(referral.commission_expiry_date) < new Date()) {
       return new Response(JSON.stringify({ skipped: true, reason: "Commission window expired" }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -105,7 +122,6 @@ Deno.serve(async (req) => {
     const amount = COMMISSION_MAP[plan] || 10;
     const now = new Date();
 
-    // Set subscription_start_date and commission_expiry_date on first commission
     const updateData: Record<string, any> = {
       subscription_plan: plan,
       is_active: true,
@@ -114,7 +130,7 @@ Deno.serve(async (req) => {
 
     if (!referral.subscription_start_date) {
       updateData.subscription_start_date = now.toISOString();
-      const expiry = new Date(now.getTime() + 90 * 24 * 60 * 60 * 1000); // 90 days
+      const expiry = new Date(now.getTime() + 90 * 24 * 60 * 60 * 1000);
       updateData.commission_expiry_date = expiry.toISOString();
     }
 
@@ -123,7 +139,6 @@ Deno.serve(async (req) => {
       .update(updateData)
       .eq("id", referral.id);
 
-    // Create commission
     await supabase.from("commissions").insert({
       affiliate_id: affiliateId,
       referral_id: referral.id,
@@ -133,7 +148,6 @@ Deno.serve(async (req) => {
       status: "pending",
     });
 
-    // Update affiliate balances
     await supabase
       .from("affiliates")
       .update({
