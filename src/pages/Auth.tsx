@@ -26,8 +26,7 @@ const Auth = () => {
   const { user } = useAuth();
 
   if (user) {
-    const dest = redirectTarget === "trial" ? "/dashboard/billing" : "/dashboard";
-    return <Navigate to={dest} replace />;
+    return <Navigate to="/dashboard" replace />;
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -42,12 +41,27 @@ const Auth = () => {
         if (error) throw error;
         toast({ title: "Check your email", description: "Password reset link sent." });
       } else if (mode === "signup") {
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email,
           password,
-          options: { emailRedirectTo: window.location.origin },
+          options: { emailRedirectTo: `${window.location.origin}/dashboard` },
         });
         if (error) throw error;
+        // If auto-confirmed (session exists), activate trial and redirect
+        if (data.session) {
+          // Activate 7-day Silver trial for new user
+          const userId = data.session.user.id;
+          const trialEnd = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
+          await supabase.from("profiles").update({
+            subscription_plan: "trial",
+            trial_ends_at: trialEnd,
+            trial_start_date: new Date().toISOString(),
+            trial_end_date: trialEnd,
+            trial_used: true,
+          }).eq("user_id", userId);
+          // Session is set, Navigate component will redirect to /dashboard
+          return;
+        }
         toast({ title: "Check your email", description: "Confirm your account to get started." });
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });

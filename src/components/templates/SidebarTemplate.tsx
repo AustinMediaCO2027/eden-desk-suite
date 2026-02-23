@@ -189,7 +189,6 @@ const SidebarTemplate = ({
       <div className="mt-auto px-10 pb-8">
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-2">
-            <span className="text-red-500 text-xl">❤️</span>
             <span className="text-lg font-bold text-gray-800">Thank You!</span>
           </div>
           <div className="text-xs flex gap-2" style={{ color: brandColor }}>

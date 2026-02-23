@@ -5,12 +5,12 @@ export const downloadPDF = (elementId: string, filename: string) => {
   if (!element) return;
 
   const opt = {
-    margin: [0.2, 0.3, 0.2, 0.3],
+    margin: [0.4, 0.3, 0.6, 0.3],
     filename: `${filename}.pdf`,
     image: { type: "jpeg", quality: 0.98 },
     html2canvas: { scale: 2, useCORS: true, scrollY: 0, windowWidth: 800 },
-    jsPDF: { unit: "in", format: "a4", orientation: "portrait" },
-    pagebreak: { mode: ["css", "legacy"] },
+    jsPDF: { unit: "in", format: "a4", orientation: "portrait" as const },
+    pagebreak: { mode: ["avoid-all", "css", "legacy"] },
   };
 
   html2pdf().set(opt).from(element).save();
@@ -28,11 +28,11 @@ export const generatePDFBase64 = (elementId: string): Promise<string | null> => 
     }
 
     const opt = {
-      margin: [0.2, 0.3, 0.2, 0.3],
+      margin: [0.4, 0.3, 0.6, 0.3],
       image: { type: "jpeg", quality: 0.98 },
       html2canvas: { scale: 2, useCORS: true, scrollY: 0, windowWidth: 800 },
-      jsPDF: { unit: "in", format: "a4", orientation: "portrait" },
-      pagebreak: { mode: ["css", "legacy"] },
+      jsPDF: { unit: "in", format: "a4", orientation: "portrait" as const },
+      pagebreak: { mode: ["avoid-all", "css", "legacy"] },
     };
 
     html2pdf()
