@@ -119,7 +119,19 @@ const DashboardHome = () => {
 
     fetchData();
 
-    if (profile?.subscription_plan === "trial") {
+    // Auto-activate 7-day Silver trial for new users who haven't used trial yet
+    if (profile && profile.subscription_plan === "free" && !(profile as any).trial_used) {
+      const trialEnd = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
+      supabase.from("profiles").update({
+        subscription_plan: "trial",
+        trial_ends_at: trialEnd,
+        trial_start_date: new Date().toISOString(),
+        trial_end_date: trialEnd,
+        trial_used: true,
+      }).eq("user_id", user.id).then(() => {
+        setShowTrial(true);
+      });
+    } else if (profile?.subscription_plan === "trial") {
       setShowTrial(true);
     }
   }, [user, profile]);
