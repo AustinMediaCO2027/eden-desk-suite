@@ -120,9 +120,9 @@ const ClassicTemplate = ({ type, profile, documentNumber, date, dueDate, clientN
       {/* Footer */}
       <div className="mt-auto">
         <div className="mx-10 border-t border-gray-200 pt-4 pb-4 flex justify-center gap-8 text-xs text-gray-500">
-          {profile?.company_website && <span>🌐 {profile.company_website}</span>}
-          {profile?.company_phone && <span>📞 {profile.company_phone}</span>}
-          {profile?.company_email && <span>✉ {profile.company_email}</span>}
+          {profile?.company_website && <span>{profile.company_website}</span>}
+          {profile?.company_phone && <span>{profile.company_phone}</span>}
+          {profile?.company_email && <span>{profile.company_email}</span>}
         </div>
         <div className="h-2 w-full" style={{ backgroundColor: brandColor }} />
       </div>
