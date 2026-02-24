@@ -7,7 +7,7 @@ const BoldTemplate = ({ type, profile, documentNumber, date, dueDate, clientName
   const title = type === "invoice" ? "INVOICE" : "QUOTE";
 
   return (
-    <div className="bg-white text-black max-w-[210mm] mx-auto" style={{ fontFamily: "'Inter', 'Helvetica Neue', sans-serif", minHeight: "297mm" }}>
+    <div className="bg-white text-black w-[210mm] mx-auto flex flex-col" style={{ fontFamily: "'Inter', 'Helvetica Neue', sans-serif", height: "297mm", overflow: "hidden" }}>
       {/* Full-width colored header */}
       <div className="px-10 pt-10 pb-8" style={{ backgroundColor: brandColor }}>
         <div className="flex justify-between items-start">

@@ -51,6 +51,21 @@ interface DocumentPreviewProps {
   colorOverride?: string;
 }
 
+/**
+ * Print-ready A4 document wrapper.
+ * Screen preview uses the same strict dimensions as PDF export
+ * to guarantee WYSIWYG between preview and download.
+ */
+const A4_CONTAINER_STYLE: React.CSSProperties = {
+  width: "210mm",
+  height: "297mm",
+  maxWidth: "210mm",
+  maxHeight: "297mm",
+  overflow: "hidden",
+  boxSizing: "border-box",
+  backgroundColor: "#ffffff",
+};
+
 const DocumentPreview = ({ id, templateStyle, colorOverride, ...rest }: DocumentPreviewProps) => {
   const style = templateStyle || "classic";
   const props: TemplateProps = { ...rest, colorOverride };
@@ -70,7 +85,11 @@ const DocumentPreview = ({ id, templateStyle, colorOverride, ...rest }: Document
     }
   };
 
-  return <div id={id}>{renderTemplate()}</div>;
+  return (
+    <div id={id} style={A4_CONTAINER_STYLE}>
+      {renderTemplate()}
+    </div>
+  );
 };
 
 export default DocumentPreview;

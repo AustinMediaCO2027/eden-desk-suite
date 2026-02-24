@@ -7,8 +7,8 @@ const ModernTemplate = ({ type, profile, documentNumber, date, dueDate, clientNa
   const title = type === "invoice" ? "INVOICE" : "QUOTE";
 
   return (
-    <div className="bg-white text-black max-w-[210mm] mx-auto" style={{ fontFamily: "'Inter', 'Helvetica Neue', sans-serif", minHeight: "297mm" }}>
-      <div className="p-10">
+    <div className="bg-white text-black w-[210mm] mx-auto flex flex-col" style={{ fontFamily: "'Inter', 'Helvetica Neue', sans-serif", height: "297mm", overflow: "hidden" }}>
+      <div className="p-10 flex-1 flex flex-col">
         {/* Header */}
         <div className="flex justify-between items-start mb-12">
           <div>
