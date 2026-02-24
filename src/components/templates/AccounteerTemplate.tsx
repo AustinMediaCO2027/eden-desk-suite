@@ -21,8 +21,8 @@ const AccounteerTemplate = ({
 
   return (
     <div
-      className="bg-white text-black max-w-[210mm] mx-auto flex flex-col"
-      style={{ fontFamily: "'Inter', 'Helvetica Neue', sans-serif", minHeight: "297mm" }}
+      className="bg-white text-black w-[210mm] mx-auto flex flex-col"
+      style={{ fontFamily: "'Inter', 'Helvetica Neue', sans-serif", height: "297mm", overflow: "hidden" }}
     >
       <div className="px-10 pt-10 pb-6 flex-1">
         {/* Header: Logo left, INVOICE N° right */}

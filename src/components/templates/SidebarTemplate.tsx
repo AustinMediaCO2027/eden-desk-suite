@@ -21,8 +21,8 @@ const SidebarTemplate = ({
 
   return (
     <div
-      className="bg-white text-black max-w-[210mm] mx-auto flex flex-col"
-      style={{ fontFamily: "'Inter', 'Helvetica Neue', sans-serif", minHeight: "297mm" }}
+      className="bg-white text-black w-[210mm] mx-auto flex flex-col"
+      style={{ fontFamily: "'Inter', 'Helvetica Neue', sans-serif", height: "297mm", overflow: "hidden" }}
     >
       {/* Top section: Sidebar + Invoice details */}
       <div className="flex">

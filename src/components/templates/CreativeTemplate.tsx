@@ -7,7 +7,7 @@ const CreativeTemplate = ({ type, profile, documentNumber, date, dueDate, client
   const title = type === "invoice" ? "INVOICE" : "QUOTE";
 
   return (
-    <div className="bg-white text-black max-w-[210mm] mx-auto flex" style={{ fontFamily: "'Inter', 'Helvetica Neue', sans-serif", minHeight: "297mm" }}>
+    <div className="bg-white text-black w-[210mm] mx-auto flex" style={{ fontFamily: "'Inter', 'Helvetica Neue', sans-serif", height: "297mm", overflow: "hidden" }}>
       {/* Side accent bar */}
       <div className="w-[60px] flex-shrink-0 flex flex-col items-center py-10" style={{ backgroundColor: brandColor }}>
         {profile?.logo_url && <img src={profile.logo_url} alt="Logo" className="w-10 h-10 object-contain brightness-0 invert mb-4" />}

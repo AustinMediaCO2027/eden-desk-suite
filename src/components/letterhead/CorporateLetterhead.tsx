@@ -5,7 +5,7 @@ const CorporateLetterhead = ({ profile, recipientName, recipientTitle, recipient
   const brandColor = colorOverride || profile?.brand_color || "#E67E22";
 
   return (
-    <div className="bg-white text-black max-w-[210mm] mx-auto flex flex-col" style={{ fontFamily: "'Inter', 'Helvetica Neue', sans-serif", minHeight: "297mm" }}>
+    <div className="bg-white text-black w-[210mm] mx-auto flex flex-col" style={{ fontFamily: "'Inter', 'Helvetica Neue', sans-serif", height: "297mm", overflow: "hidden" }}>
       {/* Header */}
       <div className="px-10 pt-8 pb-4">
         <div className="flex justify-between items-start">

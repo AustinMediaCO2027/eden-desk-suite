@@ -23,7 +23,7 @@ const ClassicTemplate = ({ type, profile, documentNumber, date, dueDate, clientN
   const title = type === "invoice" ? "INVOICE" : "QUOTE";
 
   return (
-    <div className="bg-white text-black max-w-[210mm] mx-auto" style={{ fontFamily: "'Inter', 'Helvetica Neue', sans-serif", minHeight: "297mm" }}>
+    <div className="bg-white text-black w-[210mm] mx-auto flex flex-col" style={{ fontFamily: "'Inter', 'Helvetica Neue', sans-serif", height: "297mm", overflow: "hidden" }}>
       {/* Top accent bar */}
       <div className="h-2 w-full" style={{ backgroundColor: brandColor }} />
 

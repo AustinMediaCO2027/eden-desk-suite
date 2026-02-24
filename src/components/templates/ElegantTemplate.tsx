@@ -7,7 +7,7 @@ const ElegantTemplate = ({ type, profile, documentNumber, date, dueDate, clientN
   const title = type === "invoice" ? "Invoice" : "Quote";
 
   return (
-    <div className="bg-white text-black max-w-[210mm] mx-auto" style={{ fontFamily: "'Georgia', 'Times New Roman', serif", minHeight: "297mm" }}>
+    <div className="bg-white text-black w-[210mm] mx-auto flex flex-col" style={{ fontFamily: "'Georgia', 'Times New Roman', serif", height: "297mm", overflow: "hidden" }}>
       <div className="h-1 w-full" style={{ backgroundColor: brandColor }} />
       <div className="p-10">
         {/* Header */}
