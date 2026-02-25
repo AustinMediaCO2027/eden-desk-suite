@@ -1,15 +1,47 @@
+import { createElement } from "react";
+import { flushSync } from "react-dom";
+import { createRoot } from "react-dom/client";
 import html2pdf from "html2pdf.js";
-
-/**
- * Print-ready A4 PDF generation.
- * Forces strict A4 dimensions (210mm × 297mm) with overflow hidden
- * to guarantee single-page output. Separates screen layout from print layout.
- */
+import type { Profile } from "@/hooks/useProfile";
+import type { LineItem } from "@/lib/document-utils";
+import type { LetterheadTemplateProps } from "@/components/letterhead/LetterheadTypes";
+import InvoicePrint from "@/components/print/InvoicePrint";
+import QuotePrint from "@/components/print/QuotePrint";
+import LetterheadPrint from "@/components/print/LetterheadPrint";
 
 const A4_WIDTH = "210mm";
 const A4_HEIGHT = "297mm";
 
-const getOpts = (filename: string) => ({
+interface BaseDocumentPayload {
+  profile: Profile | null;
+  documentNumber: string;
+  date: string;
+  clientName: string;
+  clientEmail: string;
+  clientAddress: string;
+  items: LineItem[];
+  taxRate: number;
+  notes: string;
+  status: string;
+  colorOverride?: string;
+}
+
+export interface InvoicePDFPayload extends BaseDocumentPayload {
+  type: "invoice";
+  dueDate?: string;
+}
+
+export interface QuotePDFPayload extends BaseDocumentPayload {
+  type: "quote";
+}
+
+export interface LetterheadPDFPayload extends LetterheadTemplateProps {
+  type: "letterhead";
+}
+
+export type DocumentPDFPayload = InvoicePDFPayload | QuotePDFPayload | LetterheadPDFPayload;
+
+const getOpts = (filename: string): any => ({
   margin: 0,
   filename,
   image: { type: "jpeg", quality: 0.98 },
@@ -32,84 +64,144 @@ const getOpts = (filename: string) => ({
   },
 });
 
-/**
- * Enforce strict A4 print layout on an element before PDF capture.
- * Returns a cleanup function to restore original styles.
- */
-const enforceA4 = (element: HTMLElement) => {
-  const orig = {
-    width: element.style.width,
-    maxWidth: element.style.maxWidth,
-    height: element.style.height,
-    maxHeight: element.style.maxHeight,
-    minHeight: element.style.minHeight,
-    overflow: element.style.overflow,
-    boxSizing: element.style.boxSizing,
-  };
+const waitForNextFrame = () => new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
 
-  element.style.width = A4_WIDTH;
-  element.style.maxWidth = A4_WIDTH;
-  element.style.height = A4_HEIGHT;
-  element.style.maxHeight = A4_HEIGHT;
-  element.style.minHeight = A4_HEIGHT;
-  element.style.overflow = "hidden";
-  element.style.boxSizing = "border-box";
-
-  return () => {
-    element.style.width = orig.width;
-    element.style.maxWidth = orig.maxWidth;
-    element.style.height = orig.height;
-    element.style.maxHeight = orig.maxHeight;
-    element.style.minHeight = orig.minHeight;
-    element.style.overflow = orig.overflow;
-    element.style.boxSizing = orig.boxSizing;
-  };
+const waitForImages = async (container: HTMLElement) => {
+  const images = Array.from(container.querySelectorAll("img"));
+  await Promise.all(
+    images.map(
+      (img) =>
+        new Promise<void>((resolve) => {
+          if (img.complete) {
+            resolve();
+            return;
+          }
+          img.onload = () => resolve();
+          img.onerror = () => resolve();
+        })
+    )
+  );
 };
 
-/**
- * Download a DOM element as a professionally formatted single-page A4 PDF.
- */
-export const downloadPDF = (elementId: string, filename: string) => {
-  const element = document.getElementById(elementId);
-  if (!element) return;
-
-  const restore = enforceA4(element);
-  const opts = getOpts(`${filename}.pdf`);
-
-  html2pdf()
-    .set(opts)
-    .from(element)
-    .save()
-    .then(() => restore())
-    .catch(() => restore());
+const createPrintHost = () => {
+  const host = document.createElement("div");
+  host.style.position = "fixed";
+  host.style.left = "-99999px";
+  host.style.top = "0";
+  host.style.width = A4_WIDTH;
+  host.style.height = A4_HEIGHT;
+  host.style.overflow = "hidden";
+  host.style.pointerEvents = "none";
+  host.style.opacity = "0";
+  host.style.background = "white";
+  host.setAttribute("data-print-host", "true");
+  document.body.appendChild(host);
+  return host;
 };
 
-/**
- * Generate a PDF as base64 string for email attachment.
- */
-export const generatePDFBase64 = (elementId: string): Promise<string | null> => {
-  return new Promise((resolve) => {
-    const element = document.getElementById(elementId);
-    if (!element) {
-      resolve(null);
-      return;
-    }
+const buildNode = (payload: DocumentPDFPayload) => {
+  if (payload.type === "invoice") {
+    return createElement(InvoicePrint, {
+      profile: payload.profile,
+      documentNumber: payload.documentNumber,
+      date: payload.date,
+      dueDate: payload.dueDate,
+      clientName: payload.clientName,
+      clientEmail: payload.clientEmail,
+      clientAddress: payload.clientAddress,
+      items: payload.items,
+      taxRate: payload.taxRate,
+      notes: payload.notes,
+      status: payload.status,
+      colorOverride: payload.colorOverride,
+    });
+  }
 
-    const restore = enforceA4(element);
-    const opts = getOpts("document.pdf");
+  if (payload.type === "quote") {
+    return createElement(QuotePrint, {
+      profile: payload.profile,
+      documentNumber: payload.documentNumber,
+      date: payload.date,
+      clientName: payload.clientName,
+      clientEmail: payload.clientEmail,
+      clientAddress: payload.clientAddress,
+      items: payload.items,
+      taxRate: payload.taxRate,
+      notes: payload.notes,
+      status: payload.status,
+      colorOverride: payload.colorOverride,
+    });
+  }
 
-    html2pdf()
-      .set(opts)
-      .from(element)
-      .outputPdf("datauristring")
-      .then((dataUri: string) => {
-        restore();
-        const base64 = dataUri.split(",")[1];
-        resolve(base64);
-      })
-      .catch(() => {
-        restore();
-        resolve(null);
-      });
+  return createElement(LetterheadPrint, {
+    profile: payload.profile,
+    recipientName: payload.recipientName,
+    recipientTitle: payload.recipientTitle,
+    recipientCompany: payload.recipientCompany,
+    recipientAddress: payload.recipientAddress,
+    recipientPhone: payload.recipientPhone,
+    recipientEmail: payload.recipientEmail,
+    date: payload.date,
+    subject: payload.subject,
+    body: payload.body,
+    closing: payload.closing,
+    senderName: payload.senderName,
+    senderTitle: payload.senderTitle,
+    colorOverride: payload.colorOverride,
+    signatureUrl: payload.signatureUrl,
   });
+};
+
+const renderPrintElement = async (payload: DocumentPDFPayload) => {
+  const host = createPrintHost();
+  const root = createRoot(host);
+
+  flushSync(() => {
+    root.render(buildNode(payload));
+  });
+
+  await waitForNextFrame();
+  await waitForNextFrame();
+  await waitForImages(host);
+
+  const element = host.firstElementChild as HTMLElement | null;
+
+  if (!element) {
+    root.unmount();
+    host.remove();
+    return null;
+  }
+
+  return {
+    element,
+    cleanup: () => {
+      root.unmount();
+      host.remove();
+    },
+  };
+};
+
+export const downloadDocumentPDF = async (payload: DocumentPDFPayload, filename: string) => {
+  const rendered = await renderPrintElement(payload);
+  if (!rendered) return;
+
+  try {
+    await html2pdf().set(getOpts(`${filename}.pdf`)).from(rendered.element).save();
+  } finally {
+    rendered.cleanup();
+  }
+};
+
+export const generateDocumentPDFBase64 = async (payload: DocumentPDFPayload): Promise<string | null> => {
+  const rendered = await renderPrintElement(payload);
+  if (!rendered) return null;
+
+  try {
+    const dataUri = await html2pdf().set(getOpts("document.pdf")).from(rendered.element).outputPdf("datauristring");
+    return dataUri.split(",")[1] || null;
+  } catch {
+    return null;
+  } finally {
+    rendered.cleanup();
+  }
 };

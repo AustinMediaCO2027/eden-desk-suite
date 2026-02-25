@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Plus, Trash2, Download, Save, ArrowLeft, X, Bot, Send, Palette, Mail, FileText } from "lucide-react";
 import LogoUploadWidget from "@/components/dashboard/LogoUploadWidget";
 import SignatureUploadWidget from "@/components/dashboard/SignatureUploadWidget";
-import { downloadPDF } from "@/lib/pdf";
+import { downloadDocumentPDF } from "@/lib/pdf";
 import LetterheadPreview from "@/components/letterhead/LetterheadPreview";
 import { LETTERHEAD_TEMPLATES, LETTERHEAD_COLORS } from "@/components/letterhead/LetterheadTypes";
 import ClientSelector from "@/components/dashboard/ClientSelector";
@@ -219,7 +219,32 @@ const LetterheadPage = () => {
           <Button variant="outline" size="sm" onClick={() => setPreviewing(false)}>
             <ArrowLeft className="h-4 w-4 mr-1" /> Back
           </Button>
-          <Button size="sm" onClick={() => downloadPDF("letterhead-preview", `letterhead-${editing.title}`)}>
+          <Button
+            size="sm"
+            onClick={() =>
+              downloadDocumentPDF(
+                {
+                  type: "letterhead",
+                  profile,
+                  recipientName: editing.recipient_name,
+                  recipientTitle: editing.recipient_title,
+                  recipientCompany: editing.recipient_company,
+                  recipientAddress: editing.recipient_address,
+                  recipientPhone: editing.recipient_phone,
+                  recipientEmail: editing.recipient_email,
+                  date: editing.date,
+                  subject: editing.subject,
+                  body: editing.body,
+                  closing: editing.closing,
+                  senderName: editing.sender_name,
+                  senderTitle: editing.sender_title,
+                  colorOverride: previewColor || undefined,
+                  signatureUrl: editing.signature_url || undefined,
+                },
+                `letterhead-${editing.title}`
+              )
+            }
+          >
             <Download className="h-4 w-4 mr-1" /> Download PDF
           </Button>
           <Button size="sm" variant="outline" onClick={() => { setShowSendForm(!showSendForm); setSendEmail(editing.recipient_email || ""); }}>

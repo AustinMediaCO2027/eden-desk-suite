@@ -1,28 +1,19 @@
 import { Profile } from "@/hooks/useProfile";
 import { LineItem } from "@/lib/document-utils";
-import ClassicTemplate from "./ClassicTemplate";
-import ModernTemplate from "./ModernTemplate";
-import MinimalTemplate from "./MinimalTemplate";
-import BoldTemplate from "./BoldTemplate";
-import ElegantTemplate from "./ElegantTemplate";
-import CreativeTemplate from "./CreativeTemplate";
-import FreelancerTemplate from "./FreelancerTemplate";
-import AccounteerTemplate from "./AccounteerTemplate";
-import CorporateDetailTemplate from "./CorporateDetailTemplate";
-import SidebarTemplate from "./SidebarTemplate";
-import type { TemplateProps } from "./ClassicTemplate";
+import InvoicePrint from "@/components/print/InvoicePrint";
+import QuotePrint from "@/components/print/QuotePrint";
 
 export const TEMPLATE_OPTIONS = [
-  { value: "classic", label: "Classic", desc: "Clean corporate layout with colored header bar and side-by-side details." },
-  { value: "modern", label: "Modern", desc: "Minimalist black & white with bold table headers." },
-  { value: "minimal", label: "Minimal", desc: "Ultra clean. Light typography. Maximum whitespace." },
-  { value: "bold", label: "Bold", desc: "Full-width colored header. High contrast. Strong brand." },
-  { value: "elegant", label: "Elegant", desc: "Serif accents. Refined borders. Sophisticated feel." },
-  { value: "creative", label: "Creative", desc: "Side accent bar. Asymmetric layout. Standout design." },
-  { value: "freelancer", label: "Freelancer", desc: "Clean Mular-style layout. Green accents. Professional freelancer feel." },
-  { value: "accounteer", label: "Accounteer", desc: "Circle bullets. Client details with dates. Account details & note footer." },
-  { value: "corporate-detail", label: "Corporate Detail", desc: "Centered logo. Client info & details boxes. Detailed items with descriptions." },
-  { value: "sidebar", label: "Sidebar", desc: "Vertical colored sidebar. Invoice details prominent. Bill To & Client Details split." },
+  { value: "classic", label: "Classic", desc: "Locked professional print layout" },
+  { value: "modern", label: "Modern", desc: "Locked professional print layout" },
+  { value: "minimal", label: "Minimal", desc: "Locked professional print layout" },
+  { value: "bold", label: "Bold", desc: "Locked professional print layout" },
+  { value: "elegant", label: "Elegant", desc: "Locked professional print layout" },
+  { value: "creative", label: "Creative", desc: "Locked professional print layout" },
+  { value: "freelancer", label: "Freelancer", desc: "Locked professional print layout" },
+  { value: "accounteer", label: "Accounteer", desc: "Locked professional print layout" },
+  { value: "corporate-detail", label: "Corporate Detail", desc: "Locked professional print layout" },
+  { value: "sidebar", label: "Sidebar", desc: "Locked professional print layout" },
 ];
 
 export const COLOR_OPTIONS = [
@@ -51,43 +42,39 @@ interface DocumentPreviewProps {
   colorOverride?: string;
 }
 
-/**
- * Print-ready A4 document wrapper.
- * Screen preview uses the same strict dimensions as PDF export
- * to guarantee WYSIWYG between preview and download.
- */
-const A4_CONTAINER_STYLE: React.CSSProperties = {
-  width: "210mm",
-  height: "297mm",
-  maxWidth: "210mm",
-  maxHeight: "297mm",
-  overflow: "hidden",
-  boxSizing: "border-box",
-  backgroundColor: "#ffffff",
-};
-
-const DocumentPreview = ({ id, templateStyle, colorOverride, ...rest }: DocumentPreviewProps) => {
-  const style = templateStyle || "classic";
-  const props: TemplateProps = { ...rest, colorOverride };
-
-  const renderTemplate = () => {
-    switch (style) {
-      case "modern": return <ModernTemplate {...props} />;
-      case "minimal": return <MinimalTemplate {...props} />;
-      case "bold": return <BoldTemplate {...props} />;
-      case "elegant": return <ElegantTemplate {...props} />;
-      case "creative": return <CreativeTemplate {...props} />;
-      case "freelancer": return <FreelancerTemplate {...props} />;
-      case "accounteer": return <AccounteerTemplate {...props} />;
-      case "corporate-detail": return <CorporateDetailTemplate {...props} />;
-      case "sidebar": return <SidebarTemplate {...props} />;
-      default: return <ClassicTemplate {...props} />;
-    }
-  };
-
+const DocumentPreview = ({ id, templateStyle: _templateStyle, ...props }: DocumentPreviewProps) => {
   return (
-    <div id={id} style={A4_CONTAINER_STYLE}>
-      {renderTemplate()}
+    <div id={id}>
+      {props.type === "invoice" ? (
+        <InvoicePrint
+          profile={props.profile}
+          documentNumber={props.documentNumber}
+          date={props.date}
+          dueDate={props.dueDate}
+          clientName={props.clientName}
+          clientEmail={props.clientEmail}
+          clientAddress={props.clientAddress}
+          items={props.items}
+          taxRate={props.taxRate}
+          notes={props.notes}
+          status={props.status}
+          colorOverride={props.colorOverride}
+        />
+      ) : (
+        <QuotePrint
+          profile={props.profile}
+          documentNumber={props.documentNumber}
+          date={props.date}
+          clientName={props.clientName}
+          clientEmail={props.clientEmail}
+          clientAddress={props.clientAddress}
+          items={props.items}
+          taxRate={props.taxRate}
+          notes={props.notes}
+          status={props.status}
+          colorOverride={props.colorOverride}
+        />
+      )}
     </div>
   );
 };
