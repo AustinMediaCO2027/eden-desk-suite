@@ -7,19 +7,21 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Send, X, Mail, ExternalLink } from "lucide-react";
-import { generatePDFBase64 } from "@/lib/pdf";
+import { generateDocumentPDFBase64 } from "@/lib/pdf";
 
 interface SendDocumentDialogProps {
   type: "invoice" | "quote";
   documentNumber: string;
   clientEmail: string;
   clientName: string;
+  clientAddress: string;
   total: number;
   items: any[];
   taxRate: number;
   date?: string;
   dueDate?: string;
   notes?: string;
+  status?: string;
   profile: Profile | null;
   onClose: () => void;
 }
@@ -29,12 +31,14 @@ const SendDocumentDialog = ({
   documentNumber,
   clientEmail,
   clientName,
+  clientAddress,
   total,
   items,
   taxRate,
   date,
   dueDate,
   notes,
+  status,
   profile,
   onClose,
 }: SendDocumentDialogProps) => {
@@ -57,9 +61,23 @@ const SendDocumentDialog = ({
     setSending(true);
 
     try {
-      // Generate PDF attachment from the preview element
-      const previewId = type === "invoice" ? "invoice-preview" : "quote-preview";
-      const pdfBase64 = await generatePDFBase64(previewId);
+      const basePayload = {
+        profile,
+        documentNumber,
+        date: date || new Date().toISOString().split("T")[0],
+        clientName,
+        clientEmail: email,
+        clientAddress,
+        items,
+        taxRate,
+        notes: notes || "",
+        status: status || (type === "invoice" ? "draft" : "pending"),
+      };
+
+      const pdfBase64 =
+        type === "invoice"
+          ? await generateDocumentPDFBase64({ ...basePayload, type: "invoice", dueDate })
+          : await generateDocumentPDFBase64({ ...basePayload, type: "quote" });
 
       const brandColor = profile?.brand_color || "#2563EB";
       const { subtotal, taxAmount } = (() => {
@@ -147,7 +165,7 @@ const SendDocumentDialog = ({
             <Label>Message</Label>
             <Textarea value={message} onChange={(e) => setMessage(e.target.value)} className="bg-secondary" rows={5} />
           </div>
-          <p className="text-xs text-muted-foreground">📎 PDF will be attached automatically</p>
+          <p className="text-xs text-muted-foreground">PDF will be attached automatically</p>
         </div>
 
         <div className="flex gap-2 pt-2">

@@ -12,7 +12,7 @@ import LogoUploadWidget from "@/components/dashboard/LogoUploadWidget";
 import { LineItem, calculateTotals, emptyLineItem, formatNumberInput, parseNumberInput } from "@/lib/document-utils";
 import CompanyProfileBanner from "@/components/dashboard/CompanyProfileBanner";
 import ClientSelector from "@/components/dashboard/ClientSelector";
-import { downloadPDF } from "@/lib/pdf";
+import { downloadDocumentPDF } from "@/lib/pdf";
 import DocumentPreview, { TEMPLATE_OPTIONS, COLOR_OPTIONS } from "@/components/templates/DocumentPreview";
 import SendDocumentDialog from "@/components/dashboard/SendDocumentDialog";
 import type { Json } from "@/integrations/supabase/types";
@@ -146,7 +146,29 @@ const InvoicesPage = () => {
           <Button variant="outline" size="sm" onClick={() => setPreviewing(false)}>
             <ArrowLeft className="h-4 w-4 mr-1" /> Back
           </Button>
-          <Button size="sm" onClick={() => downloadPDF("invoice-preview", `invoice-${editing.invoice_number}`)}>
+          <Button
+            size="sm"
+            onClick={() =>
+              downloadDocumentPDF(
+                {
+                  type: "invoice",
+                  profile,
+                  documentNumber: editing.invoice_number,
+                  date: editing.date,
+                  dueDate: editing.due_date,
+                  clientName: editing.client_name,
+                  clientEmail: editing.client_email,
+                  clientAddress: editing.client_address,
+                  items: editing.items,
+                  taxRate: editing.tax_rate,
+                  notes: editing.notes,
+                  status: editing.status,
+                  colorOverride: previewColor || undefined,
+                },
+                `invoice-${editing.invoice_number}`
+              )
+            }
+          >
             <Download className="h-4 w-4 mr-1" /> Download PDF
           </Button>
           <Button size="sm" variant="outline" onClick={() => setShowSendDialog(true)}>
@@ -160,12 +182,14 @@ const InvoicesPage = () => {
             documentNumber={editing.invoice_number}
             clientEmail={editing.client_email}
             clientName={editing.client_name}
+            clientAddress={editing.client_address}
             total={calculateTotals(editing.items, editing.tax_rate).total}
             items={editing.items}
             taxRate={editing.tax_rate}
             date={editing.date}
             dueDate={editing.due_date}
             notes={editing.notes}
+            status={editing.status}
             profile={profile}
             onClose={() => setShowSendDialog(false)}
           />
