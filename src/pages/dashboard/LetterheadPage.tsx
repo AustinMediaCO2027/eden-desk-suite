@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Plus, Trash2, Download, Save, ArrowLeft, X, Bot, Send, Palette, Mail, FileText } from "lucide-react";
 import LogoUploadWidget from "@/components/dashboard/LogoUploadWidget";
 import SignatureUploadWidget from "@/components/dashboard/SignatureUploadWidget";
-import { downloadDocumentPDF } from "@/lib/pdf";
+import { downloadDocumentPDF, generateDocumentPDFBase64 } from "@/lib/pdf";
 import LetterheadPreview from "@/components/letterhead/LetterheadPreview";
 import { LETTERHEAD_TEMPLATES, LETTERHEAD_COLORS } from "@/components/letterhead/LetterheadTypes";
 import ClientSelector from "@/components/dashboard/ClientSelector";
@@ -166,6 +166,24 @@ const LetterheadPage = () => {
     setSending(true);
     try {
       const subject = editing.subject || editing.title || "Letterhead";
+      const pdfBase64 = await generateDocumentPDFBase64({
+        type: "letterhead",
+        profile,
+        recipientName: editing.recipient_name,
+        recipientTitle: editing.recipient_title,
+        recipientCompany: editing.recipient_company,
+        recipientAddress: editing.recipient_address,
+        recipientPhone: editing.recipient_phone,
+        recipientEmail: editing.recipient_email,
+        date: editing.date,
+        subject: editing.subject,
+        body: editing.body,
+        closing: editing.closing,
+        senderName: editing.sender_name,
+        senderTitle: editing.sender_title,
+        colorOverride: previewColor || undefined,
+        signatureUrl: editing.signature_url || undefined,
+      });
       const htmlBody = `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <div style="border-bottom: 2px solid #e5e7eb; padding-bottom: 16px; margin-bottom: 24px;">
@@ -196,8 +214,19 @@ const LetterheadPage = () => {
           </div>
         </div>
       `;
+      const attachments = pdfBase64
+        ? [{ filename: `letterhead-${(editing.title || "document").replace(/[^a-z0-9_-]/gi, "-").toLowerCase()}.pdf`, content: pdfBase64 }]
+        : undefined;
+
       const { error } = await supabase.functions.invoke("send-email", {
-        body: { to: sendEmail, subject, html: htmlBody },
+        body: {
+          to: sendEmail,
+          subject,
+          html: htmlBody,
+          from_name: profile?.company_name || "Eden Desk",
+          from_email: profile?.company_email || undefined,
+          attachments,
+        },
       });
       if (error) throw error;
       toast({ title: "Sent!", description: `Letterhead emailed to ${sendEmail}` });
