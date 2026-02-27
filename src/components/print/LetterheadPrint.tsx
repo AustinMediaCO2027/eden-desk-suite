@@ -16,6 +16,23 @@ const PAGE_STYLE: CSSProperties = {
   pageBreakInside: "avoid",
 };
 
+const CONTENT_STYLE: CSSProperties = {
+  height: "257mm",
+  position: "relative",
+  paddingBottom: "24mm",
+  boxSizing: "border-box",
+  overflow: "hidden",
+};
+
+const FOOTER_STYLE: CSSProperties = {
+  position: "absolute",
+  left: "20mm",
+  right: "20mm",
+  bottom: "20mm",
+  borderTop: "0.3mm solid hsl(220 13% 87%)",
+  paddingTop: "3mm",
+};
+
 const TABLE_RESET: CSSProperties = {
   width: "100%",
   borderCollapse: "collapse",
@@ -42,11 +59,11 @@ const LetterheadPrint = ({
   signatureUrl,
 }: LetterheadTemplateProps) => {
   const brandColor = colorOverride || profile?.brand_color || "hsl(206 66% 30%)";
-  const bodyText = safeText(body, 3600);
+  const bodyText = safeText(body, 3200);
 
   return (
     <div style={PAGE_STYLE} data-print-template="letterhead">
-      <div style={{ height: "100%", position: "relative", paddingBottom: "30mm", boxSizing: "border-box" }}>
+      <div style={CONTENT_STYLE}>
         <table style={{ ...TABLE_RESET, marginBottom: "4mm" }}>
           <tbody>
             <tr>
@@ -56,7 +73,7 @@ const LetterheadPrint = ({
                 ) : null}
                 <p style={{ margin: 0, fontSize: "5.2mm", fontWeight: 700 }}>{safeText(profile?.company_name, 90) || "Your Company"}</p>
                 {profile?.company_address ? (
-                  <p style={{ margin: "1.2mm 0 0", fontSize: "3mm", color: "hsl(215 16% 47%)", whiteSpace: "pre-wrap" }}>{safeText(profile.company_address, 150)}</p>
+                  <p style={{ margin: "1.2mm 0 0", fontSize: "3mm", color: "hsl(215 16% 47%)", whiteSpace: "pre-wrap", maxHeight: "15mm", overflow: "hidden" }}>{safeText(profile.company_address, 150)}</p>
                 ) : null}
               </td>
               <td style={{ width: "44%", verticalAlign: "top", textAlign: "right" }}>
@@ -78,7 +95,7 @@ const LetterheadPrint = ({
                 {recipientName ? <p style={{ margin: 0, fontSize: "3.2mm", fontWeight: 600 }}>{safeText(recipientName, 80)}</p> : null}
                 {recipientTitle ? <p style={{ margin: "0.8mm 0 0", fontSize: "3mm", color: "hsl(215 16% 47%)" }}>{safeText(recipientTitle, 80)}</p> : null}
                 {recipientCompany ? <p style={{ margin: "0.8mm 0 0", fontSize: "3mm", color: "hsl(215 16% 47%)" }}>{safeText(recipientCompany, 80)}</p> : null}
-                {recipientAddress ? <p style={{ margin: "0.8mm 0 0", fontSize: "3mm", color: "hsl(215 16% 47%)", whiteSpace: "pre-wrap" }}>{safeText(recipientAddress, 160)}</p> : null}
+                {recipientAddress ? <p style={{ margin: "0.8mm 0 0", fontSize: "3mm", color: "hsl(215 16% 47%)", whiteSpace: "pre-wrap", maxHeight: "12mm", overflow: "hidden" }}>{safeText(recipientAddress, 130)}</p> : null}
                 {recipientPhone ? <p style={{ margin: "0.8mm 0 0", fontSize: "3mm", color: "hsl(215 16% 47%)" }}>{safeText(recipientPhone, 50)}</p> : null}
                 {recipientEmail ? <p style={{ margin: "0.8mm 0 0", fontSize: "3mm", color: "hsl(215 16% 47%)" }}>{safeText(recipientEmail, 70)}</p> : null}
               </td>
@@ -93,7 +110,7 @@ const LetterheadPrint = ({
           <table style={{ ...TABLE_RESET, marginBottom: "4mm" }}>
             <tbody>
               <tr>
-                <td style={{ fontSize: "3.3mm", fontWeight: 700, color: "hsl(215 25% 25%)", paddingBottom: "1.2mm" }}>{safeText(subject, 160)}</td>
+                <td style={{ fontSize: "3.3mm", fontWeight: 700, color: "hsl(215 25% 25%)", paddingBottom: "1.2mm" }}>{safeText(subject, 140)}</td>
               </tr>
             </tbody>
           </table>
@@ -102,7 +119,7 @@ const LetterheadPrint = ({
         <table style={{ ...TABLE_RESET, marginBottom: "4mm" }}>
           <tbody>
             <tr>
-              <td style={{ fontSize: "3.2mm", lineHeight: 1.65, color: "hsl(215 25% 25%)", verticalAlign: "top", whiteSpace: "pre-wrap", height: "138mm", overflow: "hidden" }}>
+              <td style={{ fontSize: "3.2mm", lineHeight: 1.65, color: "hsl(215 25% 25%)", verticalAlign: "top", whiteSpace: "pre-wrap", height: "144mm", overflow: "hidden" }}>
                 {bodyText}
               </td>
             </tr>
@@ -113,7 +130,7 @@ const LetterheadPrint = ({
           <tbody>
             <tr>
               <td style={{ fontSize: "3.2mm", color: "hsl(215 25% 25%)", verticalAlign: "top" }}>
-                <p style={{ margin: 0 }}>{safeText(closing, 80) || "Sincerely,"}</p>
+                <p style={{ margin: 0 }}>{safeText(closing, 60) || "Sincerely,"}</p>
                 {signatureUrl ? <img src={signatureUrl} alt="Signature" style={{ maxHeight: "12mm", maxWidth: "48mm", objectFit: "contain", marginTop: "2mm", marginBottom: "2mm" }} /> : null}
                 <p style={{ margin: "1mm 0 0", fontWeight: 600 }}>{safeText(senderName, 80) || safeText(profile?.company_name, 80)}</p>
                 {senderTitle ? <p style={{ margin: "0.8mm 0 0", fontSize: "3mm", color: "hsl(215 16% 47%)" }}>{safeText(senderTitle, 80)}</p> : null}
@@ -123,13 +140,13 @@ const LetterheadPrint = ({
         </table>
       </div>
 
-      <div style={{ position: "absolute", left: "20mm", right: "20mm", bottom: "20mm", borderTop: "0.3mm solid hsl(220 13% 87%)", paddingTop: "3mm" }}>
+      <div style={FOOTER_STYLE}>
         <table style={TABLE_RESET}>
           <tbody>
             <tr>
-              <td style={{ width: "33.33%", fontSize: "2.8mm", color: "hsl(215 16% 47%)" }}>{safeText(profile?.company_website, 60)}</td>
-              <td style={{ width: "33.33%", fontSize: "2.8mm", color: "hsl(215 16% 47%)", textAlign: "center" }}>{safeText(profile?.company_phone, 40)}</td>
-              <td style={{ width: "33.33%", fontSize: "2.8mm", color: "hsl(215 16% 47%)", textAlign: "right" }}>{safeText(profile?.company_email, 60)}</td>
+              <td style={{ width: "33.33%", fontSize: "2.8mm", color: "hsl(215 16% 47%)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{safeText(profile?.company_website, 60)}</td>
+              <td style={{ width: "33.33%", fontSize: "2.8mm", color: "hsl(215 16% 47%)", textAlign: "center", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{safeText(profile?.company_phone, 40)}</td>
+              <td style={{ width: "33.33%", fontSize: "2.8mm", color: "hsl(215 16% 47%)", textAlign: "right", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{safeText(profile?.company_email, 60)}</td>
             </tr>
           </tbody>
         </table>
@@ -139,3 +156,4 @@ const LetterheadPrint = ({
 };
 
 export default LetterheadPrint;
+

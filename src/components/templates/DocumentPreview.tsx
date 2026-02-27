@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import { Profile } from "@/hooks/useProfile";
 import { LineItem } from "@/lib/document-utils";
 import InvoicePrint from "@/components/print/InvoicePrint";
@@ -24,6 +25,16 @@ export const COLOR_OPTIONS = [
   { value: "#6B4226", label: "Brown" },
 ];
 
+const PREVIEW_CANVAS_STYLE: CSSProperties = {
+  width: "210mm",
+  minWidth: "210mm",
+  height: "297mm",
+  overflow: "hidden",
+  backgroundColor: "white",
+  boxSizing: "border-box",
+  margin: "0 auto",
+};
+
 interface DocumentPreviewProps {
   id: string;
   templateStyle?: string;
@@ -44,7 +55,7 @@ interface DocumentPreviewProps {
 
 const DocumentPreview = ({ id, templateStyle: _templateStyle, ...props }: DocumentPreviewProps) => {
   return (
-    <div id={id}>
+    <div id={id} style={PREVIEW_CANVAS_STYLE}>
       {props.type === "invoice" ? (
         <InvoicePrint
           profile={props.profile}
@@ -80,3 +91,4 @@ const DocumentPreview = ({ id, templateStyle: _templateStyle, ...props }: Docume
 };
 
 export default DocumentPreview;
+

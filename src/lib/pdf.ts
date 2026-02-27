@@ -11,6 +11,10 @@ import LetterheadPrint from "@/components/print/LetterheadPrint";
 
 const A4_WIDTH = "210mm";
 const A4_HEIGHT = "297mm";
+const A4_WIDTH_MM = 210;
+const A4_HEIGHT_MM = 297;
+const A4_WIDTH_PX = 794;
+const A4_HEIGHT_PX = 1123;
 
 interface BaseDocumentPayload {
   profile: Profile | null;
@@ -48,16 +52,22 @@ const getOpts = (filename: string): any => ({
   html2canvas: {
     scale: 2,
     useCORS: true,
+    scrollX: 0,
     scrollY: 0,
-    windowWidth: 794,
+    width: A4_WIDTH_PX,
+    height: A4_HEIGHT_PX,
+    windowWidth: A4_WIDTH_PX,
+    windowHeight: A4_HEIGHT_PX,
+    backgroundColor: "#ffffff",
     logging: false,
     removeContainer: true,
   },
   jsPDF: {
     unit: "mm",
-    format: "a4",
+    format: [A4_WIDTH_MM, A4_HEIGHT_MM],
     orientation: "portrait" as const,
     compress: true,
+    precision: 16,
   },
   pagebreak: {
     mode: [] as string[],
@@ -81,6 +91,55 @@ const waitForImages = async (container: HTMLElement) => {
         })
     )
   );
+};
+
+const enforceA4Canvas = (element: HTMLElement) => {
+  const original = {
+    width: element.style.width,
+    minWidth: element.style.minWidth,
+    maxWidth: element.style.maxWidth,
+    height: element.style.height,
+    minHeight: element.style.minHeight,
+    maxHeight: element.style.maxHeight,
+    overflow: element.style.overflow,
+    margin: element.style.margin,
+    transform: element.style.transform,
+    position: element.style.position,
+    boxSizing: element.style.boxSizing,
+  };
+
+  element.style.width = A4_WIDTH;
+  element.style.minWidth = A4_WIDTH;
+  element.style.maxWidth = A4_WIDTH;
+  element.style.height = A4_HEIGHT;
+  element.style.minHeight = A4_HEIGHT;
+  element.style.maxHeight = A4_HEIGHT;
+  element.style.overflow = "hidden";
+  element.style.margin = "0";
+  element.style.transform = "none";
+  element.style.position = "relative";
+  element.style.boxSizing = "border-box";
+
+  return () => {
+    element.style.width = original.width;
+    element.style.minWidth = original.minWidth;
+    element.style.maxWidth = original.maxWidth;
+    element.style.height = original.height;
+    element.style.minHeight = original.minHeight;
+    element.style.maxHeight = original.maxHeight;
+    element.style.overflow = original.overflow;
+    element.style.margin = original.margin;
+    element.style.transform = original.transform;
+    element.style.position = original.position;
+    element.style.boxSizing = original.boxSizing;
+  };
+};
+
+const trimToSinglePage = (pdf: any) => {
+  const totalPages = Number(pdf?.internal?.getNumberOfPages?.() || 1);
+  for (let page = totalPages; page > 1; page -= 1) {
+    pdf.deletePage(page);
+  }
 };
 
 const createPrintHost = () => {
@@ -172,36 +231,46 @@ const renderPrintElement = async (payload: DocumentPDFPayload) => {
     return null;
   }
 
+  const restoreA4 = enforceA4Canvas(element);
+
   return {
     element,
     cleanup: () => {
+      restoreA4();
       root.unmount();
       host.remove();
     },
   };
 };
 
-export const downloadDocumentPDF = async (payload: DocumentPDFPayload, filename: string) => {
-  const rendered = await renderPrintElement(payload);
-  if (!rendered) return;
-
-  try {
-    await html2pdf().set(getOpts(`${filename}.pdf`)).from(rendered.element).save();
-  } finally {
-    rendered.cleanup();
-  }
-};
-
-export const generateDocumentPDFBase64 = async (payload: DocumentPDFPayload): Promise<string | null> => {
+const buildSinglePagePdf = async (payload: DocumentPDFPayload, filename: string) => {
   const rendered = await renderPrintElement(payload);
   if (!rendered) return null;
 
   try {
-    const dataUri = await html2pdf().set(getOpts("document.pdf")).from(rendered.element).outputPdf("datauristring");
-    return dataUri.split(",")[1] || null;
-  } catch {
-    return null;
+    const worker: any = (html2pdf() as any).set(getOpts(filename)).from(rendered.element).toPdf();
+    const pdf = await worker.get("pdf");
+    trimToSinglePage(pdf);
+    return { worker, pdf };
   } finally {
     rendered.cleanup();
   }
 };
+
+export const downloadDocumentPDF = async (payload: DocumentPDFPayload, filename: string) => {
+  const output = await buildSinglePagePdf(payload, `${filename}.pdf`);
+  if (!output) return;
+  await output.worker.save();
+};
+
+export const generateDocumentPDFBase64 = async (payload: DocumentPDFPayload): Promise<string | null> => {
+  try {
+    const output = await buildSinglePagePdf(payload, "document.pdf");
+    if (!output) return null;
+    const dataUri = output.pdf.output("datauristring") as string;
+    return dataUri.split(",")[1] || null;
+  } catch {
+    return null;
+  }
+};
+
