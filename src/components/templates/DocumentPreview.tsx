@@ -1,4 +1,4 @@
-import type { CSSProperties } from "react";
+import { forwardRef, type CSSProperties } from "react";
 import { Profile } from "@/hooks/useProfile";
 import { LineItem } from "@/lib/document-utils";
 import InvoicePrint from "@/components/print/InvoicePrint";
@@ -53,42 +53,48 @@ interface DocumentPreviewProps {
   colorOverride?: string;
 }
 
-const DocumentPreview = ({ id, templateStyle: _templateStyle, ...props }: DocumentPreviewProps) => {
-  return (
-    <div id={id} style={PREVIEW_CANVAS_STYLE}>
-      {props.type === "invoice" ? (
-        <InvoicePrint
-          profile={props.profile}
-          documentNumber={props.documentNumber}
-          date={props.date}
-          dueDate={props.dueDate}
-          clientName={props.clientName}
-          clientEmail={props.clientEmail}
-          clientAddress={props.clientAddress}
-          items={props.items}
-          taxRate={props.taxRate}
-          notes={props.notes}
-          status={props.status}
-          colorOverride={props.colorOverride}
-        />
-      ) : (
-        <QuotePrint
-          profile={props.profile}
-          documentNumber={props.documentNumber}
-          date={props.date}
-          clientName={props.clientName}
-          clientEmail={props.clientEmail}
-          clientAddress={props.clientAddress}
-          items={props.items}
-          taxRate={props.taxRate}
-          notes={props.notes}
-          status={props.status}
-          colorOverride={props.colorOverride}
-        />
-      )}
-    </div>
-  );
-};
+const DocumentPreview = forwardRef<HTMLDivElement, DocumentPreviewProps>(
+  ({ id, templateStyle = "classic", ...props }, ref) => {
+    return (
+      <div id={id} ref={ref} style={PREVIEW_CANVAS_STYLE}>
+        {props.type === "invoice" ? (
+          <InvoicePrint
+            templateStyle={templateStyle}
+            profile={props.profile}
+            documentNumber={props.documentNumber}
+            date={props.date}
+            dueDate={props.dueDate}
+            clientName={props.clientName}
+            clientEmail={props.clientEmail}
+            clientAddress={props.clientAddress}
+            items={props.items}
+            taxRate={props.taxRate}
+            notes={props.notes}
+            status={props.status}
+            colorOverride={props.colorOverride}
+          />
+        ) : (
+          <QuotePrint
+            templateStyle={templateStyle}
+            profile={props.profile}
+            documentNumber={props.documentNumber}
+            date={props.date}
+            clientName={props.clientName}
+            clientEmail={props.clientEmail}
+            clientAddress={props.clientAddress}
+            items={props.items}
+            taxRate={props.taxRate}
+            notes={props.notes}
+            status={props.status}
+            colorOverride={props.colorOverride}
+          />
+        )}
+      </div>
+    );
+  }
+);
+
+DocumentPreview.displayName = "DocumentPreview";
 
 export default DocumentPreview;
 

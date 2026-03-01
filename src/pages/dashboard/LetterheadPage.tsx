@@ -166,8 +166,10 @@ const LetterheadPage = () => {
     setSending(true);
     try {
       const subject = editing.subject || editing.title || "Letterhead";
+      const activeTemplate = previewTemplate || profile?.template_style || "classic";
       const pdfBase64 = await generateDocumentPDFBase64({
         type: "letterhead",
+        templateStyle: activeTemplate,
         profile,
         recipientName: editing.recipient_name,
         recipientTitle: editing.recipient_title,
@@ -184,6 +186,9 @@ const LetterheadPage = () => {
         colorOverride: previewColor || undefined,
         signatureUrl: editing.signature_url || undefined,
       });
+      if (!pdfBase64) {
+        throw new Error("PDF generation failed. Please try again.");
+      }
       const htmlBody = `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <div style="border-bottom: 2px solid #e5e7eb; padding-bottom: 16px; margin-bottom: 24px;">

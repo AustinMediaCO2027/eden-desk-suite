@@ -178,6 +178,7 @@ const QuotesPage = () => {
                 {
                   type: "quote",
                   profile,
+                  templateStyle: activeTemplate,
                   documentNumber: editing.quote_number,
                   date: editing.date,
                   clientName: editing.client_name,
@@ -203,6 +204,7 @@ const QuotesPage = () => {
         {showSendDialog && (
           <SendDocumentDialog
             type="quote"
+            templateStyle={activeTemplate}
             documentNumber={editing.quote_number}
             clientEmail={editing.client_email}
             clientName={editing.client_name}

@@ -1,4 +1,4 @@
-import type { CSSProperties } from "react";
+import { forwardRef, type CSSProperties } from "react";
 import type { LetterheadTemplateProps } from "./LetterheadTypes";
 import LetterheadPrint from "@/components/print/LetterheadPrint";
 
@@ -17,13 +17,15 @@ const PREVIEW_CANVAS_STYLE: CSSProperties = {
   margin: "0 auto",
 };
 
-const LetterheadPreview = ({ id, templateStyle: _templateStyle, ...rest }: Props) => {
+const LetterheadPreview = forwardRef<HTMLDivElement, Props>(({ id, templateStyle = "classic", ...rest }, ref) => {
   return (
-    <div id={id} style={PREVIEW_CANVAS_STYLE}>
-      <LetterheadPrint {...rest} />
+    <div id={id} ref={ref} style={PREVIEW_CANVAS_STYLE}>
+      <LetterheadPrint templateStyle={templateStyle} {...rest} />
     </div>
   );
-};
+});
+
+LetterheadPreview.displayName = "LetterheadPreview";
 
 export default LetterheadPreview;
 
