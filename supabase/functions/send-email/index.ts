@@ -6,6 +6,26 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
 };
 
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+const sanitizeHeaderValue = (value?: string | null) => (value || "").replace(/[\r\n]/g, "").trim();
+
+const resolveFromAddress = (fromName?: string, fromEmail?: string) => {
+  const senderName = sanitizeHeaderValue(fromName) || "Eden Desk";
+  const preferredFromEmail = sanitizeHeaderValue(fromEmail);
+  const configuredFromEmail = sanitizeHeaderValue(Deno.env.get("RESEND_FROM_EMAIL"));
+
+  if (preferredFromEmail && emailRegex.test(preferredFromEmail)) {
+    return `${senderName} <${preferredFromEmail}>`;
+  }
+
+  if (configuredFromEmail && emailRegex.test(configuredFromEmail)) {
+    return `${senderName} <${configuredFromEmail}>`;
+  }
+
+  return "Eden Desk <onboarding@resend.dev>";
+};
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -52,17 +72,18 @@ serve(async (req) => {
       );
     }
 
-    const defaultFrom = "Eden Desk <onboarding@resend.dev>";
+    const resolvedFrom = resolveFromAddress(from_name, from_email);
     const emailPayload: Record<string, unknown> = {
-      from: defaultFrom,
+      from: resolvedFrom,
       to: [to],
       subject,
       html,
     };
 
-    // Set reply-to so recipients can reply to the actual company email
-    if (from_email) {
-      emailPayload.reply_to = from_email;
+    // Keep reply-to aligned with company email when provided
+    const replyToEmail = sanitizeHeaderValue(from_email);
+    if (replyToEmail && emailRegex.test(replyToEmail)) {
+      emailPayload.reply_to = replyToEmail;
     }
 
     if (attachments && Array.isArray(attachments) && attachments.length > 0) {
@@ -88,8 +109,23 @@ serve(async (req) => {
     const data = await res.json();
 
     if (!res.ok) {
+      const resendMessage =
+        data?.message ||
+        data?.error?.message ||
+        data?.error ||
+        "Failed to send email";
+
+      const isSandboxRestriction =
+        typeof resendMessage === "string" &&
+        resendMessage.includes("You can only send testing emails to your own email address");
+
       return new Response(
-        JSON.stringify({ error: "Failed to send email", details: data }),
+        JSON.stringify({
+          error: "Failed to send email",
+          code: isSandboxRestriction ? "RESEND_SANDBOX_RESTRICTION" : "RESEND_SEND_FAILED",
+          message: resendMessage,
+          details: data,
+        }),
         { status: res.status, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
