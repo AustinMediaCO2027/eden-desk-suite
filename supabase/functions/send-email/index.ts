@@ -20,15 +20,14 @@ const extractConfiguredEmail = (value?: string | null) => {
   return emailRegex.test(candidate) ? candidate : null;
 };
 
-const resolveFromAddress = (fromName?: string) => {
-  const senderName = sanitizeHeaderValue(fromName) || "Eden Desk";
+const resolveFromAddress = () => {
   const configuredFromEmail = extractConfiguredEmail(Deno.env.get("RESEND_FROM_EMAIL"));
 
   if (configuredFromEmail) {
-    return `${senderName} <${configuredFromEmail}>`;
+    return configuredFromEmail;
   }
 
-  return "Eden Desk <onboarding@resend.dev>";
+  return "onboarding@resend.dev";
 };
 
 serve(async (req) => {
@@ -56,7 +55,7 @@ serve(async (req) => {
       });
     }
 
-    const { to, subject, html, from_name, from_email, attachments } = await req.json();
+    const { to, subject, html, from_email, attachments } = await req.json();
 
     if (!to || !subject || !html) {
       return new Response(
@@ -77,7 +76,7 @@ serve(async (req) => {
       );
     }
 
-    const resolvedFrom = resolveFromAddress(from_name);
+    const resolvedFrom = resolveFromAddress();
     const baseEmailPayload: Record<string, unknown> = {
       to: [to],
       subject,
@@ -130,7 +129,7 @@ serve(async (req) => {
       resendMessage.toLowerCase().includes("domain") &&
       resendMessage.toLowerCase().includes("not verified");
 
-    const onboardingSender = "Eden Desk <onboarding@resend.dev>";
+    const onboardingSender = "onboarding@resend.dev";
     const shouldFallbackToOnboarding = isUnverifiedDomainError && activeFrom !== onboardingSender;
 
     if (shouldFallbackToOnboarding) {
