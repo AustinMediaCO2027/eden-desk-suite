@@ -13,7 +13,7 @@ import { LineItem, calculateTotals, emptyLineItem, formatNumberInput, parseNumbe
 import CompanyProfileBanner from "@/components/dashboard/CompanyProfileBanner";
 import ClientSelector from "@/components/dashboard/ClientSelector";
 import { downloadDocumentPDF } from "@/lib/pdf";
-import DocumentPreview, { TEMPLATE_OPTIONS, COLOR_OPTIONS } from "@/components/templates/DocumentPreview";
+import DocumentPreview, { INVOICE_TEMPLATE_OPTIONS, COLOR_OPTIONS } from "@/components/templates/DocumentPreview";
 import SendDocumentDialog from "@/components/dashboard/SendDocumentDialog";
 import type { Json } from "@/integrations/supabase/types";
 import { useGenerationLimit } from "@/hooks/useGenerationLimit";
@@ -139,7 +139,7 @@ const InvoicesPage = () => {
 
   // Preview mode
   if (previewing && editing) {
-    const activeTemplate = previewTemplate || profile?.template_style || "classic";
+    const activeTemplate = previewTemplate || profile?.template_style || "template1";
     return (
       <div className="space-y-4">
         <div className="flex gap-2 flex-wrap items-center">
@@ -204,7 +204,7 @@ const InvoicesPage = () => {
             <p className="text-sm font-medium">Choose Template</p>
           </div>
           <div className="flex gap-2 flex-wrap mb-4">
-            {TEMPLATE_OPTIONS.map(t => (
+            {INVOICE_TEMPLATE_OPTIONS.map(t => (
               <button
                 key={t.value}
                 onClick={() => setPreviewTemplate(t.value)}
