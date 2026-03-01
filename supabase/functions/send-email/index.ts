@@ -21,7 +21,10 @@ const extractConfiguredEmail = (value?: string | null) => {
 };
 
 const resolveFromAddress = () => {
-  const configuredFromEmail = extractConfiguredEmail(Deno.env.get("RESEND_FROM_EMAIL"));
+  const raw = Deno.env.get("RESEND_FROM_EMAIL");
+  console.log("RESEND_FROM_EMAIL raw value:", JSON.stringify(raw));
+  const configuredFromEmail = extractConfiguredEmail(raw);
+  console.log("Extracted email:", JSON.stringify(configuredFromEmail));
 
   if (configuredFromEmail) {
     return configuredFromEmail;
