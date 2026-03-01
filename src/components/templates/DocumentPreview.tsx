@@ -28,6 +28,13 @@ export const COLOR_OPTIONS = [
   { value: "#1E6B4A", label: "Green" },
   { value: "#9B2C5E", label: "Pink" },
   { value: "#6B4226", label: "Brown" },
+  { value: "#1B2A4A", label: "Navy" },
+  { value: "#DC2626", label: "Red" },
+  { value: "#6B1D1D", label: "Maroon" },
+  { value: "#B8860B", label: "Gold" },
+  { value: "#4B5563", label: "Grey" },
+  { value: "#7C3AED", label: "Purple" },
+  { value: "#0891B2", label: "Teal" },
 ];
 
 const PREVIEW_CANVAS_STYLE: CSSProperties = {

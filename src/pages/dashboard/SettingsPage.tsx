@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Save, Upload, Check } from "lucide-react";
 import { INVOICE_TEMPLATE_OPTIONS, QUOTE_TEMPLATE_OPTIONS } from "@/components/templates/DocumentPreview";
 
-const COLOR_PRESETS = ["#2563EB", "#0F172A", "#16A34A", "#DC2626", "#7C3AED", "#0891B2", "#CA8A04", "#E11D48"];
+const COLOR_PRESETS = ["#2563EB", "#0F172A", "#16A34A", "#DC2626", "#7C3AED", "#0891B2", "#CA8A04", "#E11D48", "#1B2A4A", "#6B1D1D", "#B8860B", "#4B5563"];
 
 // Mini visual thumbnail for template picker
 const TemplateThumbnail = ({ style, brandColor }: { style: string; brandColor: string }) => {
