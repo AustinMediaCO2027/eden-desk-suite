@@ -58,8 +58,8 @@ const QuoteTemplate2 = forwardRef<HTMLDivElement, QuoteTemplateProps>(
           {clientEmail && <p style={{ margin: "0.5mm 0 0", fontSize: "2.8mm", color: "#555" }}>{safeText(clientEmail, 60)}</p>}
         </div>
 
-        {/* Blue metadata bar */}
-        <div style={{ backgroundColor: "#eef2ff", borderRadius: "2.5mm", padding: "3.5mm 5mm", marginBottom: "5mm" }}>
+        {/* Metadata bar */}
+        <div style={{ backgroundColor: `${accent}12`, borderRadius: "2.5mm", padding: "3.5mm 5mm", marginBottom: "5mm" }}>
           <table style={T}>
             <tbody>
               <tr>

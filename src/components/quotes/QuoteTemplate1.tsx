@@ -87,9 +87,11 @@ const QuoteTemplate1 = forwardRef<HTMLDivElement, QuoteTemplateProps>(
                   <p style={{ margin: "3mm 0 0", fontSize: "2.6mm", color: "#888" }}>Date</p>
                   <p style={{ margin: "1mm 0 0", fontSize: "3.2mm", fontWeight: 600 }}>{safeText(date, 30)}</p>
                 </td>
-                <td style={{ width: "32%", verticalAlign: "top", textAlign: "right" }}>
-                  <p style={{ margin: 0, fontSize: "2.6mm", color: "#888" }}>Estimated total (ZAR)</p>
-                  <p style={{ margin: "1mm 0 0", fontSize: "6.5mm", fontWeight: 700, color: accent }}>{fmt(total)}</p>
+                <td style={{ width: "32%", verticalAlign: "top" }}>
+                  <div style={{ backgroundColor: accent, borderRadius: "2mm", padding: "3mm 4mm", textAlign: "right" }}>
+                    <p style={{ margin: 0, fontSize: "2.6mm", color: "rgba(255,255,255,0.7)" }}>Estimated total (ZAR)</p>
+                    <p style={{ margin: "1mm 0 0", fontSize: "6.5mm", fontWeight: 700, color: "white" }}>{fmt(total)}</p>
+                  </div>
                 </td>
               </tr>
             </tbody>
@@ -140,8 +142,12 @@ const QuoteTemplate1 = forwardRef<HTMLDivElement, QuoteTemplateProps>(
                       <td style={{ ...R, fontSize: "3mm", padding: "1.5mm 0" }}>{fmt(taxAmount)}</td>
                     </tr>
                     <tr>
-                      <td style={{ fontSize: "3.5mm", fontWeight: 700, padding: "2.5mm 0", borderTop: `0.4mm solid ${accent}` }}>Total</td>
-                      <td style={{ ...R, fontSize: "3.5mm", fontWeight: 700, padding: "2.5mm 0", borderTop: `0.4mm solid ${accent}`, color: accent }}>{fmt(total)}</td>
+                      <td colSpan={2} style={{ padding: "2.5mm 0 0" }}>
+                        <div style={{ backgroundColor: accent, borderRadius: "2mm", padding: "2.5mm 4mm", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                          <span style={{ fontSize: "3.5mm", fontWeight: 700, color: "white" }}>Total</span>
+                          <span style={{ fontSize: "3.5mm", fontWeight: 700, color: "white" }}>{fmt(total)}</span>
+                        </div>
+                      </td>
                     </tr>
                   </tbody>
                 </table>
