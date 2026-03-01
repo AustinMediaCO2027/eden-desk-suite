@@ -53,12 +53,18 @@ serve(async (req) => {
       );
     }
 
+    const defaultFrom = "Eden Desk <onboarding@resend.dev>";
     const emailPayload: Record<string, unknown> = {
-      from: from_email ? `${from_name || "Eden Desk"} <${from_email}>` : "Eden Desk <onboarding@resend.dev>",
+      from: defaultFrom,
       to: [to],
       subject,
       html,
     };
+
+    // Set reply-to so recipients can reply to the actual company email
+    if (from_email) {
+      emailPayload.reply_to = from_email;
+    }
 
     if (attachments && Array.isArray(attachments) && attachments.length > 0) {
       emailPayload.attachments = attachments.map((att: { filename: string; content: string; content_type?: string }) => {
