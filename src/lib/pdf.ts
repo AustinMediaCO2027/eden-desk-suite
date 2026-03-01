@@ -1,7 +1,8 @@
 import { createElement } from "react";
 import { flushSync } from "react-dom";
 import { createRoot } from "react-dom/client";
-import html2pdf from "html2pdf.js";
+import { jsPDF } from "jspdf";
+import html2canvas from "html2canvas";
 import type { Profile } from "@/hooks/useProfile";
 import type { LineItem } from "@/lib/document-utils";
 import type { LetterheadTemplateProps } from "@/components/letterhead/LetterheadTypes";
@@ -46,45 +47,18 @@ export interface LetterheadPDFPayload extends LetterheadTemplateProps {
 
 export type DocumentPDFPayload = InvoicePDFPayload | QuotePDFPayload | LetterheadPDFPayload;
 
-const getOpts = (filename: string, elementWidth: number, elementHeight: number): any => ({
-  margin: [0, 0, 0, 0],
-  filename,
-  image: { type: "png", quality: 1 },
-  html2canvas: {
-    scale: 2,
-    useCORS: true,
-    scrollX: 0,
-    scrollY: 0,
-    width: elementWidth,
-    height: elementHeight,
-    windowWidth: elementWidth,
-    windowHeight: elementHeight,
-    backgroundColor: "#ffffff",
-    logging: false,
-    removeContainer: false,
-  },
-  jsPDF: {
-    unit: "mm",
-    format: [A4_WIDTH_MM, A4_HEIGHT_MM],
-    orientation: "portrait" as const,
-    compress: true,
-  },
-  pagebreak: {
-    mode: [] as string[],
-  },
-});
+const waitForNextFrame = () =>
+  new Promise<void>((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
 
-const waitForNextFrame = () => new Promise<void>((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
 const waitMs = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms));
 
 const waitForFonts = async () => {
   const fonts = (document as Document & { fonts?: FontFaceSet }).fonts;
   if (!fonts?.ready) return;
-
   try {
     await Promise.race([fonts.ready, waitMs(600)]);
   } catch {
-    // Ignore font readiness errors and continue rendering.
+    // Ignore font readiness errors
   }
 };
 
@@ -145,13 +119,6 @@ const enforceA4Canvas = (element: HTMLElement) => {
     element.style.position = original.position;
     element.style.boxSizing = original.boxSizing;
   };
-};
-
-const trimToSinglePage = (pdf: any) => {
-  const totalPages = Number(pdf?.internal?.getNumberOfPages?.() || 1);
-  for (let page = totalPages; page > 1; page -= 1) {
-    pdf.deletePage(page);
-  }
 };
 
 const createPrintHost = () => {
@@ -260,45 +227,35 @@ const renderPrintElement = async (payload: DocumentPDFPayload) => {
   };
 };
 
-const normalizePdfToSinglePageFromCanvas = (pdf: any, canvas: HTMLCanvasElement) => {
-  try {
-    if (typeof pdf?.setPage === "function") {
-      pdf.setPage(1);
-    }
-    if (typeof pdf?.setFillColor === "function" && typeof pdf?.rect === "function") {
-      pdf.setFillColor(255, 255, 255);
-      pdf.rect(0, 0, A4_WIDTH_MM, A4_HEIGHT_MM, "F");
-    }
-
-    if (typeof pdf?.addImage === "function") {
-      pdf.addImage(canvas, "PNG", 0, 0, A4_WIDTH_MM, A4_HEIGHT_MM, undefined, "FAST");
-    }
-  } catch (error) {
-    console.warn("Falling back to default single-page trim due to image overlay error.", error);
-  } finally {
-    trimToSinglePage(pdf);
-  }
-};
-
-const buildSinglePagePdf = async (payload: DocumentPDFPayload, filename: string) => {
+const buildSinglePagePdf = async (payload: DocumentPDFPayload, _filename: string) => {
   const rendered = await renderPrintElement(payload);
   if (!rendered) return null;
 
   try {
-    const worker: any = (html2pdf() as any)
-      .set(getOpts(filename, A4_WIDTH_PX, A4_HEIGHT_PX))
-      .from(rendered.element)
-      .toCanvas();
+    // Capture element to canvas at 2x scale for crisp output
+    const canvas = await html2canvas(rendered.element, {
+      scale: 2,
+      useCORS: true,
+      scrollX: 0,
+      scrollY: 0,
+      width: A4_WIDTH_PX,
+      height: A4_HEIGHT_PX,
+      windowWidth: A4_WIDTH_PX,
+      windowHeight: A4_HEIGHT_PX,
+      backgroundColor: "#ffffff",
+      logging: false,
+    });
 
-    const canvas = (await worker.get("canvas")) as HTMLCanvasElement | null;
-    await worker.toPdf();
-    const pdf = await worker.get("pdf");
+    // Create single-page A4 PDF and place the captured image
+    const pdf = new jsPDF({
+      unit: "mm",
+      format: [A4_WIDTH_MM, A4_HEIGHT_MM],
+      orientation: "portrait",
+      compress: true,
+    });
 
-    if (canvas) {
-      normalizePdfToSinglePageFromCanvas(pdf, canvas);
-    } else {
-      trimToSinglePage(pdf);
-    }
+    const imgData = canvas.toDataURL("image/png");
+    pdf.addImage(imgData, "PNG", 0, 0, A4_WIDTH_MM, A4_HEIGHT_MM, undefined, "FAST");
 
     return pdf;
   } catch (err) {
@@ -326,4 +283,3 @@ export const generateDocumentPDFBase64 = async (payload: DocumentPDFPayload): Pr
     return null;
   }
 };
-
