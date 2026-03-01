@@ -25,6 +25,7 @@ import AdminAffiliatesPage from "./pages/dashboard/AdminAffiliatesPage";
 import AffiliatePage from "./pages/AffiliatePage";
 import NotFound from "./pages/NotFound";
 import SharedFilePage from "./pages/SharedFilePage";
+import ResetPassword from "./pages/ResetPassword";
 import { useReferralTracking } from "./hooks/useReferralTracking";
 
 const queryClient = new QueryClient();
@@ -47,6 +48,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/affiliate" element={<AffiliatePage />} />
             <Route
               path="/dashboard"
