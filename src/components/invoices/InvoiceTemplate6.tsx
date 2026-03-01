@@ -76,10 +76,10 @@ const InvoiceTemplate6 = forwardRef<HTMLDivElement, InvoiceTemplateProps>(
         </div>
 
         {/* Total due highlight */}
-        <div style={{ ...CARD, padding: "3.5mm 6mm", backgroundColor: "#fef2f2" }}>
+        <div style={{ ...CARD, padding: "3.5mm 6mm", backgroundColor: accent }}>
           <p style={{ margin: 0, fontSize: "3.5mm" }}>
-            <span style={{ fontSize: "4.5mm", fontWeight: 700, color: accent }}>{fmt(total)}</span>
-            <span style={{ color: "#555", marginLeft: "2mm" }}>dues on {safeText(dueDate, 30)}</span>
+            <span style={{ fontSize: "4.5mm", fontWeight: 700, color: "white" }}>{fmt(total)}</span>
+            <span style={{ color: "rgba(255,255,255,0.8)", marginLeft: "2mm" }}>dues on {safeText(dueDate, 30)}</span>
           </p>
         </div>
 
