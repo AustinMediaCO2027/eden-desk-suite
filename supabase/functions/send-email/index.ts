@@ -10,11 +10,21 @@ const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const sanitizeHeaderValue = (value?: string | null) => (value || "").replace(/[\r\n]/g, "").trim();
 
+const extractConfiguredEmail = (value?: string | null) => {
+  const sanitized = sanitizeHeaderValue(value);
+  if (!sanitized) return null;
+
+  const bracketMatch = sanitized.match(/<\s*([^<>]+)\s*>/);
+  const candidate = sanitizeHeaderValue(bracketMatch?.[1] || sanitized).toLowerCase();
+
+  return emailRegex.test(candidate) ? candidate : null;
+};
+
 const resolveFromAddress = (fromName?: string) => {
   const senderName = sanitizeHeaderValue(fromName) || "Eden Desk";
-  const configuredFromEmail = sanitizeHeaderValue(Deno.env.get("RESEND_FROM_EMAIL"));
+  const configuredFromEmail = extractConfiguredEmail(Deno.env.get("RESEND_FROM_EMAIL"));
 
-  if (configuredFromEmail && emailRegex.test(configuredFromEmail)) {
+  if (configuredFromEmail) {
     return `${senderName} <${configuredFromEmail}>`;
   }
 
@@ -105,7 +115,8 @@ serve(async (req) => {
       return { res, data };
     };
 
-    let { res, data } = await sendWithFrom(resolvedFrom);
+    let activeFrom = resolvedFrom;
+    let { res, data } = await sendWithFrom(activeFrom);
 
     const resendMessage =
       data?.message ||
@@ -120,10 +131,11 @@ serve(async (req) => {
       resendMessage.toLowerCase().includes("not verified");
 
     const onboardingSender = "Eden Desk <onboarding@resend.dev>";
-    const shouldFallbackToOnboarding = isUnverifiedDomainError && resolvedFrom !== onboardingSender;
+    const shouldFallbackToOnboarding = isUnverifiedDomainError && activeFrom !== onboardingSender;
 
     if (shouldFallbackToOnboarding) {
-      ({ res, data } = await sendWithFrom(onboardingSender));
+      activeFrom = onboardingSender;
+      ({ res, data } = await sendWithFrom(activeFrom));
     }
 
     if (!res.ok) {
@@ -137,11 +149,17 @@ serve(async (req) => {
         typeof finalMessage === "string" &&
         finalMessage.includes("You can only send testing emails to your own email address");
 
+      const sandboxHint = isSandboxRestriction
+        ? "Resend is still in sandbox mode for the sender domain. Verify the sender domain and set RESEND_FROM_EMAIL to a plain address like hello@eden-desk.com (no display name)."
+        : undefined;
+
       return new Response(
         JSON.stringify({
           error: "Failed to send email",
           code: isSandboxRestriction ? "RESEND_SANDBOX_RESTRICTION" : "RESEND_SEND_FAILED",
           message: finalMessage,
+          from: activeFrom,
+          hint: sandboxHint,
           details: data,
         }),
         { status: res.status, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
