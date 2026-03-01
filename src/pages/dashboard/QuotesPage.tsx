@@ -164,7 +164,7 @@ const QuotesPage = () => {
 
 
   if (previewing && editing) {
-    const activeTemplate = previewTemplate || profile?.template_style || "classic";
+    const activeTemplate = previewTemplate || profile?.template_style || "template1";
     return (
       <div className="space-y-4">
         <div className="flex gap-2 flex-wrap items-center">

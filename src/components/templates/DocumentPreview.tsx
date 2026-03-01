@@ -12,16 +12,10 @@ export const INVOICE_TEMPLATE_OPTIONS = [
 ];
 
 export const QUOTE_TEMPLATE_OPTIONS = [
-  { value: "classic", label: "Classic", desc: "Professional print layout" },
-  { value: "modern", label: "Modern", desc: "Professional print layout" },
-  { value: "minimal", label: "Minimal", desc: "Professional print layout" },
-  { value: "bold", label: "Bold", desc: "Professional print layout" },
-  { value: "elegant", label: "Elegant", desc: "Professional print layout" },
-  { value: "creative", label: "Creative", desc: "Professional print layout" },
-  { value: "freelancer", label: "Freelancer", desc: "Professional print layout" },
-  { value: "accounteer", label: "Accounteer", desc: "Professional print layout" },
-  { value: "corporate-detail", label: "Corporate Detail", desc: "Professional print layout" },
-  { value: "sidebar", label: "Sidebar", desc: "Professional print layout" },
+  { value: "template1", label: "Executive", desc: "Warm accent, logo header, billing card" },
+  { value: "template2", label: "Modern", desc: "Blue metadata bar, total highlight" },
+  { value: "template3", label: "Classic", desc: "Sidebar metadata, bordered table card" },
+  { value: "template4", label: "Creative", desc: "Serif title, accent border, editorial" },
 ];
 
 export const TEMPLATE_OPTIONS = INVOICE_TEMPLATE_OPTIONS;
