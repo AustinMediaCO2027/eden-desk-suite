@@ -48,7 +48,7 @@ export interface LetterheadPDFPayload extends LetterheadTemplateProps {
 
 export type DocumentPDFPayload = InvoicePDFPayload | QuotePDFPayload | LetterheadPDFPayload;
 
-const getOpts = (filename: string): any => ({
+const getOpts = (filename: string, elementWidth: number, elementHeight: number): any => ({
   margin: [0, 0, 0, 0],
   filename,
   image: { type: "png", quality: 1 },
@@ -57,10 +57,10 @@ const getOpts = (filename: string): any => ({
     useCORS: true,
     scrollX: 0,
     scrollY: 0,
-    width: A4_WIDTH_PX,
-    height: A4_HEIGHT_PX,
-    windowWidth: A4_WIDTH_PX,
-    windowHeight: A4_HEIGHT_PX,
+    width: elementWidth,
+    height: elementHeight,
+    windowWidth: elementWidth,
+    windowHeight: elementHeight,
     backgroundColor: "#ffffff",
     logging: false,
     removeContainer: false,
@@ -151,9 +151,7 @@ const createPrintHost = () => {
   host.style.left = "0";
   host.style.top = "0";
   host.style.zIndex = "-9999";
-  host.style.width = A4_WIDTH;
-  host.style.height = A4_HEIGHT;
-  host.style.overflow = "hidden";
+  host.style.overflow = "visible";
   host.style.pointerEvents = "none";
   host.style.opacity = "0";
   host.style.background = "white";
@@ -255,8 +253,13 @@ const buildSinglePagePdf = async (payload: DocumentPDFPayload, filename: string)
   if (!rendered) return null;
 
   try {
+    // Measure actual rendered size to avoid cutoff on different DPIs/devices
+    const rect = rendered.element.getBoundingClientRect();
+    const elementWidth = Math.ceil(rect.width);
+    const elementHeight = Math.ceil(rect.height);
+
     const worker: any = (html2pdf() as any)
-      .set(getOpts(filename))
+      .set(getOpts(filename, elementWidth, elementHeight))
       .from(rendered.element)
       .toPdf();
     const pdf = await worker.get("pdf");
