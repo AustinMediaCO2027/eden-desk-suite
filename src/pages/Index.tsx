@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState } from "react";
+import { Navigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
 import { LandingHero } from "@/components/landing/LandingHero";
 import { LogoMarquee } from "@/components/landing/LogoMarquee";
 import { LandingFeatures } from "@/components/landing/LandingFeatures";
@@ -13,6 +15,7 @@ import { useTheme } from "@/hooks/useTheme";
 import edenDarkIcon from "@/assets/eden_dark_icon.png";
 
 const Index = () => {
+  const { user, loading: authLoading } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const prevThemeRef = useRef(theme);
   const [showSplash, setShowSplash] = useState(true);
@@ -30,7 +33,6 @@ const Index = () => {
   useEffect(() => {
     return () => {
       if (prevThemeRef.current === "light") {
-        // Restore light theme when leaving landing page
         const root = document.documentElement;
         root.classList.remove("dark");
         root.classList.add("light");
@@ -43,6 +45,11 @@ const Index = () => {
     const timer = setTimeout(() => setShowSplash(false), 1800);
     return () => clearTimeout(timer);
   }, []);
+
+  // Redirect logged-in users to dashboard (after all hooks)
+  if (!authLoading && user) {
+    return <Navigate to="/dashboard" replace />;
+  }
 
   if (showSplash) {
     return (
