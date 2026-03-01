@@ -20,17 +20,18 @@ const extractConfiguredEmail = (value?: string | null) => {
   return emailRegex.test(candidate) ? candidate : null;
 };
 
-const resolveFromAddress = () => {
-  const raw = Deno.env.get("RESEND_FROM_EMAIL");
-  console.log("RESEND_FROM_EMAIL raw value:", JSON.stringify(raw));
-  const configuredFromEmail = extractConfiguredEmail(raw);
-  console.log("Extracted email:", JSON.stringify(configuredFromEmail));
+const resolveFromAddress = (requestedFromEmail?: string | null) => {
+  const requestLevelFromEmail = extractConfiguredEmail(requestedFromEmail);
+  if (requestLevelFromEmail) {
+    return requestLevelFromEmail;
+  }
 
+  const configuredFromEmail = extractConfiguredEmail(Deno.env.get("RESEND_FROM_EMAIL"));
   if (configuredFromEmail) {
     return configuredFromEmail;
   }
 
-  return "onboarding@resend.dev";
+  return "hello@eden-desk.com";
 };
 
 serve(async (req) => {
@@ -79,7 +80,7 @@ serve(async (req) => {
       );
     }
 
-    const resolvedFrom = resolveFromAddress();
+    const resolvedFrom = resolveFromAddress(from_email);
     const baseEmailPayload: Record<string, unknown> = {
       to: [to],
       subject,
