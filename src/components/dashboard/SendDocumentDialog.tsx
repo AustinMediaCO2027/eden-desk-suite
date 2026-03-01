@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Send, X, Mail, ExternalLink } from "lucide-react";
 import { generateDocumentPDFBase64 } from "@/lib/pdf";
+import { isValidEmailAddress, sanitizeDocumentFilename } from "@/lib/document-export-utils";
 
 interface SendDocumentDialogProps {
   type: "invoice" | "quote";
@@ -55,8 +56,14 @@ const SendDocumentDialog = ({
   );
 
   const handleSendViaEmail = async () => {
-    if (!email) {
+    const trimmedEmail = email.trim();
+    if (!trimmedEmail) {
       toast({ title: "Error", description: "Please enter a recipient email.", variant: "destructive" });
+      return;
+    }
+
+    if (!isValidEmailAddress(trimmedEmail)) {
+      toast({ title: "Invalid email", description: "Please enter a valid recipient email address.", variant: "destructive" });
       return;
     }
 
@@ -69,7 +76,7 @@ const SendDocumentDialog = ({
         documentNumber,
         date: date || new Date().toISOString().split("T")[0],
         clientName,
-        clientEmail: email,
+        clientEmail: trimmedEmail,
         clientAddress,
         items,
         taxRate,
@@ -93,15 +100,14 @@ const SendDocumentDialog = ({
         return { subtotal: sub, taxAmount: tax };
       })();
 
-      const html = buildEmailHtml({ type, documentNumber, clientName, email, date, dueDate, message, items, subtotal, taxAmount, taxRate, total, notes, profile, brandColor });
+      const html = buildEmailHtml({ type, documentNumber, clientName, email: trimmedEmail, date, dueDate, message, items, subtotal, taxAmount, taxRate, total, notes, profile, brandColor });
 
-      const attachments = pdfBase64
-        ? [{ filename: `${type}-${documentNumber}.pdf`, content: pdfBase64 }]
-        : undefined;
+      const attachmentFilename = `${type}-${sanitizeDocumentFilename(documentNumber, "document")}.pdf`;
+      const attachments = [{ filename: attachmentFilename, content: pdfBase64, content_type: "application/pdf" }];
 
       const { data, error } = await supabase.functions.invoke("send-email", {
         body: {
-          to: email,
+          to: trimmedEmail,
           subject,
           html,
           from_name: profile?.company_name || "Eden Desk",
@@ -114,7 +120,7 @@ const SendDocumentDialog = ({
         throw new Error(data?.error || error?.message || "Failed to send");
       }
 
-      toast({ title: "Email sent!", description: `${type === "invoice" ? "Invoice" : "Quote"} sent to ${email}` });
+      toast({ title: "Email sent!", description: `${type === "invoice" ? "Invoice" : "Quote"} sent to ${trimmedEmail}` });
       onClose();
     } catch (err: any) {
       toast({

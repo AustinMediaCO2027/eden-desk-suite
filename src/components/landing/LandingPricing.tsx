@@ -15,7 +15,7 @@ const planData = [
   },
   {
     name: "Silver",
-    zarPrice: 75.99,
+    zarPrice: 85.99,
     period: "/month",
     description: "For growing businesses",
     features: [
