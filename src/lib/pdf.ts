@@ -111,13 +111,13 @@ const enforceA4Canvas = (element: HTMLElement) => {
     boxSizing: element.style.boxSizing,
   };
 
-  element.style.width = A4_WIDTH;
-  element.style.minWidth = A4_WIDTH;
-  element.style.maxWidth = A4_WIDTH;
-  element.style.height = A4_HEIGHT;
-  element.style.minHeight = A4_HEIGHT;
-  element.style.maxHeight = A4_HEIGHT;
-  element.style.overflow = "hidden";
+  element.style.width = `${A4_WIDTH_PX}px`;
+  element.style.minWidth = `${A4_WIDTH_PX}px`;
+  element.style.maxWidth = `${A4_WIDTH_PX}px`;
+  element.style.height = `${A4_HEIGHT_PX}px`;
+  element.style.minHeight = `${A4_HEIGHT_PX}px`;
+  element.style.maxHeight = `${A4_HEIGHT_PX}px`;
+  element.style.overflow = "visible";
   element.style.margin = "0";
   element.style.transform = "none";
   element.style.position = "relative";
@@ -151,6 +151,8 @@ const createPrintHost = () => {
   host.style.left = "0";
   host.style.top = "0";
   host.style.zIndex = "-9999";
+  host.style.width = `${A4_WIDTH_PX}px`;
+  host.style.minHeight = `${A4_HEIGHT_PX}px`;
   host.style.overflow = "visible";
   host.style.pointerEvents = "none";
   host.style.opacity = "0";
@@ -253,13 +255,10 @@ const buildSinglePagePdf = async (payload: DocumentPDFPayload, filename: string)
   if (!rendered) return null;
 
   try {
-    // Measure actual rendered size to avoid cutoff on different DPIs/devices
-    const rect = rendered.element.getBoundingClientRect();
-    const elementWidth = Math.ceil(rect.width);
-    const elementHeight = Math.ceil(rect.height);
-
+    // Use fixed A4 pixel dimensions for consistent capture across all devices/DPIs.
+    // Dynamic getBoundingClientRect() varies with device DPI and can cause cutoff.
     const worker: any = (html2pdf() as any)
-      .set(getOpts(filename, elementWidth, elementHeight))
+      .set(getOpts(filename, A4_WIDTH_PX, A4_HEIGHT_PX))
       .from(rendered.element)
       .toPdf();
     const pdf = await worker.get("pdf");
