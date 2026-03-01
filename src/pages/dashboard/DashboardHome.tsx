@@ -231,7 +231,7 @@ const DashboardHome = () => {
             <h2 className="text-2xl font-bold tracking-tight mb-2">Welcome to Eden Desk</h2>
             <p className="text-sm text-muted-foreground leading-relaxed max-w-xs">
               Your <span className="text-foreground font-medium">7-day free trial</span> of the Silver plan is active.
-              Continue after for just <span className="text-foreground font-medium">R59.99/month</span>.
+              Continue after for just <span className="text-foreground font-medium">R85.99/month</span>.
             </p>
             <div className="w-full mt-6 space-y-2.5">
               {trialFeatures.map((feature) => (

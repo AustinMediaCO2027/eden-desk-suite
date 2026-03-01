@@ -5,6 +5,7 @@ import html2pdf from "html2pdf.js";
 import type { Profile } from "@/hooks/useProfile";
 import type { LineItem } from "@/lib/document-utils";
 import type { LetterheadTemplateProps } from "@/components/letterhead/LetterheadTypes";
+import { sanitizeDocumentFilename, toBase64FromArrayBuffer } from "@/lib/document-export-utils";
 import InvoicePrint from "@/components/print/InvoicePrint";
 import QuotePrint from "@/components/print/QuotePrint";
 import LetterheadPrint from "@/components/print/LetterheadPrint";
@@ -262,17 +263,18 @@ const buildSinglePagePdf = async (payload: DocumentPDFPayload, filename: string)
 };
 
 export const downloadDocumentPDF = async (payload: DocumentPDFPayload, filename: string) => {
-  const pdf = await buildSinglePagePdf(payload, `${filename}.pdf`);
+  const safeFilename = sanitizeDocumentFilename(filename, "document");
+  const pdf = await buildSinglePagePdf(payload, `${safeFilename}.pdf`);
   if (!pdf) return;
-  pdf.save(`${filename}.pdf`);
+  pdf.save(`${safeFilename}.pdf`);
 };
 
 export const generateDocumentPDFBase64 = async (payload: DocumentPDFPayload): Promise<string | null> => {
   try {
     const pdf = await buildSinglePagePdf(payload, "document.pdf");
     if (!pdf) return null;
-    const dataUri = pdf.output("datauristring") as string;
-    return dataUri.split(",")[1] || null;
+    const pdfArrayBuffer = pdf.output("arraybuffer") as ArrayBuffer;
+    return toBase64FromArrayBuffer(pdfArrayBuffer);
   } catch {
     return null;
   }

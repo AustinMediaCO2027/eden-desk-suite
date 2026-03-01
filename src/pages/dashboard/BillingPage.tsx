@@ -21,9 +21,9 @@ const plans = [
   },
   {
     name: "Silver",
-    zarPrice: 75.99,
+    zarPrice: 85.99,
     period: "/month",
-    payfastAmount: "75.99",
+    payfastAmount: "85.99",
     features: ["Send Invoice / Quotes", "Letterheads", "Gemini AI (5/day)", "Email sending"],
     highlighted: true,
     planId: "silver",
