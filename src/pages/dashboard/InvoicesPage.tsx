@@ -153,6 +153,7 @@ const InvoicesPage = () => {
                 {
                   type: "invoice",
                   profile,
+                  templateStyle: activeTemplate,
                   documentNumber: editing.invoice_number,
                   date: editing.date,
                   dueDate: editing.due_date,
@@ -179,6 +180,7 @@ const InvoicesPage = () => {
         {showSendDialog && (
           <SendDocumentDialog
             type="invoice"
+            templateStyle={activeTemplate}
             documentNumber={editing.invoice_number}
             clientEmail={editing.client_email}
             clientName={editing.client_name}

@@ -11,6 +11,7 @@ import { generateDocumentPDFBase64 } from "@/lib/pdf";
 
 interface SendDocumentDialogProps {
   type: "invoice" | "quote";
+  templateStyle?: string;
   documentNumber: string;
   clientEmail: string;
   clientName: string;
@@ -28,6 +29,7 @@ interface SendDocumentDialogProps {
 
 const SendDocumentDialog = ({
   type,
+  templateStyle = "classic",
   documentNumber,
   clientEmail,
   clientName,
@@ -63,6 +65,7 @@ const SendDocumentDialog = ({
     try {
       const basePayload = {
         profile,
+        templateStyle,
         documentNumber,
         date: date || new Date().toISOString().split("T")[0],
         clientName,
@@ -78,6 +81,10 @@ const SendDocumentDialog = ({
         type === "invoice"
           ? await generateDocumentPDFBase64({ ...basePayload, type: "invoice", dueDate })
           : await generateDocumentPDFBase64({ ...basePayload, type: "quote" });
+
+      if (!pdfBase64) {
+        throw new Error("PDF generation failed. Please try again.");
+      }
 
       const brandColor = profile?.brand_color || "#2563EB";
       const { subtotal, taxAmount } = (() => {
@@ -104,15 +111,6 @@ const SendDocumentDialog = ({
       });
 
       if (error || data?.error) {
-        if (data?.error === "Email service not configured") {
-          toast({
-            title: "Email service not configured",
-            description: "Opening your email client instead. Add a RESEND_API_KEY in secrets for direct sending.",
-          });
-          openMailto();
-          onClose();
-          return;
-        }
         throw new Error(data?.error || error?.message || "Failed to send");
       }
 
@@ -120,11 +118,10 @@ const SendDocumentDialog = ({
       onClose();
     } catch (err: any) {
       toast({
-        title: "Couldn't send directly",
-        description: "Opening your email client instead.",
+        title: "Send failed",
+        description: err?.message || "Unable to send email with attachment.",
+        variant: "destructive",
       });
-      openMailto();
-      onClose();
     } finally {
       setSending(false);
     }

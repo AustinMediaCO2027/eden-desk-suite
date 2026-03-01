@@ -28,6 +28,7 @@ interface BaseDocumentPayload {
   notes: string;
   status: string;
   colorOverride?: string;
+  templateStyle?: string;
 }
 
 export interface InvoicePDFPayload extends BaseDocumentPayload {
@@ -41,14 +42,15 @@ export interface QuotePDFPayload extends BaseDocumentPayload {
 
 export interface LetterheadPDFPayload extends LetterheadTemplateProps {
   type: "letterhead";
+  templateStyle?: string;
 }
 
 export type DocumentPDFPayload = InvoicePDFPayload | QuotePDFPayload | LetterheadPDFPayload;
 
 const getOpts = (filename: string): any => ({
-  margin: 0,
+  margin: [0, 0, 0, 0],
   filename,
-  image: { type: "jpeg", quality: 0.98 },
+  image: { type: "png", quality: 1 },
   html2canvas: {
     scale: 2,
     useCORS: true,
@@ -67,7 +69,6 @@ const getOpts = (filename: string): any => ({
     format: [A4_WIDTH_MM, A4_HEIGHT_MM],
     orientation: "portrait" as const,
     compress: true,
-    precision: 16,
   },
   pagebreak: {
     mode: [] as string[],
@@ -162,6 +163,7 @@ const buildNode = (payload: DocumentPDFPayload) => {
   if (payload.type === "invoice") {
     return createElement(InvoicePrint, {
       profile: payload.profile,
+      templateStyle: payload.templateStyle,
       documentNumber: payload.documentNumber,
       date: payload.date,
       dueDate: payload.dueDate,
@@ -179,6 +181,7 @@ const buildNode = (payload: DocumentPDFPayload) => {
   if (payload.type === "quote") {
     return createElement(QuotePrint, {
       profile: payload.profile,
+      templateStyle: payload.templateStyle,
       documentNumber: payload.documentNumber,
       date: payload.date,
       clientName: payload.clientName,
@@ -194,6 +197,7 @@ const buildNode = (payload: DocumentPDFPayload) => {
 
   return createElement(LetterheadPrint, {
     profile: payload.profile,
+    templateStyle: payload.templateStyle,
     recipientName: payload.recipientName,
     recipientTitle: payload.recipientTitle,
     recipientCompany: payload.recipientCompany,
@@ -251,23 +255,23 @@ const buildSinglePagePdf = async (payload: DocumentPDFPayload, filename: string)
     const worker: any = (html2pdf() as any).set(getOpts(filename)).from(rendered.element).toPdf();
     const pdf = await worker.get("pdf");
     trimToSinglePage(pdf);
-    return { worker, pdf };
+    return pdf;
   } finally {
     rendered.cleanup();
   }
 };
 
 export const downloadDocumentPDF = async (payload: DocumentPDFPayload, filename: string) => {
-  const output = await buildSinglePagePdf(payload, `${filename}.pdf`);
-  if (!output) return;
-  await output.worker.save();
+  const pdf = await buildSinglePagePdf(payload, `${filename}.pdf`);
+  if (!pdf) return;
+  pdf.save(`${filename}.pdf`);
 };
 
 export const generateDocumentPDFBase64 = async (payload: DocumentPDFPayload): Promise<string | null> => {
   try {
-    const output = await buildSinglePagePdf(payload, "document.pdf");
-    if (!output) return null;
-    const dataUri = output.pdf.output("datauristring") as string;
+    const pdf = await buildSinglePagePdf(payload, "document.pdf");
+    if (!pdf) return null;
+    const dataUri = pdf.output("datauristring") as string;
     return dataUri.split(",")[1] || null;
   } catch {
     return null;
