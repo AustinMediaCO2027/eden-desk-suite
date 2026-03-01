@@ -117,7 +117,18 @@ const SendDocumentDialog = ({
       });
 
       if (error || data?.error) {
-        throw new Error(data?.error || error?.message || "Failed to send");
+        const detailedMessage =
+          data?.message ||
+          data?.details?.message ||
+          data?.error ||
+          error?.message ||
+          "Failed to send";
+
+        if (data?.code === "RESEND_SANDBOX_RESTRICTION") {
+          throw new Error(`${detailedMessage}. Please verify your sender domain and update RESEND_FROM_EMAIL.`);
+        }
+
+        throw new Error(detailedMessage);
       }
 
       toast({ title: "Email sent!", description: `${type === "invoice" ? "Invoice" : "Quote"} sent to ${trimmedEmail}` });
