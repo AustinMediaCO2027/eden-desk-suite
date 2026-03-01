@@ -11,6 +11,7 @@ export const INVOICE_TEMPLATE_OPTIONS = [
   { value: "template4", label: "Creative", desc: "Serif title, accent border, bank details" },
   { value: "template5", label: "Corporate", desc: "Clean layout, payment instructions footer" },
   { value: "template6", label: "Digital", desc: "Card-based, gray bg, modern feel" },
+  { value: "template7", label: "Natural", desc: "Olive header band, warm bg, signature line" },
 ];
 
 export const QUOTE_TEMPLATE_OPTIONS = [
