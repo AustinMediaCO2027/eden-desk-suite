@@ -88,6 +88,26 @@ const TemplateThumbnail = ({ style, brandColor }: { style: string; brandColor: s
     </div>
   );
 
+  // Natural (template7) – olive header band, warm bg, table with colored header
+  if (style === "template7") return (
+    <div className={base} style={{ backgroundColor: "#fefff8" }}>
+      <div className="h-1 w-full rounded-t-sm" style={{ backgroundColor: brandColor }} />
+      <div className="h-6 w-full flex items-center px-2 gap-1" style={{ backgroundColor: brandColor }}>
+        <div className="w-4 h-3 bg-white/40 rounded-sm" />
+        <div className="w-10 h-1.5 bg-white/70 rounded-sm" />
+        <div className="ml-auto w-12 h-2.5 bg-white/30 rounded-sm" />
+      </div>
+      <div className="flex-1 p-1.5 space-y-1">
+        <div className="flex justify-between"><div className="space-y-0.5"><div className="w-8 h-1 bg-gray-200 rounded-sm" /><div className="w-6 h-1 bg-gray-100 rounded-sm" /></div><div className="space-y-0.5 text-right"><div className="w-10 h-1 bg-gray-200 rounded-sm ml-auto" /><div className="w-8 h-1 bg-gray-100 rounded-sm ml-auto" /></div></div>
+        <div className="w-full h-2 rounded-sm flex items-center px-1 gap-2" style={{ backgroundColor: brandColor }}>
+          <div className="w-8 h-1 bg-white/60 rounded-sm" /><div className="w-4 h-1 bg-white/40 rounded-sm ml-auto" />
+        </div>
+        <div className="space-y-0.5"><div className="w-full h-1 bg-gray-100 rounded-sm" /><div className="w-full h-1 bg-gray-100 rounded-sm" /></div>
+        <div className="ml-auto w-12 h-2 rounded-sm" style={{ backgroundColor: brandColor }} />
+      </div>
+    </div>
+  );
+
   // Classic (default)
   return (
     <div className={base}>

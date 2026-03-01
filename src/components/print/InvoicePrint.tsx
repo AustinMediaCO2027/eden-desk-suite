@@ -7,6 +7,7 @@ import InvoiceTemplate3 from "@/components/invoices/InvoiceTemplate3";
 import InvoiceTemplate4 from "@/components/invoices/InvoiceTemplate4";
 import InvoiceTemplate5 from "@/components/invoices/InvoiceTemplate5";
 import InvoiceTemplate6 from "@/components/invoices/InvoiceTemplate6";
+import InvoiceTemplate7 from "@/components/invoices/InvoiceTemplate7";
 
 interface InvoicePrintProps {
   profile: Profile | null;
@@ -43,6 +44,8 @@ const InvoicePrint = forwardRef<HTMLDivElement, InvoicePrintProps>(
         return <InvoiceTemplate5 {...commonProps} />;
       case "template6":
         return <InvoiceTemplate6 {...commonProps} />;
+      case "template7":
+        return <InvoiceTemplate7 {...commonProps} />;
       case "template1":
       default:
         return <InvoiceTemplate1 {...commonProps} />;
