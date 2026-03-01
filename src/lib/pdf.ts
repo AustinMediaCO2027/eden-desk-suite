@@ -63,7 +63,7 @@ const getOpts = (filename: string): any => ({
     windowHeight: A4_HEIGHT_PX,
     backgroundColor: "#ffffff",
     logging: false,
-    removeContainer: true,
+    removeContainer: false,
   },
   jsPDF: {
     unit: "mm",
@@ -76,7 +76,8 @@ const getOpts = (filename: string): any => ({
   },
 });
 
-const waitForNextFrame = () => new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
+const waitForNextFrame = () => new Promise<void>((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
+const waitMs = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms));
 
 const waitForImages = async (container: HTMLElement) => {
   const images = Array.from(container.querySelectorAll("img"));
@@ -146,9 +147,10 @@ const trimToSinglePage = (pdf: any) => {
 
 const createPrintHost = () => {
   const host = document.createElement("div");
-  host.style.position = "fixed";
-  host.style.left = "-99999px";
+  host.style.position = "absolute";
+  host.style.left = "0";
   host.style.top = "0";
+  host.style.zIndex = "-9999";
   host.style.width = A4_WIDTH;
   host.style.height = A4_HEIGHT;
   host.style.overflow = "hidden";
@@ -225,8 +227,8 @@ const renderPrintElement = async (payload: DocumentPDFPayload) => {
   });
 
   await waitForNextFrame();
-  await waitForNextFrame();
   await waitForImages(host);
+  await waitMs(100);
 
   const element = host.firstElementChild as HTMLElement | null;
 
@@ -253,10 +255,16 @@ const buildSinglePagePdf = async (payload: DocumentPDFPayload, filename: string)
   if (!rendered) return null;
 
   try {
-    const worker: any = (html2pdf() as any).set(getOpts(filename)).from(rendered.element).toPdf();
+    const worker: any = (html2pdf() as any)
+      .set(getOpts(filename))
+      .from(rendered.element)
+      .toPdf();
     const pdf = await worker.get("pdf");
     trimToSinglePage(pdf);
     return pdf;
+  } catch (err) {
+    console.error("PDF generation error:", err);
+    return null;
   } finally {
     rendered.cleanup();
   }

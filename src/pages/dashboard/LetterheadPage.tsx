@@ -220,7 +220,7 @@ const LetterheadPage = () => {
         </div>
       `;
       const attachments = pdfBase64
-        ? [{ filename: `letterhead-${(editing.title || "document").replace(/[^a-z0-9_-]/gi, "-").toLowerCase()}.pdf`, content: pdfBase64 }]
+        ? [{ filename: `letterhead-${(editing.title || "document").replace(/[^a-z0-9_-]/gi, "-").toLowerCase()}.pdf`, content: pdfBase64, content_type: "application/pdf" }]
         : undefined;
 
       const { error } = await supabase.functions.invoke("send-email", {
@@ -260,6 +260,7 @@ const LetterheadPage = () => {
                 {
                   type: "letterhead",
                   profile,
+                  templateStyle: activeTemplate,
                   recipientName: editing.recipient_name,
                   recipientTitle: editing.recipient_title,
                   recipientCompany: editing.recipient_company,
