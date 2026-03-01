@@ -14,7 +14,7 @@ import { LineItem, calculateTotals, emptyLineItem, formatNumberInput, parseNumbe
 import CompanyProfileBanner from "@/components/dashboard/CompanyProfileBanner";
 import ClientSelector from "@/components/dashboard/ClientSelector";
 import { downloadDocumentPDF } from "@/lib/pdf";
-import DocumentPreview, { TEMPLATE_OPTIONS, COLOR_OPTIONS } from "@/components/templates/DocumentPreview";
+import DocumentPreview, { QUOTE_TEMPLATE_OPTIONS, COLOR_OPTIONS } from "@/components/templates/DocumentPreview";
 import SendDocumentDialog from "@/components/dashboard/SendDocumentDialog";
 import type { Json } from "@/integrations/supabase/types";
 import { useGenerationLimit } from "@/hooks/useGenerationLimit";
@@ -226,7 +226,7 @@ const QuotesPage = () => {
             <p className="text-sm font-medium">Choose Template</p>
           </div>
           <div className="flex gap-2 flex-wrap mb-4">
-            {TEMPLATE_OPTIONS.map(t => (
+            {QUOTE_TEMPLATE_OPTIONS.map(t => (
               <button
                 key={t.value}
                 onClick={() => setPreviewTemplate(t.value)}

@@ -4,18 +4,27 @@ import { LineItem } from "@/lib/document-utils";
 import InvoicePrint from "@/components/print/InvoicePrint";
 import QuotePrint from "@/components/print/QuotePrint";
 
-export const TEMPLATE_OPTIONS = [
-  { value: "classic", label: "Classic", desc: "Locked professional print layout" },
-  { value: "modern", label: "Modern", desc: "Locked professional print layout" },
-  { value: "minimal", label: "Minimal", desc: "Locked professional print layout" },
-  { value: "bold", label: "Bold", desc: "Locked professional print layout" },
-  { value: "elegant", label: "Elegant", desc: "Locked professional print layout" },
-  { value: "creative", label: "Creative", desc: "Locked professional print layout" },
-  { value: "freelancer", label: "Freelancer", desc: "Locked professional print layout" },
-  { value: "accounteer", label: "Accounteer", desc: "Locked professional print layout" },
-  { value: "corporate-detail", label: "Corporate Detail", desc: "Locked professional print layout" },
-  { value: "sidebar", label: "Sidebar", desc: "Locked professional print layout" },
+export const INVOICE_TEMPLATE_OPTIONS = [
+  { value: "template1", label: "Executive", desc: "Warm accent, logo header, billing card" },
+  { value: "template2", label: "Modern", desc: "Blue metadata bar, total due highlight" },
+  { value: "template3", label: "Classic", desc: "Sidebar metadata, bordered table card" },
+  { value: "template4", label: "Creative", desc: "Serif title, accent border, bank details" },
 ];
+
+export const QUOTE_TEMPLATE_OPTIONS = [
+  { value: "classic", label: "Classic", desc: "Professional print layout" },
+  { value: "modern", label: "Modern", desc: "Professional print layout" },
+  { value: "minimal", label: "Minimal", desc: "Professional print layout" },
+  { value: "bold", label: "Bold", desc: "Professional print layout" },
+  { value: "elegant", label: "Elegant", desc: "Professional print layout" },
+  { value: "creative", label: "Creative", desc: "Professional print layout" },
+  { value: "freelancer", label: "Freelancer", desc: "Professional print layout" },
+  { value: "accounteer", label: "Accounteer", desc: "Professional print layout" },
+  { value: "corporate-detail", label: "Corporate Detail", desc: "Professional print layout" },
+  { value: "sidebar", label: "Sidebar", desc: "Professional print layout" },
+];
+
+export const TEMPLATE_OPTIONS = INVOICE_TEMPLATE_OPTIONS;
 
 export const COLOR_OPTIONS = [
   { value: "#1A1A1A", label: "Black" },

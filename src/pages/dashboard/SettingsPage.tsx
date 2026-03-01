@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Save, Upload, Check } from "lucide-react";
-import { TEMPLATE_OPTIONS } from "@/components/templates/DocumentPreview";
+import { INVOICE_TEMPLATE_OPTIONS, QUOTE_TEMPLATE_OPTIONS } from "@/components/templates/DocumentPreview";
 
 const COLOR_PRESETS = ["#2563EB", "#0F172A", "#16A34A", "#DC2626", "#7C3AED", "#0891B2", "#CA8A04", "#E11D48"];
 
@@ -262,7 +262,7 @@ const SettingsPage = () => {
         <h3 className="font-semibold">Invoice Template</h3>
         <p className="text-xs text-muted-foreground">Choose a layout style for your invoices and quotes. You can also switch templates when previewing.</p>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-          {TEMPLATE_OPTIONS.map(t => (
+          {INVOICE_TEMPLATE_OPTIONS.map(t => (
             <button
               key={t.value}
               onClick={() => setForm({ ...form, template_style: t.value })}
