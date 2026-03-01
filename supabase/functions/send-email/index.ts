@@ -61,10 +61,14 @@ serve(async (req) => {
     };
 
     if (attachments && Array.isArray(attachments) && attachments.length > 0) {
-      emailPayload.attachments = attachments.map((att: { filename: string; content: string }) => ({
-        filename: att.filename,
-        content: att.content,
-      }));
+      emailPayload.attachments = attachments.map((att: { filename: string; content: string; content_type?: string }) => {
+        const mapped: Record<string, string> = {
+          filename: att.filename,
+          content: att.content,
+        };
+        if (att.content_type) mapped.type = att.content_type;
+        return mapped;
+      });
     }
 
     const res = await fetch("https://api.resend.com/emails", {
