@@ -10,8 +10,6 @@ import InvoicePrint from "@/components/print/InvoicePrint";
 import QuotePrint from "@/components/print/QuotePrint";
 import LetterheadPrint from "@/components/print/LetterheadPrint";
 
-const A4_WIDTH = "210mm";
-const A4_HEIGHT = "297mm";
 const A4_WIDTH_MM = 210;
 const A4_HEIGHT_MM = 297;
 const A4_WIDTH_PX = 794;
@@ -79,6 +77,17 @@ const getOpts = (filename: string, elementWidth: number, elementHeight: number):
 const waitForNextFrame = () => new Promise<void>((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
 const waitMs = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms));
 
+const waitForFonts = async () => {
+  const fonts = (document as Document & { fonts?: FontFaceSet }).fonts;
+  if (!fonts?.ready) return;
+
+  try {
+    await Promise.race([fonts.ready, waitMs(600)]);
+  } catch {
+    // Ignore font readiness errors and continue rendering.
+  }
+};
+
 const waitForImages = async (container: HTMLElement) => {
   const images = Array.from(container.querySelectorAll("img"));
   await Promise.all(
@@ -117,7 +126,7 @@ const enforceA4Canvas = (element: HTMLElement) => {
   element.style.height = `${A4_HEIGHT_PX}px`;
   element.style.minHeight = `${A4_HEIGHT_PX}px`;
   element.style.maxHeight = `${A4_HEIGHT_PX}px`;
-  element.style.overflow = "visible";
+  element.style.overflow = "hidden";
   element.style.margin = "0";
   element.style.transform = "none";
   element.style.position = "relative";
@@ -147,13 +156,13 @@ const trimToSinglePage = (pdf: any) => {
 
 const createPrintHost = () => {
   const host = document.createElement("div");
-  host.style.position = "absolute";
-  host.style.left = "0";
+  host.style.position = "fixed";
+  host.style.left = "-10000px";
   host.style.top = "0";
-  host.style.zIndex = "-9999";
+  host.style.zIndex = "-1";
   host.style.width = `${A4_WIDTH_PX}px`;
-  host.style.minHeight = `${A4_HEIGHT_PX}px`;
-  host.style.overflow = "visible";
+  host.style.height = `${A4_HEIGHT_PX}px`;
+  host.style.overflow = "hidden";
   host.style.pointerEvents = "none";
   host.style.opacity = "0";
   host.style.background = "white";
@@ -228,7 +237,8 @@ const renderPrintElement = async (payload: DocumentPDFPayload) => {
 
   await waitForNextFrame();
   await waitForImages(host);
-  await waitMs(100);
+  await waitForFonts();
+  await waitMs(120);
 
   const element = host.firstElementChild as HTMLElement | null;
 
@@ -250,19 +260,46 @@ const renderPrintElement = async (payload: DocumentPDFPayload) => {
   };
 };
 
+const normalizePdfToSinglePageFromCanvas = (pdf: any, canvas: HTMLCanvasElement) => {
+  try {
+    if (typeof pdf?.setPage === "function") {
+      pdf.setPage(1);
+    }
+    if (typeof pdf?.setFillColor === "function" && typeof pdf?.rect === "function") {
+      pdf.setFillColor(255, 255, 255);
+      pdf.rect(0, 0, A4_WIDTH_MM, A4_HEIGHT_MM, "F");
+    }
+
+    if (typeof pdf?.addImage === "function") {
+      pdf.addImage(canvas, "PNG", 0, 0, A4_WIDTH_MM, A4_HEIGHT_MM, undefined, "FAST");
+    }
+  } catch (error) {
+    console.warn("Falling back to default single-page trim due to image overlay error.", error);
+  } finally {
+    trimToSinglePage(pdf);
+  }
+};
+
 const buildSinglePagePdf = async (payload: DocumentPDFPayload, filename: string) => {
   const rendered = await renderPrintElement(payload);
   if (!rendered) return null;
 
   try {
-    // Use fixed A4 pixel dimensions for consistent capture across all devices/DPIs.
-    // Dynamic getBoundingClientRect() varies with device DPI and can cause cutoff.
     const worker: any = (html2pdf() as any)
       .set(getOpts(filename, A4_WIDTH_PX, A4_HEIGHT_PX))
       .from(rendered.element)
-      .toPdf();
+      .toCanvas();
+
+    const canvas = (await worker.get("canvas")) as HTMLCanvasElement | null;
+    await worker.toPdf();
     const pdf = await worker.get("pdf");
-    trimToSinglePage(pdf);
+
+    if (canvas) {
+      normalizePdfToSinglePageFromCanvas(pdf, canvas);
+    } else {
+      trimToSinglePage(pdf);
+    }
+
     return pdf;
   } catch (err) {
     console.error("PDF generation error:", err);
