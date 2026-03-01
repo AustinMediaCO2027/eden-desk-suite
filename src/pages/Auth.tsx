@@ -77,7 +77,7 @@ const Auth = () => {
   const handleGoogleLogin = async () => {
     try {
       const result = await lovable.auth.signInWithOAuth("google", {
-        redirect_uri: window.location.origin,
+        redirect_uri: `${window.location.origin}/dashboard`,
         extraParams: { prompt: "select_account" },
       });
       if (result?.error) {
