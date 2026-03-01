@@ -10,14 +10,9 @@ const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const sanitizeHeaderValue = (value?: string | null) => (value || "").replace(/[\r\n]/g, "").trim();
 
-const resolveFromAddress = (fromName?: string, fromEmail?: string) => {
+const resolveFromAddress = (fromName?: string) => {
   const senderName = sanitizeHeaderValue(fromName) || "Eden Desk";
-  const preferredFromEmail = sanitizeHeaderValue(fromEmail);
   const configuredFromEmail = sanitizeHeaderValue(Deno.env.get("RESEND_FROM_EMAIL"));
-
-  if (preferredFromEmail && emailRegex.test(preferredFromEmail)) {
-    return `${senderName} <${preferredFromEmail}>`;
-  }
 
   if (configuredFromEmail && emailRegex.test(configuredFromEmail)) {
     return `${senderName} <${configuredFromEmail}>`;
@@ -72,9 +67,8 @@ serve(async (req) => {
       );
     }
 
-    const resolvedFrom = resolveFromAddress(from_name, from_email);
-    const emailPayload: Record<string, unknown> = {
-      from: resolvedFrom,
+    const resolvedFrom = resolveFromAddress(from_name);
+    const baseEmailPayload: Record<string, unknown> = {
       to: [to],
       subject,
       html,
@@ -83,11 +77,11 @@ serve(async (req) => {
     // Keep reply-to aligned with company email when provided
     const replyToEmail = sanitizeHeaderValue(from_email);
     if (replyToEmail && emailRegex.test(replyToEmail)) {
-      emailPayload.reply_to = replyToEmail;
+      baseEmailPayload.reply_to = replyToEmail;
     }
 
     if (attachments && Array.isArray(attachments) && attachments.length > 0) {
-      emailPayload.attachments = attachments.map((att: { filename: string; content: string; content_type?: string }) => {
+      baseEmailPayload.attachments = attachments.map((att: { filename: string; content: string; content_type?: string }) => {
         const mapped: Record<string, string> = {
           filename: att.filename,
           content: att.content,
@@ -97,33 +91,57 @@ serve(async (req) => {
       });
     }
 
-    const res = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${RESEND_API_KEY}`,
-      },
-      body: JSON.stringify(emailPayload),
-    });
+    const sendWithFrom = async (fromValue: string) => {
+      const res = await fetch("https://api.resend.com/emails", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${RESEND_API_KEY}`,
+        },
+        body: JSON.stringify({ ...baseEmailPayload, from: fromValue }),
+      });
 
-    const data = await res.json();
+      const data = await res.json();
+      return { res, data };
+    };
+
+    let { res, data } = await sendWithFrom(resolvedFrom);
+
+    const resendMessage =
+      data?.message ||
+      data?.error?.message ||
+      data?.error ||
+      "Failed to send email";
+
+    const isUnverifiedDomainError =
+      !res.ok &&
+      typeof resendMessage === "string" &&
+      resendMessage.toLowerCase().includes("domain") &&
+      resendMessage.toLowerCase().includes("not verified");
+
+    const onboardingSender = "Eden Desk <onboarding@resend.dev>";
+    const shouldFallbackToOnboarding = isUnverifiedDomainError && resolvedFrom !== onboardingSender;
+
+    if (shouldFallbackToOnboarding) {
+      ({ res, data } = await sendWithFrom(onboardingSender));
+    }
 
     if (!res.ok) {
-      const resendMessage =
+      const finalMessage =
         data?.message ||
         data?.error?.message ||
         data?.error ||
         "Failed to send email";
 
       const isSandboxRestriction =
-        typeof resendMessage === "string" &&
-        resendMessage.includes("You can only send testing emails to your own email address");
+        typeof finalMessage === "string" &&
+        finalMessage.includes("You can only send testing emails to your own email address");
 
       return new Response(
         JSON.stringify({
           error: "Failed to send email",
           code: isSandboxRestriction ? "RESEND_SANDBOX_RESTRICTION" : "RESEND_SEND_FAILED",
-          message: resendMessage,
+          message: finalMessage,
           details: data,
         }),
         { status: res.status, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
