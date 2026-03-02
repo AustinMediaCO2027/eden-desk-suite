@@ -15,3 +15,7 @@ project_id = "ezbgywgmcowmhwmyrldm"
     verify_jwt = false
   [functions.track-referral-click]
     verify_jwt = false
+  [functions.payfast-itn]
+    verify_jwt = false
+  [functions.email-diagnostics]
+    verify_jwt = false
