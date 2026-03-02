@@ -20,18 +20,27 @@ const extractConfiguredEmail = (value?: string | null) => {
   return emailRegex.test(candidate) ? candidate : null;
 };
 
+const extractDomain = (email?: string | null) => {
+  const value = extractConfiguredEmail(email);
+  if (!value) return null;
+  return value.split("@")[1] || null;
+};
+
 const resolveFromAddress = (requestedFromEmail?: string | null) => {
-  const requestLevelFromEmail = extractConfiguredEmail(requestedFromEmail);
-  if (requestLevelFromEmail) {
-    return requestLevelFromEmail;
+  const configuredFromEmail = extractConfiguredEmail(Deno.env.get("RESEND_FROM_EMAIL")) || "hello@eden-desk.com";
+  const requestedEmail = extractConfiguredEmail(requestedFromEmail);
+
+  // Only allow request-level sender when it matches the configured sender domain.
+  // This prevents profile company emails on unrelated domains from breaking delivery.
+  if (requestedEmail) {
+    const configuredDomain = extractDomain(configuredFromEmail);
+    const requestedDomain = extractDomain(requestedEmail);
+    if (configuredDomain && requestedDomain && configuredDomain === requestedDomain) {
+      return requestedEmail;
+    }
   }
 
-  const configuredFromEmail = extractConfiguredEmail(Deno.env.get("RESEND_FROM_EMAIL"));
-  if (configuredFromEmail) {
-    return configuredFromEmail;
-  }
-
-  return "hello@eden-desk.com";
+  return configuredFromEmail;
 };
 
 serve(async (req) => {
@@ -149,7 +158,7 @@ serve(async (req) => {
             code: "RESEND_DOMAIN_NOT_VERIFIED",
             message: `Your sender domain is not verified yet. Please verify the domain for ${resolvedFrom} before sending to external recipients.`,
             from: activeFrom,
-            hint: "Finish DNS verification for your sender domain, then keep RESEND_FROM_EMAIL as a plain address like hello@eden-desk.com.",
+            hint: "Your app is currently sending from the configured sender domain only. Verify that domain's DNS (SPF, DKIM, MX) and keep RESEND_FROM_EMAIL on that same domain.",
             details: data,
           }),
           { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
