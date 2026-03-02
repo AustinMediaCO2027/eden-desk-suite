@@ -5,6 +5,7 @@ import QuoteTemplate1 from "@/components/quotes/QuoteTemplate1";
 import QuoteTemplate2 from "@/components/quotes/QuoteTemplate2";
 import QuoteTemplate3 from "@/components/quotes/QuoteTemplate3";
 import QuoteTemplate4 from "@/components/quotes/QuoteTemplate4";
+import QuoteTemplate5 from "@/components/quotes/QuoteTemplate5";
 
 interface QuotePrintProps {
   profile: Profile | null;
@@ -36,6 +37,8 @@ const QuotePrint = forwardRef<HTMLDivElement, QuotePrintProps>(
         return <QuoteTemplate3 {...commonProps} />;
       case "template4":
         return <QuoteTemplate4 {...commonProps} />;
+      case "template5":
+        return <QuoteTemplate5 {...commonProps} />;
       case "template1":
       default:
         return <QuoteTemplate1 {...commonProps} />;
