@@ -223,7 +223,7 @@ const LetterheadPage = () => {
         ? [{ filename: `letterhead-${(editing.title || "document").replace(/[^a-z0-9_-]/gi, "-").toLowerCase()}.pdf`, content: pdfBase64, content_type: "application/pdf" }]
         : undefined;
 
-      const { error } = await supabase.functions.invoke("send-email", {
+      const { data, error } = await supabase.functions.invoke("send-email", {
         body: {
           to: sendEmail,
           subject,
@@ -233,7 +233,38 @@ const LetterheadPage = () => {
           attachments,
         },
       });
-      if (error) throw error;
+
+      if (error || data?.error) {
+        let parsedPayload: any = null;
+        if (error?.message) {
+          const jsonStart = error.message.indexOf("{");
+          if (jsonStart !== -1) {
+            try {
+              parsedPayload = JSON.parse(error.message.slice(jsonStart));
+            } catch {
+              parsedPayload = null;
+            }
+          }
+        }
+
+        const detailedMessage =
+          data?.message ||
+          parsedPayload?.message ||
+          data?.details?.message ||
+          parsedPayload?.details?.message ||
+          data?.error ||
+          parsedPayload?.error ||
+          error?.message ||
+          "Failed to send email";
+
+        const errorCode = data?.code || parsedPayload?.code;
+        if (errorCode === "RESEND_SANDBOX_RESTRICTION" || errorCode === "RESEND_DOMAIN_NOT_VERIFIED") {
+          throw new Error(`${detailedMessage}. Please verify your sender domain DNS, then try again.`);
+        }
+
+        throw new Error(detailedMessage);
+      }
+
       toast({ title: "Sent!", description: `Letterhead emailed to ${sendEmail}` });
       setShowSendForm(false);
       setSendEmail("");
