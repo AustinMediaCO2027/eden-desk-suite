@@ -19,6 +19,7 @@ export const QUOTE_TEMPLATE_OPTIONS = [
   { value: "template2", label: "Modern", desc: "Blue metadata bar, total highlight" },
   { value: "template3", label: "Classic", desc: "Sidebar metadata, bordered table card" },
   { value: "template4", label: "Creative", desc: "Serif title, accent border, editorial" },
+  { value: "template5", label: "Bold Minimal", desc: "Black & white, bold header band, monogram" },
 ];
 
 export const TEMPLATE_OPTIONS = INVOICE_TEMPLATE_OPTIONS;
