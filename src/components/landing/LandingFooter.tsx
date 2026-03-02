@@ -36,8 +36,8 @@ export const LandingFooter = () => {
             <div className="space-y-3">
               <a href="mailto:support@edendesk.com" className="block text-sm text-muted-foreground hover:text-foreground transition-colors">support@edendesk.com</a>
               <Link to="/affiliate" className="block text-sm text-muted-foreground hover:text-foreground transition-colors">Affiliate Program</Link>
-              <a href="#" className="block text-sm text-muted-foreground hover:text-foreground transition-colors">Terms</a>
-              <a href="#" className="block text-sm text-muted-foreground hover:text-foreground transition-colors">Privacy</a>
+              <Link to="/terms" className="block text-sm text-muted-foreground hover:text-foreground transition-colors">Terms</Link>
+              <Link to="/terms" className="block text-sm text-muted-foreground hover:text-foreground transition-colors">Privacy</Link>
             </div>
           </div>
         </div>
