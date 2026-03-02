@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Save, Upload, Check } from "lucide-react";
 import { INVOICE_TEMPLATE_OPTIONS, QUOTE_TEMPLATE_OPTIONS } from "@/components/templates/DocumentPreview";
+import EmailDiagnosticsPanel from "@/components/settings/EmailDiagnosticsPanel";
 
 const COLOR_PRESETS = ["#2563EB", "#0F172A", "#16A34A", "#DC2626", "#7C3AED", "#0891B2", "#CA8A04", "#E11D48", "#1B2A4A", "#6B1D1D", "#B8860B", "#4B5563"];
 
@@ -302,6 +303,9 @@ const SettingsPage = () => {
           ))}
         </div>
       </div>
+
+      {/* Email Diagnostics */}
+      <EmailDiagnosticsPanel />
 
       {/* Account */}
       <div className="rounded-xl border border-border bg-card p-6 space-y-4">
