@@ -127,18 +127,34 @@ serve(async (req) => {
       data?.error ||
       "Failed to send email";
 
+    const lowerResendMessage = typeof resendMessage === "string" ? resendMessage.toLowerCase() : "";
     const isUnverifiedDomainError =
       !res.ok &&
-      typeof resendMessage === "string" &&
-      resendMessage.toLowerCase().includes("domain") &&
-      resendMessage.toLowerCase().includes("not verified");
+      (lowerResendMessage.includes("domain") &&
+        (lowerResendMessage.includes("not verified") || lowerResendMessage.includes("verify a domain")));
 
-    const onboardingSender = "onboarding@resend.dev";
-    const shouldFallbackToOnboarding = isUnverifiedDomainError && activeFrom !== onboardingSender;
+    if (isUnverifiedDomainError) {
+      const recipientEmail = sanitizeHeaderValue(to).toLowerCase();
+      const accountOwnerEmail = sanitizeHeaderValue(user.email ?? "").toLowerCase();
+      const isSendingToAccountOwner = !!recipientEmail && recipientEmail === accountOwnerEmail;
 
-    if (shouldFallbackToOnboarding) {
-      activeFrom = onboardingSender;
-      ({ res, data } = await sendWithFrom(activeFrom));
+      // Keep sandbox fallback only for account-owner testing.
+      if (isSendingToAccountOwner) {
+        activeFrom = "onboarding@resend.dev";
+        ({ res, data } = await sendWithFrom(activeFrom));
+      } else {
+        return new Response(
+          JSON.stringify({
+            error: "Failed to send email",
+            code: "RESEND_DOMAIN_NOT_VERIFIED",
+            message: `Your sender domain is not verified yet. Please verify the domain for ${resolvedFrom} before sending to external recipients.`,
+            from: activeFrom,
+            hint: "Finish DNS verification for your sender domain, then keep RESEND_FROM_EMAIL as a plain address like hello@eden-desk.com.",
+            details: data,
+          }),
+          { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
     }
 
     if (!res.ok) {
@@ -153,7 +169,7 @@ serve(async (req) => {
         finalMessage.includes("You can only send testing emails to your own email address");
 
       const sandboxHint = isSandboxRestriction
-        ? "Resend is still in sandbox mode for the sender domain. Verify the sender domain and set RESEND_FROM_EMAIL to a plain address like hello@eden-desk.com (no display name)."
+        ? "Resend sandbox mode is active for this sender. Verify your sender domain DNS and keep RESEND_FROM_EMAIL as a plain address like hello@eden-desk.com."
         : undefined;
 
       return new Response(

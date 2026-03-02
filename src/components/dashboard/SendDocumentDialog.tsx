@@ -117,15 +117,31 @@ const SendDocumentDialog = ({
       });
 
       if (error || data?.error) {
+        let parsedPayload: any = null;
+        if (error?.message) {
+          const jsonStart = error.message.indexOf("{");
+          if (jsonStart !== -1) {
+            try {
+              parsedPayload = JSON.parse(error.message.slice(jsonStart));
+            } catch {
+              parsedPayload = null;
+            }
+          }
+        }
+
+        const errorCode = data?.code || parsedPayload?.code;
         const detailedMessage =
           data?.message ||
+          parsedPayload?.message ||
           data?.details?.message ||
+          parsedPayload?.details?.message ||
           data?.error ||
+          parsedPayload?.error ||
           error?.message ||
           "Failed to send";
 
-        if (data?.code === "RESEND_SANDBOX_RESTRICTION") {
-          throw new Error(`${detailedMessage}. Please verify your sender domain and update RESEND_FROM_EMAIL.`);
+        if (errorCode === "RESEND_SANDBOX_RESTRICTION" || errorCode === "RESEND_DOMAIN_NOT_VERIFIED") {
+          throw new Error(`${detailedMessage}. Please verify your sender domain DNS, then try again.`);
         }
 
         throw new Error(detailedMessage);
