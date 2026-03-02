@@ -54,7 +54,7 @@ serve(async (req) => {
       merchant_key: PAYFAST_MERCHANT_KEY,
       return_url: body.returnUrl || `${req.headers.get("origin") || ""}/dashboard/billing?status=success`,
       cancel_url: body.cancelUrl || `${req.headers.get("origin") || ""}/dashboard/billing?status=cancelled`,
-      notify_url: body.notifyUrl || `${req.headers.get("origin") || ""}/dashboard/billing`,
+      notify_url: `${Deno.env.get("SUPABASE_URL")}/functions/v1/payfast-itn`,
       name_first: companyName || userEmail?.split("@")[0] || "",
       email_address: userEmail || "",
       amount: amount,
