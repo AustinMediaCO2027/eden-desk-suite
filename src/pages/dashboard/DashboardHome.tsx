@@ -18,8 +18,9 @@ import {
   Users,
   Bot,
 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -50,6 +51,8 @@ const DashboardHome = () => {
   const { user } = useAuth();
   const { profile, refetch } = useProfile();
   const { currentPlan, planDisplayName, isTrialActive, trialDaysRemaining, isTrialExpired } = useSubscription();
+  const { toast } = useToast();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [stats, setStats] = useState({
     outstanding: 0,
     dueSoon: 0,
@@ -59,6 +62,25 @@ const DashboardHome = () => {
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [showTrial, setShowTrial] = useState(false);
+
+  // Handle payment return from PayFast
+  useEffect(() => {
+    const paymentStatus = searchParams.get("payment");
+    const plan = searchParams.get("plan");
+    if (paymentStatus === "success" && plan) {
+      toast({
+        title: "Payment received!",
+        description: `Your ${plan.charAt(0).toUpperCase() + plan.slice(1)} plan is being activated. It may take a moment to reflect.`,
+      });
+      // Clear the query params
+      setSearchParams({}, { replace: true });
+      // Poll for profile update
+      const interval = setInterval(() => {
+        refetch?.();
+      }, 3000);
+      setTimeout(() => clearInterval(interval), 30000);
+    }
+  }, []);
 
   useEffect(() => {
     if (!user) return;
