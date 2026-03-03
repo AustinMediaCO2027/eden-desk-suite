@@ -26,8 +26,9 @@ const LogoUploadWidget = ({ logoUrl }: LogoUploadWidgetProps) => {
       setUploading(false);
       return;
     }
-    const { data } = supabase.storage.from("logos").getPublicUrl(path);
-    await supabase.from("profiles").update({ logo_url: data.publicUrl }).eq("user_id", user.id);
+    const { data } = await supabase.storage.from("logos").createSignedUrl(path, 60 * 60 * 24 * 365);
+    const logoUrl = data?.signedUrl || "";
+    await supabase.from("profiles").update({ logo_url: logoUrl }).eq("user_id", user.id);
     toast({ title: "Logo uploaded successfully" });
     setUploading(false);
     window.location.reload();

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAffiliate } from "@/hooks/useAffiliate";
 import { Button } from "@/components/ui/button";
@@ -9,7 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Check, X, Ban, Users, DollarSign, Clock, TrendingUp } from "lucide-react";
 
 const AdminAffiliatesPage = () => {
-  const { isAdmin } = useAffiliate();
+  const { isAdmin, loading: affiliateLoading } = useAffiliate();
   const { toast } = useToast();
   const [applications, setApplications] = useState<any[]>([]);
   const [activeAffiliates, setActiveAffiliates] = useState<any[]>([]);
@@ -43,6 +44,8 @@ const AdminAffiliatesPage = () => {
       totalReferrals: referralCount || 0,
     });
   };
+
+  const safeUrl = (url: string | null) => url && url.startsWith("https://") ? url : undefined;
 
   useEffect(() => { if (isAdmin) fetchAll(); }, [isAdmin]);
 
@@ -86,8 +89,17 @@ const AdminAffiliatesPage = () => {
     fetchAll();
   };
 
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!isAdmin && !affiliateLoading) {
+      navigate("/dashboard", { replace: true });
+    }
+  }, [isAdmin, affiliateLoading, navigate]);
+
+  // Need to get loading from useAffiliate
   if (!isAdmin) {
-    return <div className="p-8 text-center text-sm text-muted-foreground">Access denied.</div>;
+    return null;
   }
 
   const overviewCards = [
@@ -136,13 +148,13 @@ const AdminAffiliatesPage = () => {
                   <p className="text-xs text-muted-foreground">{app.email}</p>
                   <p className="text-xs text-muted-foreground">{app.country} • {app.website || "No website"}</p>
                   <p className="text-xs text-muted-foreground">Method: {app.promotion_method || "—"} • Audience: {app.audience_type || "—"}</p>
-                  {(app.instagram_url || app.youtube_url || app.tiktok_url || app.linkedin_url) && (
-                    <div className="flex gap-2 mt-1">
-                      {app.instagram_url && <a href={app.instagram_url} target="_blank" rel="noopener" className="text-[10px] text-muted-foreground hover:text-foreground">IG</a>}
-                      {app.youtube_url && <a href={app.youtube_url} target="_blank" rel="noopener" className="text-[10px] text-muted-foreground hover:text-foreground">YT</a>}
-                      {app.tiktok_url && <a href={app.tiktok_url} target="_blank" rel="noopener" className="text-[10px] text-muted-foreground hover:text-foreground">TT</a>}
-                      {app.linkedin_url && <a href={app.linkedin_url} target="_blank" rel="noopener" className="text-[10px] text-muted-foreground hover:text-foreground">LI</a>}
-                    </div>
+                   {(app.instagram_url || app.youtube_url || app.tiktok_url || app.linkedin_url) && (
+                     <div className="flex gap-2 mt-1">
+                       {safeUrl(app.instagram_url) && <a href={safeUrl(app.instagram_url)} target="_blank" rel="noopener noreferrer" className="text-[10px] text-muted-foreground hover:text-foreground">IG</a>}
+                       {safeUrl(app.youtube_url) && <a href={safeUrl(app.youtube_url)} target="_blank" rel="noopener noreferrer" className="text-[10px] text-muted-foreground hover:text-foreground">YT</a>}
+                       {safeUrl(app.tiktok_url) && <a href={safeUrl(app.tiktok_url)} target="_blank" rel="noopener noreferrer" className="text-[10px] text-muted-foreground hover:text-foreground">TT</a>}
+                       {safeUrl(app.linkedin_url) && <a href={safeUrl(app.linkedin_url)} target="_blank" rel="noopener noreferrer" className="text-[10px] text-muted-foreground hover:text-foreground">LI</a>}
+                     </div>
                   )}
                   {app.audience_size && <p className="text-[10px] text-muted-foreground">Audience: {app.audience_size}</p>}
                 </div>
@@ -174,13 +186,13 @@ const AdminAffiliatesPage = () => {
                   <p className="text-xs text-muted-foreground">
                     Earnings: R{aff.total_earnings?.toFixed(2)} • Pending: R{aff.pending_balance?.toFixed(2)} • Paid: R{aff.paid_earnings?.toFixed(2)}
                   </p>
-                  {(aff.instagram_url || aff.youtube_url || aff.tiktok_url || aff.linkedin_url) && (
-                    <div className="flex gap-2">
-                      {aff.instagram_url && <a href={aff.instagram_url} target="_blank" rel="noopener" className="text-[10px] text-muted-foreground hover:text-foreground">IG</a>}
-                      {aff.youtube_url && <a href={aff.youtube_url} target="_blank" rel="noopener" className="text-[10px] text-muted-foreground hover:text-foreground">YT</a>}
-                      {aff.tiktok_url && <a href={aff.tiktok_url} target="_blank" rel="noopener" className="text-[10px] text-muted-foreground hover:text-foreground">TT</a>}
-                      {aff.linkedin_url && <a href={aff.linkedin_url} target="_blank" rel="noopener" className="text-[10px] text-muted-foreground hover:text-foreground">LI</a>}
-                    </div>
+                   {(aff.instagram_url || aff.youtube_url || aff.tiktok_url || aff.linkedin_url) && (
+                     <div className="flex gap-2">
+                       {safeUrl(aff.instagram_url) && <a href={safeUrl(aff.instagram_url)} target="_blank" rel="noopener noreferrer" className="text-[10px] text-muted-foreground hover:text-foreground">IG</a>}
+                       {safeUrl(aff.youtube_url) && <a href={safeUrl(aff.youtube_url)} target="_blank" rel="noopener noreferrer" className="text-[10px] text-muted-foreground hover:text-foreground">YT</a>}
+                       {safeUrl(aff.tiktok_url) && <a href={safeUrl(aff.tiktok_url)} target="_blank" rel="noopener noreferrer" className="text-[10px] text-muted-foreground hover:text-foreground">TT</a>}
+                       {safeUrl(aff.linkedin_url) && <a href={safeUrl(aff.linkedin_url)} target="_blank" rel="noopener noreferrer" className="text-[10px] text-muted-foreground hover:text-foreground">LI</a>}
+                     </div>
                   )}
                 </div>
                 <Button size="sm" variant="outline" onClick={() => suspend(aff.id)} className="gap-1 h-8 text-destructive">

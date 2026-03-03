@@ -9,17 +9,24 @@ import { Check, ArrowLeft, Link2, BarChart3, DollarSign, Users, Zap, Globe } fro
 import edenDarkLogo from "@/assets/eden_dark_logo.png";
 import { z } from "zod";
 
+const safeUrlSchema = (domain: string) =>
+  z.string().max(500)
+    .refine(val => !val || val.startsWith("https://"), "Must use HTTPS")
+    .refine(val => !val || new URL(val).hostname.includes(domain), `Must be a valid ${domain} URL`)
+    .optional()
+    .or(z.literal(""));
+
 const schema = z.object({
   full_name: z.string().trim().min(1, "Name is required").max(100),
   email: z.string().trim().email("Invalid email").max(255),
   country: z.string().trim().min(1, "Country is required").max(100),
-  website: z.string().max(500).optional(),
+  website: z.string().max(500).refine(val => !val || val.startsWith("https://"), "Must use HTTPS").optional().or(z.literal("")),
   promotion_method: z.string().max(500).optional(),
   audience_type: z.string().max(500).optional(),
-  instagram_url: z.string().max(500).optional(),
-  youtube_url: z.string().max(500).optional(),
-  tiktok_url: z.string().max(500).optional(),
-  linkedin_url: z.string().max(500).optional(),
+  instagram_url: safeUrlSchema("instagram.com"),
+  youtube_url: z.string().max(500).refine(val => !val || val.startsWith("https://"), "Must use HTTPS").refine(val => !val || val.includes("youtube.com") || val.includes("youtu.be"), "Must be a YouTube URL").optional().or(z.literal("")),
+  tiktok_url: safeUrlSchema("tiktok.com"),
+  linkedin_url: safeUrlSchema("linkedin.com"),
   audience_size: z.string().max(100).optional(),
 });
 
