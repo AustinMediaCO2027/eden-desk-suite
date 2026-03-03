@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
 import { supabase } from "@/integrations/supabase/client";
@@ -62,6 +62,7 @@ const DashboardHome = () => {
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [showTrial, setShowTrial] = useState(false);
+  const trialActivatedRef = useRef(false);
 
   // Handle payment return from PayFast
   useEffect(() => {
@@ -72,9 +73,7 @@ const DashboardHome = () => {
         title: "Payment received!",
         description: `Your ${plan.charAt(0).toUpperCase() + plan.slice(1)} plan is being activated. It may take a moment to reflect.`,
       });
-      // Clear the query params
       setSearchParams({}, { replace: true });
-      // Poll for profile update
       const interval = setInterval(() => {
         refetch?.();
       }, 3000);
@@ -82,6 +81,7 @@ const DashboardHome = () => {
     }
   }, []);
 
+  // Fetch dashboard data
   useEffect(() => {
     if (!user) return;
 
@@ -140,9 +140,14 @@ const DashboardHome = () => {
     };
 
     fetchData();
+  }, [user]);
 
-    // Auto-activate 7-day Silver trial for new users who haven't used trial yet
-    if (profile && profile.subscription_plan === "free" && !profile.trial_used) {
+  // Auto-activate 7-day Silver trial for new users
+  useEffect(() => {
+    if (!user || !profile || trialActivatedRef.current) return;
+
+    if (profile.subscription_plan === "free" && !profile.trial_used) {
+      trialActivatedRef.current = true;
       const trialEnd = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
       supabase.from("profiles").update({
         subscription_plan: "trial",
@@ -156,7 +161,7 @@ const DashboardHome = () => {
           setShowTrial(true);
         }
       });
-    } else if (profile?.subscription_plan === "trial") {
+    } else if (profile.subscription_plan === "trial" && profile.trial_ends_at && new Date(profile.trial_ends_at) > new Date()) {
       setShowTrial(true);
     }
   }, [user, profile]);
