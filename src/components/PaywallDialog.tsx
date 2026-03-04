@@ -1,7 +1,12 @@
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Check, Lock, ArrowRight } from "lucide-react";
+import { Check, Lock, ArrowRight, Sparkles } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
+import { useProfile } from "@/hooks/useProfile";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+import { useState } from "react";
 
 interface PaywallDialogProps {
   open: boolean;
@@ -16,6 +21,38 @@ const features = [
 ];
 
 const PaywallDialog = ({ open, onOpenChange }: PaywallDialogProps) => {
+  const { user } = useAuth();
+  const { profile, refetch } = useProfile();
+  const { toast } = useToast();
+  const [activating, setActivating] = useState(false);
+
+  const trialUsed = (profile as any)?.trial_used === true;
+
+  const handleStartTrial = async () => {
+    if (!user || trialUsed) return;
+    setActivating(true);
+    try {
+      const trialEnd = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
+      const { error } = await supabase.from("profiles").update({
+        subscription_plan: "trial",
+        trial_ends_at: trialEnd,
+        trial_start_date: new Date().toISOString(),
+        trial_end_date: trialEnd,
+        trial_used: true,
+      }).eq("user_id", user.id);
+
+      if (error) throw error;
+
+      toast({ title: "Trial Activated!", description: "Your 7-day Silver trial is now active. Enjoy full access!" });
+      await refetch?.();
+      onOpenChange(false);
+    } catch (err: any) {
+      toast({ title: "Error", description: err.message, variant: "destructive" });
+    } finally {
+      setActivating(false);
+    }
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="bg-card border-border p-0 overflow-hidden max-w-md">
@@ -24,10 +61,12 @@ const PaywallDialog = ({ open, onOpenChange }: PaywallDialogProps) => {
           <div className="h-14 w-14 rounded-2xl bg-muted flex items-center justify-center mb-6">
             <Lock className="h-7 w-7 text-muted-foreground" />
           </div>
-          <h2 className="text-2xl font-bold tracking-tight mb-2">Free Usage Exhausted</h2>
+          <h2 className="text-2xl font-bold tracking-tight mb-2">Free Access Used</h2>
           <p className="text-sm text-muted-foreground leading-relaxed max-w-xs">
-            You've used your <span className="text-foreground font-medium">1 free document generation</span>.
-            Subscribe to a plan to continue creating documents.
+            You've used your free access for this feature.
+            {!trialUsed
+              ? " Start your 7-day trial or subscribe to continue."
+              : " Subscribe to a plan to continue creating documents."}
           </p>
           <div className="w-full mt-6 space-y-2.5">
             {features.map((feature) => (
@@ -39,8 +78,24 @@ const PaywallDialog = ({ open, onOpenChange }: PaywallDialogProps) => {
               </div>
             ))}
           </div>
+
+          {/* Show Start Trial button only if trial hasn't been used */}
+          {!trialUsed && (
+            <Button
+              className="w-full mt-6 h-11 text-sm font-medium gap-2"
+              onClick={handleStartTrial}
+              disabled={activating}
+            >
+              <Sparkles className="h-4 w-4" />
+              {activating ? "Activating..." : "Start 7-Day Free Trial"}
+            </Button>
+          )}
+
           <Link to="/dashboard/billing" className="w-full">
-            <Button className="w-full mt-8 h-11 text-sm font-medium gap-2">
+            <Button
+              variant={trialUsed ? "default" : "outline"}
+              className="w-full mt-2 h-11 text-sm font-medium gap-2"
+            >
               View Plans & Subscribe
               <ArrowRight className="h-4 w-4" />
             </Button>

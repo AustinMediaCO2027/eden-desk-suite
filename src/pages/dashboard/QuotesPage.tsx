@@ -50,7 +50,7 @@ const QuotesPage = () => {
   const { profile } = useProfile();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { showPaywall, setShowPaywall, checkAndProceed } = useGenerationLimit();
+  const { showPaywall, setShowPaywall, checkAndProceed } = useGenerationLimit("quote");
   const [quotes, setQuotes] = useState<any[]>([]);
   const [editing, setEditing] = useState<QuoteForm | null>(null);
   const [previewing, setPreviewing] = useState(false);

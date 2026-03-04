@@ -58,7 +58,7 @@ const LetterheadPage = () => {
   const { user } = useAuth();
   const { profile } = useProfile();
   const { toast } = useToast();
-  const { showPaywall, setShowPaywall, checkAndProceed } = useGenerationLimit();
+  const { showPaywall, setShowPaywall, checkAndProceed } = useGenerationLimit("letterhead");
   const { canUseFeature } = useSubscription();
   const [showUpgrade, setShowUpgrade] = useState(false);
   const [letterheads, setLetterheads] = useState<any[]>([]);

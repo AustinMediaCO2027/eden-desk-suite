@@ -515,6 +515,9 @@ export type Database = {
           company_website: string | null
           created_at: string | null
           free_generations_used: number
+          free_invoices_used: number
+          free_letterheads_used: number
+          free_quotes_used: number
           id: string
           logo_url: string | null
           referred_by_affiliate_id: string | null
@@ -547,6 +550,9 @@ export type Database = {
           company_website?: string | null
           created_at?: string | null
           free_generations_used?: number
+          free_invoices_used?: number
+          free_letterheads_used?: number
+          free_quotes_used?: number
           id?: string
           logo_url?: string | null
           referred_by_affiliate_id?: string | null
@@ -579,6 +585,9 @@ export type Database = {
           company_website?: string | null
           created_at?: string | null
           free_generations_used?: number
+          free_invoices_used?: number
+          free_letterheads_used?: number
+          free_quotes_used?: number
           id?: string
           logo_url?: string | null
           referred_by_affiliate_id?: string | null
