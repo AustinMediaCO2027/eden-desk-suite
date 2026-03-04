@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
 import { supabase } from "@/integrations/supabase/client";
@@ -8,27 +8,18 @@ import {
   CalendarDays,
   Check,
   Plus,
-  Search,
-  Filter,
   Clock,
   TrendingUp,
   AlertCircle,
   ArrowUpRight,
   Mail,
-  Users,
   Bot,
 } from "lucide-react";
 import { Link, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Dialog,
-  DialogContent,
-} from "@/components/ui/dialog";
-import edenIcon from "@/assets/eden_desk_icon.png";
-import { format, differenceInDays } from "date-fns";
+import { format } from "date-fns";
 import { useSubscription } from "@/hooks/useSubscription";
 
 interface Invoice {
@@ -61,8 +52,7 @@ const DashboardHome = () => {
   });
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [tasks, setTasks] = useState<Task[]>([]);
-  const [showTrial, setShowTrial] = useState(false);
-  const trialActivatedRef = useRef(false);
+  
 
   // Handle payment return from PayFast
   useEffect(() => {
@@ -142,36 +132,8 @@ const DashboardHome = () => {
     fetchData();
   }, [user]);
 
-  // Auto-activate 7-day Silver trial for new users
-  useEffect(() => {
-    if (!user || !profile || trialActivatedRef.current) return;
+  // No auto-trial activation — trial is manually activated via PaywallDialog
 
-    if (profile.subscription_plan === "free" && !profile.trial_used) {
-      trialActivatedRef.current = true;
-      const trialEnd = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
-      supabase.from("profiles").update({
-        subscription_plan: "trial",
-        trial_ends_at: trialEnd,
-        trial_start_date: new Date().toISOString(),
-        trial_end_date: trialEnd,
-        trial_used: true,
-      }).eq("user_id", user.id).then(({ error: updateErr }) => {
-        if (!updateErr) {
-          refetch?.();
-          setShowTrial(true);
-        }
-      });
-    } else if (profile.subscription_plan === "trial" && profile.trial_ends_at && new Date(profile.trial_ends_at) > new Date()) {
-      setShowTrial(true);
-    }
-  }, [user, profile]);
-
-  const trialFeatures = [
-    "Invoices & Quotes",
-    "Letterheads with AI drafting",
-    "PDF download & email",
-    "5 AI prompts per day",
-  ];
 
   const formatCurrency = (val: number) =>
     new Intl.NumberFormat("en-ZA", {
@@ -250,41 +212,6 @@ const DashboardHome = () => {
 
   return (
     <div className="h-full">
-      {/* Trial popup */}
-      <Dialog open={showTrial} onOpenChange={setShowTrial}>
-        <DialogContent className="bg-card border-border p-0 overflow-hidden max-w-md">
-          <div className="h-1 w-full bg-gradient-to-r from-foreground/20 via-foreground to-foreground/20" />
-          <div className="px-8 pt-8 pb-6 flex flex-col items-center text-center">
-            <div className="mb-6">
-              <img src={edenIcon} alt="Eden Desk" className="h-14 w-14 invert dark:invert" />
-            </div>
-            <h2 className="text-2xl font-bold tracking-tight mb-2">Welcome to Eden Desk</h2>
-            <p className="text-sm text-muted-foreground leading-relaxed max-w-xs">
-              Your <span className="text-foreground font-medium">7-day free trial</span> of the Silver plan is active.
-              Continue after for just <span className="text-foreground font-medium">R85.99/month</span>.
-            </p>
-            <div className="w-full mt-6 space-y-2.5">
-              {trialFeatures.map((feature) => (
-                <div key={feature} className="flex items-center gap-3 text-sm text-muted-foreground">
-                  <div className="h-5 w-5 rounded-full bg-foreground/10 flex items-center justify-center shrink-0">
-                    <Check className="h-3 w-3 text-foreground" />
-                  </div>
-                  <span>{feature}</span>
-                </div>
-              ))}
-            </div>
-            <Button className="w-full mt-8 h-11 text-sm font-medium" onClick={() => setShowTrial(false)}>
-              Start Exploring
-            </Button>
-            <button
-              onClick={() => setShowTrial(false)}
-              className="mt-3 text-xs text-muted-foreground hover:text-foreground transition-colors"
-            >
-              Maybe later
-            </button>
-          </div>
-        </DialogContent>
-      </Dialog>
 
       {/* Plan Badge & Trial Countdown */}
       {(currentPlan !== "free" || isTrialExpired) && (

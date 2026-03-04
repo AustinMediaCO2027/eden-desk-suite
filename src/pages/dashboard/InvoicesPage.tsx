@@ -50,7 +50,7 @@ const InvoicesPage = () => {
   const { user } = useAuth();
   const { profile } = useProfile();
   const { toast } = useToast();
-  const { showPaywall, setShowPaywall, checkAndProceed } = useGenerationLimit();
+  const { showPaywall, setShowPaywall, checkAndProceed } = useGenerationLimit("invoice");
   const [invoices, setInvoices] = useState<any[]>([]);
   const [editing, setEditing] = useState<InvoiceForm | null>(null);
   const [previewing, setPreviewing] = useState(false);
