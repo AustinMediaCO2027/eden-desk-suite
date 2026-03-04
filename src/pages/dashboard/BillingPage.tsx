@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Check, Calendar, CreditCard, Package } from "lucide-react";
+import { Check, Calendar, CreditCard, Package, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useAuth } from "@/hooks/useAuth";
@@ -48,11 +48,12 @@ const plans = [
 
 const BillingPage = () => {
   const { user } = useAuth();
-  const { profile } = useProfile();
+  const { profile, refetch } = useProfile();
   const { toast } = useToast();
-  const { planDisplayName, currentPlan } = useSubscription();
+  const { planDisplayName, currentPlan, trialUsed } = useSubscription();
   const { convert, currency } = useCurrency();
   const [loading, setLoading] = useState<string | null>(null);
+  const [activatingTrial, setActivatingTrial] = useState(false);
 
   const handleSubscribe = async (plan: typeof plans[0]) => {
     if (!user) {
@@ -160,6 +161,49 @@ const BillingPage = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Start 7-Day Trial Card */}
+      {!trialUsed && currentPlan === "free" && (
+        <div className="rounded-xl border-2 border-dashed border-foreground/20 bg-gradient-to-r from-foreground/[0.03] to-foreground/[0.06] p-6 flex flex-col sm:flex-row items-center gap-4">
+          <div className="h-12 w-12 rounded-xl bg-foreground/10 flex items-center justify-center shrink-0">
+            <Sparkles className="h-6 w-6 text-foreground" />
+          </div>
+          <div className="flex-1 text-center sm:text-left">
+            <h3 className="font-semibold text-lg">Try Silver Free for 7 Days</h3>
+            <p className="text-sm text-muted-foreground mt-1">
+              Unlock letterheads, AI drafting, email sending & more. No payment required.
+            </p>
+          </div>
+          <Button
+            className="shrink-0 gap-2"
+            disabled={activatingTrial}
+            onClick={async () => {
+              if (!user) return;
+              setActivatingTrial(true);
+              try {
+                const trialEnd = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
+                const { error } = await supabase.from("profiles").update({
+                  subscription_plan: "trial",
+                  trial_ends_at: trialEnd,
+                  trial_start_date: new Date().toISOString(),
+                  trial_end_date: trialEnd,
+                  trial_used: true,
+                }).eq("user_id", user.id);
+                if (error) throw error;
+                toast({ title: "Trial Activated!", description: "Your 7-day Silver trial is now active." });
+                await refetch?.();
+              } catch (err: any) {
+                toast({ title: "Error", description: err.message, variant: "destructive" });
+              } finally {
+                setActivatingTrial(false);
+              }
+            }}
+          >
+            <Sparkles className="h-4 w-4" />
+            {activatingTrial ? "Activating..." : "Start 7-Day Trial"}
+          </Button>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {plans.map(plan => (
