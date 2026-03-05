@@ -520,11 +520,15 @@ export type Database = {
           free_quotes_used: number
           id: string
           logo_url: string | null
+          payfast_subscription_id: string | null
+          payfast_token: string | null
+          payment_status: string | null
           referred_by_affiliate_id: string | null
           registration_number: string | null
           storage_used: number
           subscription_plan: string | null
           template_style: string | null
+          trial_active: boolean
           trial_end_date: string | null
           trial_ends_at: string | null
           trial_start_date: string | null
@@ -555,11 +559,15 @@ export type Database = {
           free_quotes_used?: number
           id?: string
           logo_url?: string | null
+          payfast_subscription_id?: string | null
+          payfast_token?: string | null
+          payment_status?: string | null
           referred_by_affiliate_id?: string | null
           registration_number?: string | null
           storage_used?: number
           subscription_plan?: string | null
           template_style?: string | null
+          trial_active?: boolean
           trial_end_date?: string | null
           trial_ends_at?: string | null
           trial_start_date?: string | null
@@ -590,11 +598,15 @@ export type Database = {
           free_quotes_used?: number
           id?: string
           logo_url?: string | null
+          payfast_subscription_id?: string | null
+          payfast_token?: string | null
+          payment_status?: string | null
           referred_by_affiliate_id?: string | null
           registration_number?: string | null
           storage_used?: number
           subscription_plan?: string | null
           template_style?: string | null
+          trial_active?: boolean
           trial_end_date?: string | null
           trial_ends_at?: string | null
           trial_start_date?: string | null

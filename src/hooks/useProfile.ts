@@ -13,6 +13,7 @@ export interface Profile {
   logo_url: string;
   subscription_plan: string;
   trial_ends_at: string;
+  trial_active: boolean;
   ai_prompts_used_today: number;
   ai_prompts_reset_date: string;
   registration_number: string;
@@ -28,6 +29,9 @@ export interface Profile {
   trial_used: boolean;
   trial_start_date: string;
   trial_end_date: string;
+  payfast_subscription_id: string;
+  payfast_token: string;
+  payment_status: string;
 }
 
 export const useProfile = () => {
