@@ -69,17 +69,38 @@ serve(async (req) => {
       }
     } else {
       // Subscription plan update
-      const validPlans = ["standard", "silver", "premium", "yearly"];
-      if (validPlans.includes(planId)) {
+      if (planId === "trial") {
+        // Trial activation via PayFast
+        const trialEnd = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
         const { error } = await supabase
           .from("profiles")
-          .update({ subscription_plan: planId })
+          .update({
+            subscription_plan: "trial",
+            trial_ends_at: trialEnd,
+            trial_start_date: new Date().toISOString(),
+            trial_end_date: trialEnd,
+            trial_used: true,
+          })
           .eq("user_id", userId);
 
         if (error) {
-          console.error("Error updating subscription:", error);
+          console.error("Error activating trial:", error);
         } else {
-          console.log(`Subscription ${planId} activated for user ${userId}`);
+          console.log(`Trial activated for user ${userId}, expires ${trialEnd}`);
+        }
+      } else {
+        const validPlans = ["standard", "silver", "premium", "yearly"];
+        if (validPlans.includes(planId)) {
+          const { error } = await supabase
+            .from("profiles")
+            .update({ subscription_plan: planId })
+            .eq("user_id", userId);
+
+          if (error) {
+            console.error("Error updating subscription:", error);
+          } else {
+            console.log(`Subscription ${planId} activated for user ${userId}`);
+          }
         }
       }
     }
