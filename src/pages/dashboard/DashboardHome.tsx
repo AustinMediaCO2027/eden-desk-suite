@@ -213,30 +213,58 @@ const DashboardHome = () => {
   return (
     <div className="h-full">
 
-      {/* Plan Badge & Trial Countdown */}
-      {(currentPlan !== "free" || isTrialExpired) && (
-        <div className="flex items-center gap-3 flex-wrap">
+      {/* Trial Active Banner */}
+      {isTrialActive && (
+        <div className="mb-4 rounded-xl border border-emerald-200 dark:border-emerald-500/20 bg-emerald-50 dark:bg-emerald-500/10 p-4 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-lg bg-emerald-100 dark:bg-emerald-500/20 flex items-center justify-center shrink-0">
+              <Check className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-emerald-900 dark:text-emerald-300">Your 7-Day Trial is Active</p>
+              <p className="text-xs text-emerald-700 dark:text-emerald-400">
+                {trialDaysRemaining} day{trialDaysRemaining !== 1 ? "s" : ""} remaining — Enjoy full Silver access.
+              </p>
+            </div>
+          </div>
+          <Link to="/dashboard/billing">
+            <Button size="sm" variant="outline" className="text-xs h-8 border-emerald-300 dark:border-emerald-500/30 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100 dark:hover:bg-emerald-500/20">
+              Upgrade Now
+            </Button>
+          </Link>
+        </div>
+      )}
+
+      {/* Trial Expired Banner */}
+      {isTrialExpired && (
+        <div className="mb-4 rounded-xl border border-destructive/20 bg-destructive/5 p-4 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-lg bg-destructive/10 flex items-center justify-center shrink-0">
+              <AlertCircle className="h-5 w-5 text-destructive" />
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-destructive">Your Trial Has Ended</p>
+              <p className="text-xs text-muted-foreground">Upgrade to continue using all features.</p>
+            </div>
+          </div>
+          <Link to="/dashboard/billing">
+            <Button size="sm" className="text-xs h-8">Choose a Plan</Button>
+          </Link>
+        </div>
+      )}
+
+      {/* Plan Badge */}
+      {currentPlan !== "free" && !isTrialActive && !isTrialExpired && (
+        <div className="flex items-center gap-3 flex-wrap mb-2">
           <span className={`inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full ${
             currentPlan === "premium" || currentPlan === "yearly"
               ? "bg-foreground text-background"
-              : currentPlan === "silver" || currentPlan === "trial"
+              : currentPlan === "silver"
               ? "bg-foreground/10 text-foreground border border-border"
               : "bg-secondary text-muted-foreground"
           }`}>
             {planDisplayName} Plan
           </span>
-          {isTrialActive && (
-            <span className="text-xs text-muted-foreground">
-              Trial ends in <span className="text-foreground font-medium">{trialDaysRemaining} day{trialDaysRemaining !== 1 ? "s" : ""}</span>
-            </span>
-          )}
-          {isTrialExpired && (
-            <Link to="/dashboard/billing">
-              <span className="text-xs text-destructive font-medium hover:underline">
-                Trial expired — Choose a plan to continue
-              </span>
-            </Link>
-          )}
         </div>
       )}
 
