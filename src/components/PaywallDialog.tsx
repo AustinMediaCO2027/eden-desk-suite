@@ -22,7 +22,7 @@ const features = [
 
 const PaywallDialog = ({ open, onOpenChange }: PaywallDialogProps) => {
   const { user } = useAuth();
-  const { profile, refetch } = useProfile();
+  const { profile } = useProfile();
   const { toast } = useToast();
   const [activating, setActivating] = useState(false);
 
@@ -32,20 +32,39 @@ const PaywallDialog = ({ open, onOpenChange }: PaywallDialogProps) => {
     if (!user || trialUsed) return;
     setActivating(true);
     try {
-      const trialEnd = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
-      const { error } = await supabase.from("profiles").update({
-        subscription_plan: "trial",
-        trial_ends_at: trialEnd,
-        trial_start_date: new Date().toISOString(),
-        trial_end_date: trialEnd,
-        trial_used: true,
-      }).eq("user_id", user.id);
+      const { data, error } = await supabase.functions.invoke("payfast-checkout", {
+        body: {
+          planName: "Trial",
+          planId: "trial",
+          amount: "0.00",
+          period: "7 days",
+          userEmail: user.email,
+          userId: user.id,
+          companyName: profile?.company_name,
+          isTrial: true,
+          returnUrl: `${window.location.origin}/dashboard?payment=success&plan=trial`,
+          cancelUrl: `${window.location.origin}/dashboard/billing?status=cancelled`,
+        },
+      });
 
       if (error) throw error;
 
-      toast({ title: "Trial Activated!", description: "Your 7-day Silver trial is now active. Enjoy full access!" });
-      await refetch?.();
-      onOpenChange(false);
+      // Redirect to PayFast
+      const form = document.createElement("form");
+      form.method = "POST";
+      form.action = data.paymentUrl;
+      form.target = "_top";
+
+      Object.entries(data.params as Record<string, string>).forEach(([key, value]) => {
+        const input = document.createElement("input");
+        input.type = "hidden";
+        input.name = key;
+        input.value = value;
+        form.appendChild(input);
+      });
+
+      document.body.appendChild(form);
+      form.submit();
     } catch (err: any) {
       toast({ title: "Error", description: err.message, variant: "destructive" });
     } finally {
@@ -79,7 +98,6 @@ const PaywallDialog = ({ open, onOpenChange }: PaywallDialogProps) => {
             ))}
           </div>
 
-          {/* Show Start Trial button only if trial hasn't been used */}
           {!trialUsed && (
             <Button
               className="w-full mt-6 h-11 text-sm font-medium gap-2"
@@ -87,7 +105,7 @@ const PaywallDialog = ({ open, onOpenChange }: PaywallDialogProps) => {
               disabled={activating}
             >
               <Sparkles className="h-4 w-4" />
-              {activating ? "Activating..." : "Start 7-Day Free Trial"}
+              {activating ? "Redirecting to PayFast..." : "Start 7-Day Free Trial"}
             </Button>
           )}
 

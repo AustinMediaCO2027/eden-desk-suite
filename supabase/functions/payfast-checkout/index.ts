@@ -49,6 +49,24 @@ serve(async (req) => {
     const body = await req.json();
     const { planName, planId, amount, period, userEmail, userId, companyName, isTrial } = body;
 
+    // For trial: check if already used
+    if (isTrial) {
+      const adminSupabase = createClient(
+        Deno.env.get("SUPABASE_URL")!,
+        Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
+      );
+      const { data: profile } = await adminSupabase
+        .from("profiles")
+        .select("trial_used")
+        .eq("user_id", userId)
+        .single();
+      if (profile?.trial_used) {
+        return new Response(JSON.stringify({ error: "Trial already used" }), {
+          status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+    }
+
     const params: Record<string, string> = {
       merchant_id: PAYFAST_MERCHANT_ID,
       merchant_key: PAYFAST_MERCHANT_KEY,
@@ -57,15 +75,15 @@ serve(async (req) => {
       notify_url: `${Deno.env.get("SUPABASE_URL")}/functions/v1/payfast-itn`,
       name_first: companyName || userEmail?.split("@")[0] || "",
       email_address: userEmail || "",
-      amount: amount,
-      item_name: `Eden Desk ${planName} Plan`,
-      item_description: `${planName} subscription - ${period}`,
+      amount: isTrial ? "0.00" : amount,
+      item_name: isTrial ? "Eden Desk Starter Plan Trial" : `Eden Desk ${planName} Plan`,
+      item_description: isTrial ? "7-Day Free Trial - Monthly recurring" : `${planName} subscription - ${period}`,
       custom_str1: userId || "",
-      custom_str2: planId || "",
+      custom_str2: isTrial ? "trial" : (planId || ""),
       subscription_type: "1",
-      recurring_amount: amount,
-      frequency: planId === "yearly" ? "6" : "3",
-      cycles: "0",
+      recurring_amount: isTrial ? "0.00" : amount,
+      frequency: isTrial ? "3" : (planId === "yearly" ? "6" : "3"),
+      cycles: isTrial ? "0" : "0",
     };
 
     return new Response(JSON.stringify({

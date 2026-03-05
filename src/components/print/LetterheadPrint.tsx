@@ -39,30 +39,25 @@ const PAGE_STYLE: CSSProperties = {
   padding: "20mm",
   boxSizing: "border-box",
   overflow: "hidden",
-  position: "relative",
+  display: "flex",
+  flexDirection: "column",
   backgroundColor: "white",
   fontFamily: "'Inter', 'Helvetica Neue', Arial, sans-serif",
   color: "hsl(222 47% 11%)",
-  pageBreakBefore: "avoid",
-  pageBreakAfter: "avoid",
-  pageBreakInside: "avoid",
 };
 
 const CONTENT_STYLE: CSSProperties = {
-  height: "257mm",
-  position: "relative",
-  paddingBottom: "24mm",
-  boxSizing: "border-box",
+  flex: "1 1 auto",
   overflow: "hidden",
+  display: "flex",
+  flexDirection: "column",
 };
 
 const FOOTER_STYLE: CSSProperties = {
-  position: "absolute",
-  left: "20mm",
-  right: "20mm",
-  bottom: "20mm",
+  flexShrink: 0,
   borderTop: "0.3mm solid hsl(220 13% 87%)",
   paddingTop: "3mm",
+  marginTop: "auto",
 };
 
 const TABLE_RESET: CSSProperties = {
@@ -151,10 +146,10 @@ const LetterheadPrint = forwardRef<HTMLDivElement, LetterheadPrintProps>(
             </table>
           ) : null}
 
-          <table style={{ ...TABLE_RESET, marginBottom: "4mm" }}>
+          <table style={{ ...TABLE_RESET, marginBottom: "4mm", flex: "1 1 auto" }}>
             <tbody>
               <tr>
-                <td style={{ fontSize: "3.2mm", lineHeight: 1.65, color: "hsl(215 25% 25%)", verticalAlign: "top", whiteSpace: "pre-wrap", height: "144mm", overflow: "hidden" }}>
+                <td style={{ fontSize: "3.2mm", lineHeight: 1.65, color: "hsl(215 25% 25%)", verticalAlign: "top", whiteSpace: "pre-wrap", overflow: "hidden" }}>
                   {bodyText}
                 </td>
               </tr>
