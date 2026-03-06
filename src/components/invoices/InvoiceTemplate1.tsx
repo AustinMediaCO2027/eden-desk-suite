@@ -186,6 +186,16 @@ const InvoiceTemplate1 = forwardRef<HTMLDivElement, InvoiceTemplateProps>(
 
         {/* Footer */}
         <div style={{ position: "absolute", left: "20mm", right: "20mm", bottom: "20mm" }}>
+          {profile?.bank_name && (
+            <div style={{ marginBottom: "3mm" }}>
+              <p style={{ margin: 0, fontSize: "2.6mm", color: accent, fontWeight: 600 }}>Banking details</p>
+              <p style={{ margin: "0.8mm 0 0", fontSize: "2.7mm", color: "#666" }}>
+                {safeText(profile.bank_name, 36)} • {safeText(profile.bank_account_holder, 36)} • Acc {safeText(profile.bank_account_number, 30)}
+                {profile?.bank_branch_code ? ` • Branch ${safeText(profile.bank_branch_code, 20)}` : ""}
+                {profile?.bank_account_type ? ` • ${safeText(profile.bank_account_type, 20)}` : ""}
+              </p>
+            </div>
+          )}
           {notes && (
             <div style={{ marginBottom: "3mm" }}>
               <p style={{ margin: 0, fontSize: "2.6mm", color: accent, fontWeight: 600 }}>Terms & Conditions</p>
