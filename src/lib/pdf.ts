@@ -200,7 +200,8 @@ const buildNode = (payload: DocumentPDFPayload) => {
 };
 
 const renderPrintElement = async (payload: DocumentPDFPayload) => {
-  const host = createPrintHost();
+  const isLetterhead = payload.type === "letterhead";
+  const host = createPrintHost(isLetterhead);
   const root = createRoot(host);
 
   flushSync(() => {
@@ -220,16 +221,95 @@ const renderPrintElement = async (payload: DocumentPDFPayload) => {
     return null;
   }
 
-  const restoreA4 = enforceA4Canvas(element);
+  if (!isLetterhead) {
+    const restoreA4 = enforceA4Canvas(element);
+    return {
+      element,
+      cleanup: () => {
+        restoreA4();
+        root.unmount();
+        host.remove();
+      },
+    };
+  }
+
+  // For letterhead, set width but allow natural height
+  element.style.width = `${A4_WIDTH_PX}px`;
+  element.style.minWidth = `${A4_WIDTH_PX}px`;
+  element.style.maxWidth = `${A4_WIDTH_PX}px`;
+  element.style.overflow = "visible";
+  element.style.margin = "0";
+  element.style.boxSizing = "border-box";
 
   return {
     element,
     cleanup: () => {
-      restoreA4();
       root.unmount();
       host.remove();
     },
   };
+};
+
+const MARGIN_MM = 0; // Margins are already in the template padding
+const CONTENT_WIDTH_MM = A4_WIDTH_MM;
+const SECTION_GAP_MM = 2;
+
+const buildSectionBasedPdf = async (payload: DocumentPDFPayload) => {
+  const rendered = await renderPrintElement(payload);
+  if (!rendered) return null;
+
+  try {
+    const sections = Array.from(
+      rendered.element.querySelectorAll("[data-pdf-section]")
+    ) as HTMLElement[];
+
+    if (sections.length === 0) {
+      // Fallback to single-page capture
+      return buildSinglePagePdf(payload, "document.pdf");
+    }
+
+    const pdf = new jsPDF({
+      unit: "mm",
+      format: [A4_WIDTH_MM, A4_HEIGHT_MM],
+      orientation: "portrait",
+      compress: true,
+    });
+
+    let currentY = MARGIN_MM;
+
+    for (const section of sections) {
+      const canvas = await html2canvas(section, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: "#ffffff",
+        logging: false,
+        width: A4_WIDTH_PX,
+      });
+
+      const widthPx = canvas.width;
+      const heightPx = canvas.height;
+      const scaleFactor = CONTENT_WIDTH_MM / widthPx;
+      const heightMM = heightPx * scaleFactor;
+
+      const remainingSpace = A4_HEIGHT_MM - currentY;
+
+      if (heightMM > remainingSpace && currentY > MARGIN_MM) {
+        pdf.addPage();
+        currentY = MARGIN_MM;
+      }
+
+      const imgData = canvas.toDataURL("image/png");
+      pdf.addImage(imgData, "PNG", MARGIN_MM, currentY, CONTENT_WIDTH_MM, heightMM, undefined, "FAST");
+      currentY += heightMM + SECTION_GAP_MM;
+    }
+
+    return pdf;
+  } catch (err) {
+    console.error("Section-based PDF generation error:", err);
+    return null;
+  } finally {
+    rendered.cleanup();
+  }
 };
 
 const buildSinglePagePdf = async (payload: DocumentPDFPayload, _filename: string) => {
@@ -237,7 +317,6 @@ const buildSinglePagePdf = async (payload: DocumentPDFPayload, _filename: string
   if (!rendered) return null;
 
   try {
-    // Capture element to canvas at 2x scale for crisp output
     const canvas = await html2canvas(rendered.element, {
       scale: 2,
       useCORS: true,
@@ -251,7 +330,6 @@ const buildSinglePagePdf = async (payload: DocumentPDFPayload, _filename: string
       logging: false,
     });
 
-    // Create single-page A4 PDF and place the captured image
     const pdf = new jsPDF({
       unit: "mm",
       format: [A4_WIDTH_MM, A4_HEIGHT_MM],
@@ -271,16 +349,23 @@ const buildSinglePagePdf = async (payload: DocumentPDFPayload, _filename: string
   }
 };
 
+const buildPdf = async (payload: DocumentPDFPayload, filename: string) => {
+  if (payload.type === "letterhead") {
+    return buildSectionBasedPdf(payload);
+  }
+  return buildSinglePagePdf(payload, filename);
+};
+
 export const downloadDocumentPDF = async (payload: DocumentPDFPayload, filename: string) => {
   const safeFilename = sanitizeDocumentFilename(filename, "document");
-  const pdf = await buildSinglePagePdf(payload, `${safeFilename}.pdf`);
+  const pdf = await buildPdf(payload, `${safeFilename}.pdf`);
   if (!pdf) return;
   pdf.save(`${safeFilename}.pdf`);
 };
 
 export const generateDocumentPDFBase64 = async (payload: DocumentPDFPayload): Promise<string | null> => {
   try {
-    const pdf = await buildSinglePagePdf(payload, "document.pdf");
+    const pdf = await buildPdf(payload, "document.pdf");
     if (!pdf) return null;
     const pdfArrayBuffer = pdf.output("arraybuffer") as ArrayBuffer;
     return toBase64FromArrayBuffer(pdfArrayBuffer);
