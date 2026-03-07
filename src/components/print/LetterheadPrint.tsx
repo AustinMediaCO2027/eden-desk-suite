@@ -35,29 +35,14 @@ const LETTERHEAD_PRESETS: Record<string, LetterheadPreset> = {
 
 const PAGE_STYLE: CSSProperties = {
   width: "210mm",
-  height: "297mm",
+  minWidth: "210mm",
   padding: "20mm",
   boxSizing: "border-box",
-  overflow: "hidden",
   display: "flex",
   flexDirection: "column",
   backgroundColor: "white",
   fontFamily: "'Inter', 'Helvetica Neue', Arial, sans-serif",
   color: "hsl(222 47% 11%)",
-};
-
-const CONTENT_STYLE: CSSProperties = {
-  flex: "1 1 auto",
-  overflow: "hidden",
-  display: "flex",
-  flexDirection: "column",
-};
-
-const FOOTER_STYLE: CSSProperties = {
-  flexShrink: 0,
-  borderTop: "0.3mm solid hsl(220 13% 87%)",
-  paddingTop: "3mm",
-  marginTop: "auto",
 };
 
 const TABLE_RESET: CSSProperties = {
@@ -89,11 +74,15 @@ const LetterheadPrint = forwardRef<HTMLDivElement, LetterheadPrintProps>(
   }, ref) => {
     const preset = LETTERHEAD_PRESETS[templateStyle] || LETTERHEAD_PRESETS.classic;
     const brandColor = colorOverride || profile?.brand_color || preset.accent;
-    const bodyText = safeText(body, 3200);
+    const bodyText = safeText(body, 8000);
+
+    // Split body into paragraphs for section-based rendering
+    const bodyParagraphs = bodyText.split(/\n\n+/).filter(Boolean);
 
     return (
       <div ref={ref} style={PAGE_STYLE} data-print-template="letterhead" data-template-style={templateStyle}>
-        <div style={CONTENT_STYLE}>
+        {/* HEADER SECTION */}
+        <div data-pdf-section="header">
           <table style={{ ...TABLE_RESET, marginBottom: "4mm", backgroundColor: preset.darkHeader ? brandColor : "transparent" }}>
             <tbody>
               <tr>
@@ -103,7 +92,7 @@ const LetterheadPrint = forwardRef<HTMLDivElement, LetterheadPrintProps>(
                   ) : null}
                   <p style={{ margin: 0, fontSize: "5.2mm", fontWeight: 700, color: preset.darkHeader ? "hsl(0 0% 100%)" : "hsl(222 47% 11%)" }}>{safeText(profile?.company_name, 90) || "Your Company"}</p>
                   {profile?.company_address ? (
-                    <p style={{ margin: "1.2mm 0 0", fontSize: "3mm", color: preset.darkHeader ? "hsl(0 0% 92%)" : "hsl(215 16% 47%)", whiteSpace: "pre-wrap", maxHeight: "15mm", overflow: "hidden" }}>{safeText(profile.company_address, 150)}</p>
+                    <p style={{ margin: "1.2mm 0 0", fontSize: "3mm", color: preset.darkHeader ? "hsl(0 0% 92%)" : "hsl(215 16% 47%)", whiteSpace: "pre-wrap" }}>{safeText(profile.company_address, 150)}</p>
                   ) : null}
                 </td>
                 <td style={{ width: "44%", verticalAlign: "top", textAlign: "right", padding: preset.darkHeader ? "4mm" : "0" }}>
@@ -115,9 +104,11 @@ const LetterheadPrint = forwardRef<HTMLDivElement, LetterheadPrintProps>(
               </tr>
             </tbody>
           </table>
-
           <div style={{ height: templateStyle === "corporate" ? "0.8mm" : "0.4mm", width: "100%", backgroundColor: brandColor, marginBottom: "5mm" }} />
+        </div>
 
+        {/* RECIPIENT SECTION */}
+        <div data-pdf-section="recipient">
           <table style={{ ...TABLE_RESET, marginBottom: "5mm" }}>
             <tbody>
               <tr>
@@ -125,7 +116,7 @@ const LetterheadPrint = forwardRef<HTMLDivElement, LetterheadPrintProps>(
                   {recipientName ? <p style={{ margin: 0, fontSize: "3.2mm", fontWeight: 600 }}>{safeText(recipientName, 80)}</p> : null}
                   {recipientTitle ? <p style={{ margin: "0.8mm 0 0", fontSize: "3mm", color: "hsl(215 16% 47%)" }}>{safeText(recipientTitle, 80)}</p> : null}
                   {recipientCompany ? <p style={{ margin: "0.8mm 0 0", fontSize: "3mm", color: "hsl(215 16% 47%)" }}>{safeText(recipientCompany, 80)}</p> : null}
-                  {recipientAddress ? <p style={{ margin: "0.8mm 0 0", fontSize: "3mm", color: "hsl(215 16% 47%)", whiteSpace: "pre-wrap", maxHeight: "12mm", overflow: "hidden" }}>{safeText(recipientAddress, 130)}</p> : null}
+                  {recipientAddress ? <p style={{ margin: "0.8mm 0 0", fontSize: "3mm", color: "hsl(215 16% 47%)", whiteSpace: "pre-wrap" }}>{safeText(recipientAddress, 130)}</p> : null}
                   {recipientPhone ? <p style={{ margin: "0.8mm 0 0", fontSize: "3mm", color: "hsl(215 16% 47%)" }}>{safeText(recipientPhone, 50)}</p> : null}
                   {recipientEmail ? <p style={{ margin: "0.8mm 0 0", fontSize: "3mm", color: "hsl(215 16% 47%)" }}>{safeText(recipientEmail, 70)}</p> : null}
                 </td>
@@ -135,8 +126,11 @@ const LetterheadPrint = forwardRef<HTMLDivElement, LetterheadPrintProps>(
               </tr>
             </tbody>
           </table>
+        </div>
 
-          {subject ? (
+        {/* SUBJECT SECTION */}
+        {subject ? (
+          <div data-pdf-section="subject">
             <table style={{ ...TABLE_RESET, marginBottom: "4mm" }}>
               <tbody>
                 <tr>
@@ -144,33 +138,28 @@ const LetterheadPrint = forwardRef<HTMLDivElement, LetterheadPrintProps>(
                 </tr>
               </tbody>
             </table>
-          ) : null}
+          </div>
+        ) : null}
 
-          <table style={{ ...TABLE_RESET, marginBottom: "4mm", flex: "1 1 auto" }}>
-            <tbody>
-              <tr>
-                <td style={{ fontSize: "3.2mm", lineHeight: 1.65, color: "hsl(215 25% 25%)", verticalAlign: "top", whiteSpace: "pre-wrap", overflow: "hidden" }}>
-                  {bodyText}
-                </td>
-              </tr>
-            </tbody>
-          </table>
+        {/* BODY PARAGRAPHS - each as its own section for pagination */}
+        {bodyParagraphs.map((paragraph, index) => (
+          <div key={index} data-pdf-section="body">
+            <p style={{ fontSize: "3.2mm", lineHeight: 1.65, color: "hsl(215 25% 25%)", whiteSpace: "pre-wrap", margin: index === 0 ? "0 0 3mm 0" : "3mm 0" }}>
+              {paragraph}
+            </p>
+          </div>
+        ))}
 
-          <table style={TABLE_RESET}>
-            <tbody>
-              <tr>
-                <td style={{ fontSize: "3.2mm", color: "hsl(215 25% 25%)", verticalAlign: "top" }}>
-                  <p style={{ margin: 0 }}>{safeText(closing, 60) || "Sincerely,"}</p>
-                  {signatureUrl ? <img src={signatureUrl} alt="Signature" style={{ maxHeight: "12mm", maxWidth: "48mm", objectFit: "contain", marginTop: "2mm", marginBottom: "2mm" }} /> : null}
-                  <p style={{ margin: "1mm 0 0", fontWeight: 600 }}>{safeText(senderName, 80) || safeText(profile?.company_name, 80)}</p>
-                  {senderTitle ? <p style={{ margin: "0.8mm 0 0", fontSize: "3mm", color: "hsl(215 16% 47%)" }}>{safeText(senderTitle, 80)}</p> : null}
-                </td>
-              </tr>
-            </tbody>
-          </table>
+        {/* CLOSING SECTION */}
+        <div data-pdf-section="closing" style={{ marginTop: "5mm" }}>
+          <p style={{ margin: 0, fontSize: "3.2mm", color: "hsl(215 25% 25%)" }}>{safeText(closing, 60) || "Sincerely,"}</p>
+          {signatureUrl ? <img src={signatureUrl} alt="Signature" style={{ maxHeight: "12mm", maxWidth: "48mm", objectFit: "contain", marginTop: "2mm", marginBottom: "2mm" }} /> : null}
+          <p style={{ margin: "1mm 0 0", fontWeight: 600, fontSize: "3.2mm" }}>{safeText(senderName, 80) || safeText(profile?.company_name, 80)}</p>
+          {senderTitle ? <p style={{ margin: "0.8mm 0 0", fontSize: "3mm", color: "hsl(215 16% 47%)" }}>{safeText(senderTitle, 80)}</p> : null}
         </div>
 
-        <div style={FOOTER_STYLE}>
+        {/* FOOTER SECTION */}
+        <div data-pdf-section="footer" style={{ borderTop: "0.3mm solid hsl(220 13% 87%)", paddingTop: "3mm", marginTop: "8mm" }}>
           <table style={TABLE_RESET}>
             <tbody>
               <tr>
@@ -198,4 +187,3 @@ const LetterheadPrint = forwardRef<HTMLDivElement, LetterheadPrintProps>(
 LetterheadPrint.displayName = "LetterheadPrint";
 
 export default LetterheadPrint;
-
