@@ -121,15 +121,20 @@ const enforceA4Canvas = (element: HTMLElement) => {
   };
 };
 
-const createPrintHost = () => {
+const createPrintHost = (allowOverflow = false) => {
   const host = document.createElement("div");
   host.style.position = "fixed";
   host.style.left = "-10000px";
   host.style.top = "0";
   host.style.zIndex = "-1";
   host.style.width = `${A4_WIDTH_PX}px`;
-  host.style.height = `${A4_HEIGHT_PX}px`;
-  host.style.overflow = "hidden";
+  if (!allowOverflow) {
+    host.style.height = `${A4_HEIGHT_PX}px`;
+    host.style.overflow = "hidden";
+  } else {
+    host.style.height = "auto";
+    host.style.overflow = "visible";
+  }
   host.style.pointerEvents = "none";
   host.style.opacity = "0";
   host.style.background = "white";
