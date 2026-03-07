@@ -253,6 +253,70 @@ const renderPrintElement = async (payload: DocumentPDFPayload) => {
 const MARGIN_MM = 0; // Margins are already in the template padding
 const CONTENT_WIDTH_MM = A4_WIDTH_MM;
 const SECTION_GAP_MM = 2;
+const MIN_SLICE_HEIGHT_PX = 8;
+
+const renderSectionCanvas = async (section: HTMLElement) => {
+  return html2canvas(section, {
+    scale: 2,
+    useCORS: true,
+    backgroundColor: "#ffffff",
+    logging: false,
+    width: A4_WIDTH_PX,
+  });
+};
+
+const appendCanvasToPdf = (pdf: jsPDF, canvas: HTMLCanvasElement, startY: number) => {
+  const pxPerMM = canvas.width / CONTENT_WIDTH_MM;
+  if (!Number.isFinite(pxPerMM) || pxPerMM <= 0 || canvas.height <= 0) {
+    return startY;
+  }
+
+  let currentY = startY;
+  let offsetY = 0;
+
+  while (offsetY < canvas.height) {
+    const remainingMM = A4_HEIGHT_MM - currentY;
+
+    if (remainingMM <= 0.1) {
+      pdf.addPage();
+      currentY = MARGIN_MM;
+      continue;
+    }
+
+    let sliceHeightPx = Math.floor(remainingMM * pxPerMM);
+    const remainingPx = canvas.height - offsetY;
+    sliceHeightPx = Math.min(sliceHeightPx, remainingPx);
+
+    if (sliceHeightPx < MIN_SLICE_HEIGHT_PX) {
+      pdf.addPage();
+      currentY = MARGIN_MM;
+      continue;
+    }
+
+    const sliceCanvas = document.createElement("canvas");
+    sliceCanvas.width = canvas.width;
+    sliceCanvas.height = sliceHeightPx;
+
+    const ctx = sliceCanvas.getContext("2d");
+    if (!ctx) break;
+
+    ctx.drawImage(canvas, 0, offsetY, canvas.width, sliceHeightPx, 0, 0, canvas.width, sliceHeightPx);
+
+    const sliceHeightMM = sliceHeightPx / pxPerMM;
+    const imgData = sliceCanvas.toDataURL("image/png");
+    pdf.addImage(imgData, "PNG", MARGIN_MM, currentY, CONTENT_WIDTH_MM, sliceHeightMM, undefined, "FAST");
+
+    offsetY += sliceHeightPx;
+    currentY += sliceHeightMM;
+
+    if (offsetY < canvas.height) {
+      pdf.addPage();
+      currentY = MARGIN_MM;
+    }
+  }
+
+  return currentY;
+};
 
 const buildSectionBasedPdf = async (payload: DocumentPDFPayload) => {
   const rendered = await renderPrintElement(payload);
@@ -277,30 +341,34 @@ const buildSectionBasedPdf = async (payload: DocumentPDFPayload) => {
 
     let currentY = MARGIN_MM;
 
-    for (const section of sections) {
-      const canvas = await html2canvas(section, {
-        scale: 2,
-        useCORS: true,
-        backgroundColor: "#ffffff",
-        logging: false,
-        width: A4_WIDTH_PX,
-      });
+    for (let index = 0; index < sections.length; index += 1) {
+      const section = sections[index];
+      const canvas = await renderSectionCanvas(section);
 
-      const widthPx = canvas.width;
-      const heightPx = canvas.height;
-      const scaleFactor = CONTENT_WIDTH_MM / widthPx;
-      const heightMM = heightPx * scaleFactor;
+      if (!canvas.width || !canvas.height) {
+        continue;
+      }
 
-      const remainingSpace = A4_HEIGHT_MM - currentY;
+      const pxPerMM = canvas.width / CONTENT_WIDTH_MM;
+      const sectionHeightMM = canvas.height / pxPerMM;
+      const remainingSpaceMM = A4_HEIGHT_MM - currentY;
 
-      if (heightMM > remainingSpace && currentY > MARGIN_MM) {
+      // Keep normal-sized sections intact by moving them to a new page when needed
+      if (sectionHeightMM <= A4_HEIGHT_MM - MARGIN_MM && sectionHeightMM > remainingSpaceMM && currentY > MARGIN_MM) {
         pdf.addPage();
         currentY = MARGIN_MM;
       }
 
-      const imgData = canvas.toDataURL("image/png");
-      pdf.addImage(imgData, "PNG", MARGIN_MM, currentY, CONTENT_WIDTH_MM, heightMM, undefined, "FAST");
-      currentY += heightMM + SECTION_GAP_MM;
+      currentY = appendCanvasToPdf(pdf, canvas, currentY);
+
+      const hasMoreSections = index < sections.length - 1;
+      if (hasMoreSections) {
+        currentY += SECTION_GAP_MM;
+        if (currentY >= A4_HEIGHT_MM) {
+          pdf.addPage();
+          currentY = MARGIN_MM;
+        }
+      }
     }
 
     return pdf;

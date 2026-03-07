@@ -53,6 +53,50 @@ const TABLE_RESET: CSSProperties = {
 
 const safeText = (value: string | null | undefined, max: number) => (value || "").trim().slice(0, max);
 
+const MAX_BODY_SECTION_CHARS = 700;
+
+const chunkParagraph = (paragraph: string, maxChars: number) => {
+  const clean = paragraph.trim();
+  if (!clean) return [] as string[];
+  if (clean.length <= maxChars) return [clean];
+
+  const chunks: string[] = [];
+  let start = 0;
+
+  while (start < clean.length) {
+    let end = Math.min(start + maxChars, clean.length);
+
+    if (end < clean.length) {
+      const lastLineBreak = clean.lastIndexOf("\n", end);
+      const lastSpace = clean.lastIndexOf(" ", end);
+      const breakPoint = Math.max(lastLineBreak, lastSpace);
+
+      if (breakPoint > start + Math.floor(maxChars * 0.6)) {
+        end = breakPoint;
+      }
+    }
+
+    const chunk = clean.slice(start, end).trim();
+    if (chunk) chunks.push(chunk);
+
+    start = end;
+    while (start < clean.length && /\s/.test(clean[start])) {
+      start += 1;
+    }
+  }
+
+  return chunks;
+};
+
+const splitBodyIntoSections = (bodyText: string) => {
+  return bodyText
+    .replace(/\r/g, "")
+    .split(/\n\n+/)
+    .map((paragraph) => paragraph.trim())
+    .filter(Boolean)
+    .flatMap((paragraph) => chunkParagraph(paragraph, MAX_BODY_SECTION_CHARS));
+};
+
 const LetterheadPrint = forwardRef<HTMLDivElement, LetterheadPrintProps>(
   ({
     profile,
@@ -75,9 +119,7 @@ const LetterheadPrint = forwardRef<HTMLDivElement, LetterheadPrintProps>(
     const preset = LETTERHEAD_PRESETS[templateStyle] || LETTERHEAD_PRESETS.classic;
     const brandColor = colorOverride || profile?.brand_color || preset.accent;
     const bodyText = safeText(body, 8000);
-
-    // Split body into paragraphs for section-based rendering
-    const bodyParagraphs = bodyText.split(/\n\n+/).filter(Boolean);
+    const bodySections = splitBodyIntoSections(bodyText);
 
     return (
       <div ref={ref} style={PAGE_STYLE} data-print-template="letterhead" data-template-style={templateStyle}>
@@ -142,10 +184,10 @@ const LetterheadPrint = forwardRef<HTMLDivElement, LetterheadPrintProps>(
         ) : null}
 
         {/* BODY PARAGRAPHS - each as its own section for pagination */}
-        {bodyParagraphs.map((paragraph, index) => (
-          <div key={index} data-pdf-section="body">
+        {bodySections.map((section, index) => (
+          <div key={`body-${index}`} data-pdf-section="body">
             <p style={{ fontSize: "3.2mm", lineHeight: 1.65, color: "hsl(215 25% 25%)", whiteSpace: "pre-wrap", margin: index === 0 ? "0 0 3mm 0" : "3mm 0" }}>
-              {paragraph}
+              {section}
             </p>
           </div>
         ))}
