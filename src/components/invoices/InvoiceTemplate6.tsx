@@ -148,10 +148,12 @@ const InvoiceTemplate6 = forwardRef<HTMLDivElement, InvoiceTemplateProps>(
               <tbody>
                 <tr>
                   <td style={{ width: "40%", verticalAlign: "middle" }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: "2mm" }}>
-                      {profile?.logo_url && <img src={profile.logo_url} alt="Logo" style={{ height: "5mm", maxWidth: "15mm", objectFit: "contain" }} />}
-                      <span style={{ fontSize: "3mm", fontWeight: 700, color: accent }}>{safeText(profile?.company_name, 40)}</span>
-                    </div>
+                    <table style={{ borderCollapse: "collapse" }}>
+                      <tbody><tr>
+                        {profile?.logo_url && <td style={{ verticalAlign: "middle", paddingRight: "2mm" }}><img src={profile.logo_url} alt="Logo" style={{ height: "5mm", maxWidth: "15mm", objectFit: "contain" }} /></td>}
+                        <td style={{ verticalAlign: "middle", fontSize: "3mm", fontWeight: 700, color: accent }}>{safeText(profile?.company_name, 40)}</td>
+                      </tr></tbody>
+                    </table>
                   </td>
                   <td style={{ width: "60%", verticalAlign: "middle", textAlign: "right" }}>
                     <span style={{ fontSize: "2.7mm", color: "#888" }}>

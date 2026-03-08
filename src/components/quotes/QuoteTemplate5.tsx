@@ -41,40 +41,42 @@ const QuoteTemplate5 = forwardRef<HTMLDivElement, QuoteTemplateProps>(
         <div style={{
           backgroundColor: accent,
           padding: "12mm 20mm 10mm",
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "flex-start",
         }}>
-          <div>
-            <p style={{
-              margin: 0, fontSize: "14mm", fontWeight: 800,
-              color: "white", letterSpacing: "2mm", lineHeight: 1,
-              textTransform: "uppercase",
-            }}>Quotation</p>
-            <p style={{ margin: "3mm 0 0", fontSize: "3.2mm", color: "rgba(255,255,255,0.6)", letterSpacing: "0.5mm" }}>
-              {safeText(profile?.company_name, 50) || "Your Company"}
-            </p>
-          </div>
-          {/* Monogram / Logo */}
-          <div style={{ textAlign: "right" }}>
-            {profile?.logo_url ? (
-              <img
-                src={profile.logo_url}
-                alt="Logo"
-                style={{ maxHeight: "18mm", maxWidth: "30mm", objectFit: "contain" }}
-              />
-            ) : (
-              <div style={{
-                width: "16mm", height: "16mm",
-                border: "0.6mm solid rgba(255,255,255,0.8)",
-                display: "flex", alignItems: "center", justifyContent: "center",
-                fontSize: "7mm", fontWeight: 800, color: "white",
-                letterSpacing: "0.5mm",
-              }}>
-                {monogram}
-              </div>
-            )}
-          </div>
+          <table style={{ width: "100%", borderCollapse: "collapse" }}>
+            <tbody><tr>
+              <td style={{ verticalAlign: "top" }}>
+                <p style={{
+                  margin: 0, fontSize: "14mm", fontWeight: 800,
+                  color: "white", letterSpacing: "2mm", lineHeight: 1,
+                  textTransform: "uppercase",
+                }}>Quotation</p>
+                <p style={{ margin: "3mm 0 0", fontSize: "3.2mm", color: "rgba(255,255,255,0.6)", letterSpacing: "0.5mm" }}>
+                  {safeText(profile?.company_name, 50) || "Your Company"}
+                </p>
+              </td>
+              <td style={{ verticalAlign: "top", textAlign: "right" }}>
+                {profile?.logo_url ? (
+                  <img
+                    src={profile.logo_url}
+                    alt="Logo"
+                    style={{ maxHeight: "18mm", maxWidth: "30mm", objectFit: "contain" }}
+                  />
+                ) : (
+                  <table style={{ borderCollapse: "collapse", marginLeft: "auto" }}>
+                    <tbody><tr><td style={{
+                      width: "16mm", height: "16mm",
+                      border: "0.6mm solid rgba(255,255,255,0.8)",
+                      textAlign: "center", verticalAlign: "middle",
+                      fontSize: "7mm", fontWeight: 800, color: "white",
+                      letterSpacing: "0.5mm",
+                    }}>
+                      {monogram}
+                    </td></tr></tbody>
+                  </table>
+                )}
+              </td>
+            </tr></tbody>
+          </table>
         </div>
 
         {/* ── Body content ── */}
@@ -175,12 +177,13 @@ const QuoteTemplate5 = forwardRef<HTMLDivElement, QuoteTemplateProps>(
                         <div style={{
                           backgroundColor: accent,
                           padding: "3mm 4mm",
-                          display: "flex",
-                          justifyContent: "space-between",
-                          alignItems: "center",
                         }}>
-                          <span style={{ fontSize: "3.5mm", fontWeight: 800, color: "white", textTransform: "uppercase", letterSpacing: "0.3mm" }}>Total Estimate</span>
-                          <span style={{ fontSize: "4mm", fontWeight: 800, color: "white" }}>{fmt(total)}</span>
+                          <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                            <tbody><tr>
+                              <td style={{ fontSize: "3.5mm", fontWeight: 800, color: "white", textTransform: "uppercase", letterSpacing: "0.3mm", textAlign: "left" }}>Total Estimate</td>
+                              <td style={{ fontSize: "4mm", fontWeight: 800, color: "white", textAlign: "right", whiteSpace: "nowrap", fontVariantNumeric: "tabular-nums" }}>{fmt(total)}</td>
+                            </tr></tbody>
+                          </table>
                         </div>
                       </td>
                     </tr>
@@ -204,20 +207,21 @@ const QuoteTemplate5 = forwardRef<HTMLDivElement, QuoteTemplateProps>(
           position: "absolute", left: 0, right: 0, bottom: 0,
           backgroundColor: accent,
           padding: "4mm 20mm",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          gap: "10mm",
+          textAlign: "center",
         }}>
-          {profile?.company_phone && (
-            <span style={{ fontSize: "2.8mm", color: "white" }}>📞 {safeText(profile.company_phone, 30)}</span>
-          )}
-          {profile?.company_email && (
-            <span style={{ fontSize: "2.8mm", color: "white" }}>✉ {safeText(profile.company_email, 50)}</span>
-          )}
-          {profile?.company_website && (
-            <span style={{ fontSize: "2.8mm", color: "white" }}>🌐 {safeText(profile.company_website, 50)}</span>
-          )}
+          <table style={{ width: "100%", borderCollapse: "collapse" }}>
+            <tbody><tr>
+              {profile?.company_phone && (
+                <td style={{ fontSize: "2.8mm", color: "white", textAlign: "center" }}>📞 {safeText(profile.company_phone, 30)}</td>
+              )}
+              {profile?.company_email && (
+                <td style={{ fontSize: "2.8mm", color: "white", textAlign: "center" }}>✉ {safeText(profile.company_email, 50)}</td>
+              )}
+              {profile?.company_website && (
+                <td style={{ fontSize: "2.8mm", color: "white", textAlign: "center" }}>🌐 {safeText(profile.company_website, 50)}</td>
+              )}
+            </tr></tbody>
+          </table>
         </div>
       </div>
     );

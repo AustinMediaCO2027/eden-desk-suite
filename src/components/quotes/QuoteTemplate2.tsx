@@ -136,9 +136,13 @@ const QuoteTemplate2 = forwardRef<HTMLDivElement, QuoteTemplateProps>(
           <tbody>
             <tr><td style={{ width: "60%" }} />
               <td style={{ width: "40%" }}>
-                <div style={{ backgroundColor: accent, borderRadius: "2mm", padding: "3mm 4mm", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <span style={{ fontSize: "3.4mm", fontWeight: 700, color: "white" }}>Estimated total</span>
-                  <span style={{ fontSize: "3.4mm", fontWeight: 700, color: "white" }}>{fmt(total)}</span>
+                <div style={{ backgroundColor: accent, borderRadius: "2mm", padding: "3mm 4mm" }}>
+                  <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                    <tbody><tr>
+                      <td style={{ fontSize: "3.4mm", fontWeight: 700, color: "white", textAlign: "left" }}>Estimated total</td>
+                      <td style={{ fontSize: "3.4mm", fontWeight: 700, color: "white", textAlign: "right", whiteSpace: "nowrap", fontVariantNumeric: "tabular-nums" }}>{fmt(total)}</td>
+                    </tr></tbody>
+                  </table>
                 </div>
               </td>
             </tr>
