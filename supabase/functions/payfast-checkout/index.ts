@@ -189,7 +189,15 @@ serve(async (req) => {
       ? formatAmount(trialRecurringAmount, "39.99")
       : formatAmount(amount, "0.00");
 
-    const params: Record<string, string> = {
+    const passphrase = PAYFAST_PASSPHRASE.trim();
+    if (!passphrase) {
+      return new Response(JSON.stringify({ error: "PayFast passphrase is not configured" }), {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const rawParams: Record<string, string | undefined> = {
       merchant_id: PAYFAST_MERCHANT_ID,
       merchant_key: PAYFAST_MERCHANT_KEY,
       return_url: returnUrl || `${req.headers.get("origin") || ""}/dashboard/billing?status=success`,
@@ -197,6 +205,7 @@ serve(async (req) => {
       notify_url: `${Deno.env.get("SUPABASE_URL")}/functions/v1/payfast-itn`,
       name_first: companyName || userEmail?.split("@")[0] || "Eden Desk",
       email_address: userEmail || user.email || "",
+      m_payment_id: `${userId}:${isTrial ? "trial" : planId}:${Date.now()}`,
       amount: paymentAmount,
       item_name: isTrial ? "Starter Plan Trial" : `Eden Desk ${planName} Plan`,
       item_description: isTrial
@@ -204,14 +213,15 @@ serve(async (req) => {
         : `${planName} subscription - ${period}`,
       custom_str1: userId,
       custom_str2: isTrial ? "trial" : (planId || ""),
-      m_payment_id: `${userId}:${isTrial ? "trial" : planId}:${Date.now()}`,
       subscription_type: "1",
       recurring_amount: recurringAmount,
       frequency: isTrial ? "3" : (planId === "yearly" ? "6" : "3"),
       cycles: "0",
     };
 
-    params.signature = await generatePayFastSignature(params, PAYFAST_PASSPHRASE);
+    const orderedPairs = toOrderedPayFastPairs(rawParams);
+    const params = Object.fromEntries(orderedPairs) as Record<string, string>;
+    params.signature = await generatePayFastSignature(orderedPairs, passphrase);
 
     return new Response(
       JSON.stringify({
