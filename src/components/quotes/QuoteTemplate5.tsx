@@ -177,12 +177,13 @@ const QuoteTemplate5 = forwardRef<HTMLDivElement, QuoteTemplateProps>(
                         <div style={{
                           backgroundColor: accent,
                           padding: "3mm 4mm",
-                          display: "flex",
-                          justifyContent: "space-between",
-                          alignItems: "center",
                         }}>
-                          <span style={{ fontSize: "3.5mm", fontWeight: 800, color: "white", textTransform: "uppercase", letterSpacing: "0.3mm" }}>Total Estimate</span>
-                          <span style={{ fontSize: "4mm", fontWeight: 800, color: "white" }}>{fmt(total)}</span>
+                          <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                            <tbody><tr>
+                              <td style={{ fontSize: "3.5mm", fontWeight: 800, color: "white", textTransform: "uppercase", letterSpacing: "0.3mm", textAlign: "left" }}>Total Estimate</td>
+                              <td style={{ fontSize: "4mm", fontWeight: 800, color: "white", textAlign: "right", whiteSpace: "nowrap", fontVariantNumeric: "tabular-nums" }}>{fmt(total)}</td>
+                            </tr></tbody>
+                          </table>
                         </div>
                       </td>
                     </tr>
