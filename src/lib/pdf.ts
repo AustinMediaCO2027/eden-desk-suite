@@ -200,8 +200,7 @@ const buildNode = (payload: DocumentPDFPayload) => {
 };
 
 const renderPrintElement = async (payload: DocumentPDFPayload) => {
-  const isLetterhead = payload.type === "letterhead";
-  const host = createPrintHost(isLetterhead);
+  const host = createPrintHost(false);
   const root = createRoot(host);
 
   flushSync(() => {
