@@ -432,9 +432,6 @@ const buildSinglePagePdf = async (payload: DocumentPDFPayload, _filename: string
 };
 
 const buildPdf = async (payload: DocumentPDFPayload, filename: string) => {
-  if (payload.type === "letterhead") {
-    return buildSectionBasedPdf(payload);
-  }
   return buildSinglePagePdf(payload, filename);
 };
 
