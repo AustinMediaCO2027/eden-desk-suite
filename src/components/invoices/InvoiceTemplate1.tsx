@@ -51,17 +51,23 @@ const InvoiceTemplate1 = forwardRef<HTMLDivElement, InvoiceTemplateProps>(
           <tbody>
             <tr>
               <td style={{ width: "55%", verticalAlign: "top" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "3mm", marginBottom: "2mm" }}>
-                  {profile?.logo_url && (
-                    <img src={profile.logo_url} alt="Logo" style={{ height: "12mm", maxWidth: "30mm", objectFit: "contain" }} />
-                  )}
-                  <div>
-                    <p style={{ margin: 0, fontSize: "5mm", fontWeight: 700, color: accent }}>{safeText(profile?.company_name, 60) || "Your Company"}</p>
-                    {profile?.company_website && <p style={{ margin: "0.5mm 0 0", fontSize: "2.8mm", color: "#666" }}>{safeText(profile.company_website, 60)}</p>}
-                    {profile?.company_email && <p style={{ margin: "0.3mm 0 0", fontSize: "2.8mm", color: "#666" }}>{safeText(profile.company_email, 60)}</p>}
-                    {profile?.company_phone && <p style={{ margin: "0.3mm 0 0", fontSize: "2.8mm", color: "#666" }}>{safeText(profile.company_phone, 40)}</p>}
-                  </div>
-                </div>
+                <table style={{ borderCollapse: "collapse", marginBottom: "2mm" }}>
+                  <tbody>
+                    <tr>
+                      {profile?.logo_url && (
+                        <td style={{ verticalAlign: "middle", paddingRight: "3mm" }}>
+                          <img src={profile.logo_url} alt="Logo" style={{ height: "12mm", maxWidth: "30mm", objectFit: "contain" }} />
+                        </td>
+                      )}
+                      <td style={{ verticalAlign: "middle" }}>
+                        <p style={{ margin: 0, fontSize: "5mm", fontWeight: 700, color: accent }}>{safeText(profile?.company_name, 60) || "Your Company"}</p>
+                        {profile?.company_website && <p style={{ margin: "0.5mm 0 0", fontSize: "2.8mm", color: "#666" }}>{safeText(profile.company_website, 60)}</p>}
+                        {profile?.company_email && <p style={{ margin: "0.3mm 0 0", fontSize: "2.8mm", color: "#666" }}>{safeText(profile.company_email, 60)}</p>}
+                        {profile?.company_phone && <p style={{ margin: "0.3mm 0 0", fontSize: "2.8mm", color: "#666" }}>{safeText(profile.company_phone, 40)}</p>}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
               </td>
               <td style={{ width: "45%", verticalAlign: "top", textAlign: "right" }}>
                 {profile?.company_address && <p style={{ margin: 0, fontSize: "2.9mm", color: "#555", whiteSpace: "pre-wrap" }}>{safeText(profile.company_address, 120)}</p>}
