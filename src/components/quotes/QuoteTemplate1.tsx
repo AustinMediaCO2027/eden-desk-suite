@@ -123,9 +123,9 @@ const QuoteTemplate1 = forwardRef<HTMLDivElement, QuoteTemplateProps>(
                   <p style={{ margin: 0, fontSize: "3.2mm", fontWeight: 600 }}>{safeText(item.description, 70)}</p>
                   {item.details && <p style={{ margin: "0.5mm 0 0", fontSize: "2.7mm", color: "#888" }}>{safeText(item.details, 80)}</p>}
                 </td>
-                <td style={{ ...R, textAlign: "center", padding: "2.5mm 0", borderBottom: "0.2mm solid #f0f0f0", fontSize: "3.1mm", color: "#555" }}>{Number(item.quantity || 0)}</td>
-                <td style={{ ...R, padding: "2.5mm 0", borderBottom: "0.2mm solid #f0f0f0", fontSize: "3.1mm", color: "#555" }}>{fmt(Number(item.rate || 0))}</td>
-                <td style={{ ...R, padding: "2.5mm 0", borderBottom: "0.2mm solid #f0f0f0", fontSize: "3.1mm", fontWeight: 600 }}>{fmt(item.amount)}</td>
+                <td style={{ ...R, padding: "2.5mm 0", borderBottom: "0.2mm solid #f0f0f0", fontSize: "3.1mm", color: "#555", verticalAlign: "top" }}>{Number(item.quantity || 0)}</td>
+                <td style={{ ...R, padding: "2.5mm 0", borderBottom: "0.2mm solid #f0f0f0", fontSize: "3.1mm", color: "#555", verticalAlign: "top" }}>{fmt(Number(item.rate || 0))}</td>
+                <td style={{ ...R, padding: "2.5mm 0", borderBottom: "0.2mm solid #f0f0f0", fontSize: "3.1mm", fontWeight: 600, verticalAlign: "top" }}>{fmt(item.amount)}</td>
               </tr>
             ))}
           </tbody>

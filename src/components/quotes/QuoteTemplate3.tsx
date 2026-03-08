@@ -108,9 +108,9 @@ const QuoteTemplate3 = forwardRef<HTMLDivElement, QuoteTemplateProps>(
                             <p style={{ margin: 0, fontSize: "3.1mm", fontWeight: 600 }}>{safeText(item.description, 60)}</p>
                             {item.details && <p style={{ margin: "0.5mm 0 0", fontSize: "2.6mm", color: "#888" }}>{safeText(item.details, 70)}</p>}
                           </td>
-                          <td style={{ ...R, textAlign: "center", padding: "3mm 2mm", borderBottom: "0.2mm solid #f0f0f0", fontSize: "3mm", color: "#555" }}>{Number(item.quantity || 0)}</td>
-                          <td style={{ ...R, padding: "3mm 2mm", borderBottom: "0.2mm solid #f0f0f0", fontSize: "3mm", color: "#555" }}>{fmt(Number(item.rate || 0))}</td>
-                          <td style={{ ...R, padding: "3mm 4mm", borderBottom: "0.2mm solid #f0f0f0", fontSize: "3mm", fontWeight: 600 }}>{fmt(item.amount)}</td>
+                          <td style={{ ...R, padding: "3mm 2mm", borderBottom: "0.2mm solid #f0f0f0", fontSize: "3mm", color: "#555", verticalAlign: "top" }}>{Number(item.quantity || 0)}</td>
+                          <td style={{ ...R, padding: "3mm 2mm", borderBottom: "0.2mm solid #f0f0f0", fontSize: "3mm", color: "#555", verticalAlign: "top" }}>{fmt(Number(item.rate || 0))}</td>
+                          <td style={{ ...R, padding: "3mm 4mm", borderBottom: "0.2mm solid #f0f0f0", fontSize: "3mm", fontWeight: 600, verticalAlign: "top" }}>{fmt(item.amount)}</td>
                         </tr>
                       ))}
                       {/* Subtotal rows */}
