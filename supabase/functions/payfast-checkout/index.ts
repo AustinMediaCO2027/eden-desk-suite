@@ -1,6 +1,13 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import md5 from "https://esm.sh/js-md5@0.8.3";
+
+async function md5(input: string): Promise<string> {
+  const data = new TextEncoder().encode(input);
+  const hash = await crypto.subtle.digest("MD5", data);
+  return [...new Uint8Array(hash)]
+    .map(b => b.toString(16).padStart(2, "0"))
+    .join("");
+}
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -15,7 +22,7 @@ const formatAmount = (value: unknown, fallback: string) => {
 const encodePayFastValue = (value: string) =>
   encodeURIComponent(value.trim()).replace(/%20/g, "+");
 
-const generatePayFastSignature = (params: Record<string, string>, passphrase?: string) => {
+const generatePayFastSignature = async (params: Record<string, string>, passphrase?: string): Promise<string> => {
   const payload = Object.entries(params)
     .filter(([, value]) => value !== undefined && value !== null && value !== "")
     .sort(([keyA], [keyB]) => keyA.localeCompare(keyB))
@@ -27,7 +34,7 @@ const generatePayFastSignature = (params: Record<string, string>, passphrase?: s
     ? `${payload}&passphrase=${encodePayFastValue(phrase)}`
     : payload;
 
-  return md5(fullPayload);
+  return await md5(fullPayload);
 };
 
 serve(async (req) => {
@@ -142,7 +149,7 @@ serve(async (req) => {
       cycles: "0",
     };
 
-    params.signature = generatePayFastSignature(params, PAYFAST_PASSPHRASE);
+    params.signature = await generatePayFastSignature(params, PAYFAST_PASSPHRASE);
 
     return new Response(
       JSON.stringify({
