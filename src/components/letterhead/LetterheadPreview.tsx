@@ -28,4 +28,3 @@ const LetterheadPreview = forwardRef<HTMLDivElement, Props>(({ id, templateStyle
 LetterheadPreview.displayName = "LetterheadPreview";
 
 export default LetterheadPreview;
-

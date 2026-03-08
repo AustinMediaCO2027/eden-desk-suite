@@ -1,137 +1,9 @@
-import { forwardRef, type CSSProperties } from "react";
+import { forwardRef } from "react";
 import type { LetterheadTemplateProps } from "@/components/letterhead/LetterheadTypes";
 
 interface LetterheadPrintProps extends LetterheadTemplateProps {
   templateStyle?: string;
 }
-
-const DEFAULT_ACCENT = "hsl(358 78% 52%)";
-const PAGE_BACKGROUND = "hsl(0 0% 93%)";
-const TEXT_PRIMARY = "hsl(222 47% 11%)";
-const TEXT_MUTED = "hsl(215 12% 42%)";
-const WHITE = "hsl(0 0% 100%)";
-
-const MAX_LINE_CHARS = 82;
-const SINGLE_PAGE_LINES_WITH_SUBJECT = 14;
-const SINGLE_PAGE_LINES_NO_SUBJECT = 16;
-const FIRST_PAGE_LINES_WITH_SUBJECT = 20;
-const FIRST_PAGE_LINES_NO_SUBJECT = 22;
-const MIDDLE_PAGE_LINES = 36;
-const LAST_PAGE_LINES = 24;
-
-const safeText = (value: string | null | undefined, max: number) => (value || "").trim().slice(0, max);
-
-const wrapParagraphToLines = (paragraph: string, maxChars: number) => {
-  const words = paragraph.split(/\s+/).filter(Boolean);
-  if (words.length === 0) return [] as string[];
-
-  const lines: string[] = [];
-  let current = "";
-
-  for (const word of words) {
-    if (word.length > maxChars) {
-      if (current) {
-        lines.push(current);
-        current = "";
-      }
-
-      for (let start = 0; start < word.length; start += maxChars) {
-        lines.push(word.slice(start, start + maxChars));
-      }
-      continue;
-    }
-
-    const next = current ? `${current} ${word}` : word;
-    if (next.length <= maxChars) {
-      current = next;
-      continue;
-    }
-
-    if (current) lines.push(current);
-    current = word;
-  }
-
-  if (current) lines.push(current);
-  return lines;
-};
-
-const bodyToLines = (body: string) => {
-  const text = safeText(body.replace(/\r/g, ""), 16000);
-  if (!text) return [] as string[];
-
-  const paragraphs = text
-    .split(/\n\n+/)
-    .map((paragraph) => paragraph.trim())
-    .filter(Boolean);
-
-  const lines: string[] = [];
-
-  paragraphs.forEach((paragraph, index) => {
-    lines.push(...wrapParagraphToLines(paragraph, MAX_LINE_CHARS));
-    if (index < paragraphs.length - 1) lines.push("");
-  });
-
-  return lines;
-};
-
-const paginateBodyLines = (lines: string[], hasSubject: boolean) => {
-  if (lines.length === 0) return [[]] as string[][];
-
-  const singlePageLimit = hasSubject ? SINGLE_PAGE_LINES_WITH_SUBJECT : SINGLE_PAGE_LINES_NO_SUBJECT;
-  if (lines.length <= singlePageLimit) {
-    return [lines];
-  }
-
-  const firstPageLimit = hasSubject ? FIRST_PAGE_LINES_WITH_SUBJECT : FIRST_PAGE_LINES_NO_SUBJECT;
-  const pages: string[][] = [lines.slice(0, firstPageLimit)];
-  let cursor = firstPageLimit;
-
-  while (lines.length - cursor > LAST_PAGE_LINES) {
-    pages.push(lines.slice(cursor, cursor + MIDDLE_PAGE_LINES));
-    cursor += MIDDLE_PAGE_LINES;
-  }
-
-  pages.push(lines.slice(cursor));
-  return pages;
-};
-
-const getInitials = (name: string) => {
-  const parts = name
-    .split(" ")
-    .map((part) => part.trim())
-    .filter(Boolean)
-    .slice(0, 2);
-
-  if (parts.length === 0) return "ED";
-  return parts.map((part) => part[0]?.toUpperCase() ?? "").join("");
-};
-
-const pageStyle: CSSProperties = {
-  width: "210mm",
-  minWidth: "210mm",
-  maxWidth: "210mm",
-  height: "297mm",
-  minHeight: "297mm",
-  maxHeight: "297mm",
-  position: "relative",
-  boxSizing: "border-box",
-  overflow: "hidden",
-  backgroundColor: PAGE_BACKGROUND,
-  color: TEXT_PRIMARY,
-  fontFamily: "'Helvetica Neue', Arial, sans-serif",
-};
-
-const renderCornerStripes = (accent: string) => (
-  <>
-    <div style={{ position: "absolute", top: "-42mm", left: "-54mm", width: "150mm", height: "10mm", transform: "rotate(-42deg)", backgroundColor: accent, zIndex: 0 }} />
-    <div style={{ position: "absolute", top: "-35mm", left: "-47mm", width: "150mm", height: "7mm", transform: "rotate(-42deg)", backgroundColor: WHITE, zIndex: 0 }} />
-    <div style={{ position: "absolute", top: "-28mm", left: "-40mm", width: "150mm", height: "10mm", transform: "rotate(-42deg)", backgroundColor: accent, zIndex: 0 }} />
-
-    <div style={{ position: "absolute", bottom: "-42mm", right: "-54mm", width: "150mm", height: "10mm", transform: "rotate(-42deg)", backgroundColor: accent, zIndex: 0 }} />
-    <div style={{ position: "absolute", bottom: "-35mm", right: "-47mm", width: "150mm", height: "7mm", transform: "rotate(-42deg)", backgroundColor: WHITE, zIndex: 0 }} />
-    <div style={{ position: "absolute", bottom: "-28mm", right: "-40mm", width: "150mm", height: "10mm", transform: "rotate(-42deg)", backgroundColor: accent, zIndex: 0 }} />
-  </>
-);
 
 const LetterheadPrint = forwardRef<HTMLDivElement, LetterheadPrintProps>(
   (
@@ -155,156 +27,213 @@ const LetterheadPrint = forwardRef<HTMLDivElement, LetterheadPrintProps>(
     },
     ref
   ) => {
-    const accent = colorOverride || profile?.brand_color || DEFAULT_ACCENT;
-    const companyName = safeText(profile?.company_name, 90) || "Your Company";
-    const hasSubject = Boolean(safeText(subject, 160));
+    const accent = colorOverride || profile?.brand_color || "#1A5276";
+    const companyName = profile?.company_name || "Your Company";
 
-    const bodyLines = bodyToLines(body);
-    const pagedBody = paginateBodyLines(bodyLines, hasSubject);
-
-    const salutationTarget = safeText(recipientName, 80) || "Sir/Madam";
-    const displayClosing = safeText(closing, 70) || "Thanks and best wishes,";
-    const displaySender = safeText(senderName, 80) || companyName;
+    const pageStyle: React.CSSProperties = {
+      width: "210mm",
+      minWidth: "210mm",
+      maxWidth: "210mm",
+      height: "297mm",
+      minHeight: "297mm",
+      maxHeight: "297mm",
+      overflow: "hidden",
+      boxSizing: "border-box",
+      backgroundColor: "#ffffff",
+      color: "#1a1a1a",
+      fontFamily: "'Helvetica Neue', Arial, sans-serif",
+      position: "relative",
+    };
 
     return (
-      <div ref={ref} data-print-template="letterhead" data-template-style={templateStyle}>
-        {pagedBody.map((pageLines, pageIndex) => {
-          const isFirstPage = pageIndex === 0;
-          const isLastPage = pageIndex === pagedBody.length - 1;
-          const initials = getInitials(companyName);
+      <div ref={ref} style={pageStyle}>
+        {/* ─── HEADER ─── */}
+        <table style={{ width: "100%", borderCollapse: "collapse", tableLayout: "fixed" }}>
+          <tbody>
+            <tr>
+              <td style={{ padding: "10mm 12mm 0 12mm", verticalAlign: "top" }}>
+                <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                  <tbody>
+                    <tr>
+                      <td style={{ verticalAlign: "middle", width: "60%" }}>
+                        <table style={{ borderCollapse: "collapse" }}>
+                          <tbody>
+                            <tr>
+                              {profile?.logo_url && (
+                                <td style={{ verticalAlign: "middle", paddingRight: "4mm" }}>
+                                  <img
+                                    src={profile.logo_url}
+                                    alt="Logo"
+                                    style={{ height: "14mm", maxWidth: "30mm", objectFit: "contain", display: "block" }}
+                                  />
+                                </td>
+                              )}
+                              <td style={{ verticalAlign: "middle" }}>
+                                <p style={{ margin: 0, fontSize: "6mm", fontWeight: 700, color: "#111827", lineHeight: 1.2 }}>
+                                  {companyName}
+                                </p>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </td>
+                      <td style={{ verticalAlign: "top", textAlign: "right", width: "40%", fontSize: "3mm", lineHeight: 1.7, color: "#6b7280" }}>
+                        {profile?.company_address && <p style={{ margin: 0 }}>{profile.company_address}</p>}
+                        {profile?.company_phone && <p style={{ margin: 0 }}>{profile.company_phone}</p>}
+                        {profile?.company_email && <p style={{ margin: 0 }}>{profile.company_email}</p>}
+                        {profile?.company_website && <p style={{ margin: 0 }}>{profile.company_website}</p>}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+                {/* Accent line */}
+                <div style={{ height: "0.8mm", width: "100%", backgroundColor: accent, marginTop: "4mm" }} />
+              </td>
+            </tr>
+          </tbody>
+        </table>
 
-          return (
-            <div key={`letterhead-page-${pageIndex}`} style={pageStyle} data-pdf-section="page">
-              {renderCornerStripes(accent)}
+        {/* ─── DATE + RECIPIENT ─── */}
+        <table style={{ width: "100%", borderCollapse: "collapse", tableLayout: "fixed" }}>
+          <tbody>
+            <tr>
+              <td style={{ padding: "6mm 12mm 0 12mm" }}>
+                {date && <p style={{ margin: "0 0 4mm 0", fontSize: "3.4mm", color: "#6b7280" }}>{date}</p>}
 
-              {isFirstPage ? (
-                <>
-                  <div style={{ position: "absolute", top: "36mm", left: "20mm", right: "18mm", display: "flex", justifyContent: "space-between", gap: "10mm", zIndex: 1 }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: "6mm", maxWidth: "105mm" }}>
-                      {profile?.logo_url ? (
-                        <img src={profile.logo_url} alt="Company logo" style={{ width: "16mm", height: "16mm", objectFit: "contain" }} />
-                      ) : (
-                        <div
-                          style={{
-                            width: "16mm",
-                            height: "16mm",
-                            borderRadius: "3mm",
-                            backgroundColor: accent,
-                            color: WHITE,
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            fontSize: "4.2mm",
-                            fontWeight: 700,
-                          }}
-                        >
-                          {initials}
-                        </div>
-                      )}
-                      <p style={{ margin: 0, fontSize: "9mm", lineHeight: 1.05, fontWeight: 700, color: TEXT_PRIMARY }}>{companyName}</p>
-                    </div>
-
-                    <div style={{ display: "flex", gap: "4mm", minWidth: "66mm", maxWidth: "66mm" }}>
-                      <div style={{ width: "0.6mm", backgroundColor: TEXT_PRIMARY, opacity: 0.9 }} />
-                      <div style={{ fontSize: "3.6mm", lineHeight: 1.5, color: TEXT_MUTED }}>
-                        {profile?.company_phone ? <p style={{ margin: "0 0 1mm 0" }}>☎ {safeText(profile.company_phone, 40)}</p> : null}
-                        {profile?.company_email ? <p style={{ margin: "0 0 1mm 0" }}>✉ {safeText(profile.company_email, 60)}</p> : null}
-                        {profile?.company_address ? <p style={{ margin: 0, whiteSpace: "pre-wrap" }}>📍 {safeText(profile.company_address, 130)}</p> : null}
-                      </div>
-                    </div>
+                {recipientName && (
+                  <div style={{ marginBottom: "4mm" }}>
+                    <p style={{ margin: 0, fontSize: "3.8mm", fontWeight: 600, color: "#111827" }}>{recipientName}</p>
+                    {recipientTitle && <p style={{ margin: "0.5mm 0 0", fontSize: "3.2mm", color: "#6b7280" }}>{recipientTitle}</p>}
+                    {recipientCompany && <p style={{ margin: "0.5mm 0 0", fontSize: "3.2mm", color: "#6b7280" }}>{recipientCompany}</p>}
+                    {recipientAddress && <p style={{ margin: "0.5mm 0 0", fontSize: "3.2mm", color: "#6b7280", whiteSpace: "pre-wrap" }}>{recipientAddress}</p>}
+                    {recipientPhone && <p style={{ margin: "0.5mm 0 0", fontSize: "3.2mm", color: "#6b7280" }}>{recipientPhone}</p>}
+                    {recipientEmail && <p style={{ margin: "0.5mm 0 0", fontSize: "3.2mm", color: "#6b7280" }}>{recipientEmail}</p>}
                   </div>
+                )}
+              </td>
+            </tr>
+          </tbody>
+        </table>
 
-                  <div style={{ position: "absolute", top: "87mm", left: "20mm", right: "18mm", display: "flex", justifyContent: "space-between", gap: "8mm", zIndex: 1 }}>
-                    <div style={{ maxWidth: "120mm" }}>
-                      <p style={{ margin: "0 0 4mm 0", fontSize: "4.6mm", fontWeight: 600, color: TEXT_PRIMARY }}>To :</p>
-                      {recipientName ? <p style={{ margin: 0, fontSize: "4.8mm", lineHeight: 1.35, color: TEXT_PRIMARY }}>{safeText(recipientName, 80)}</p> : null}
-                      {recipientTitle ? <p style={{ margin: "0.8mm 0 0", fontSize: "4.2mm", color: TEXT_MUTED }}>{safeText(recipientTitle, 80)}</p> : null}
-                      {recipientCompany ? <p style={{ margin: "0.8mm 0 0", fontSize: "4.2mm", color: TEXT_MUTED }}>{safeText(recipientCompany, 80)}</p> : null}
-                      {recipientAddress ? (
-                        <p style={{ margin: "0.8mm 0 0", fontSize: "4.2mm", color: TEXT_MUTED, whiteSpace: "pre-wrap" }}>{safeText(recipientAddress, 150)}</p>
-                      ) : null}
-                      {recipientPhone ? <p style={{ margin: "0.8mm 0 0", fontSize: "4.2mm", color: TEXT_MUTED }}>{safeText(recipientPhone, 60)}</p> : null}
-                      {recipientEmail ? <p style={{ margin: "0.8mm 0 0", fontSize: "4.2mm", color: TEXT_MUTED }}>{safeText(recipientEmail, 80)}</p> : null}
-                    </div>
+        {/* ─── SUBJECT ─── */}
+        {subject && (
+          <table style={{ width: "100%", borderCollapse: "collapse", tableLayout: "fixed" }}>
+            <tbody>
+              <tr>
+                <td style={{ padding: "2mm 12mm 0 12mm" }}>
+                  <p style={{ margin: 0, fontSize: "4mm", fontWeight: 700, color: "#111827" }}>{subject}</p>
+                  <div style={{ height: "0.6mm", width: "12mm", backgroundColor: accent, marginTop: "2mm", borderRadius: "1mm" }} />
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        )}
 
-                    <p style={{ margin: "31mm 0 0", fontSize: "5.2mm", color: TEXT_PRIMARY, whiteSpace: "nowrap" }}>{safeText(date, 40)}</p>
-                  </div>
+        {/* ─── SALUTATION ─── */}
+        <table style={{ width: "100%", borderCollapse: "collapse", tableLayout: "fixed" }}>
+          <tbody>
+            <tr>
+              <td style={{ padding: "4mm 12mm 0 12mm" }}>
+                <p style={{ margin: 0, fontSize: "3.6mm", color: "#374151" }}>
+                  Dear {recipientName || "Sir/Madam"},
+                </p>
+              </td>
+            </tr>
+          </tbody>
+        </table>
 
-                  {hasSubject ? (
-                    <p style={{ position: "absolute", top: "111mm", left: "20mm", right: "18mm", margin: 0, fontSize: "4.8mm", fontWeight: 700, color: TEXT_PRIMARY, zIndex: 1 }}>
-                      {safeText(subject, 160)}
-                    </p>
-                  ) : null}
-
-                  <p
-                    style={{
-                      position: "absolute",
-                      top: hasSubject ? "121mm" : "114mm",
-                      left: "20mm",
-                      right: "18mm",
-                      margin: 0,
-                      fontSize: "5.2mm",
-                      color: TEXT_PRIMARY,
-                      zIndex: 1,
-                    }}
-                  >
-                    Dear {salutationTarget},
-                  </p>
-                </>
-              ) : (
-                <div style={{ position: "absolute", top: "25mm", left: "20mm", right: "18mm", display: "flex", justifyContent: "space-between", alignItems: "center", zIndex: 1 }}>
-                  <p style={{ margin: 0, fontSize: "5.2mm", fontWeight: 700, color: TEXT_PRIMARY }}>{companyName}</p>
-                  <p style={{ margin: 0, fontSize: "3.8mm", color: TEXT_MUTED }}>Page {pageIndex + 1}</p>
+        {/* ─── BODY ─── */}
+        <table style={{ width: "100%", borderCollapse: "collapse", tableLayout: "fixed" }}>
+          <tbody>
+            <tr>
+              <td style={{ padding: "3mm 12mm 0 12mm" }}>
+                <div
+                  style={{
+                    fontSize: "3.4mm",
+                    lineHeight: 1.65,
+                    color: "#374151",
+                    whiteSpace: "pre-wrap",
+                    wordWrap: "break-word",
+                    textAlign: "justify",
+                  }}
+                >
+                  {body}
                 </div>
-              )}
+              </td>
+            </tr>
+          </tbody>
+        </table>
 
-              <div
-                style={{
-                  position: "absolute",
-                  left: "20mm",
-                  right: "18mm",
-                  top: isFirstPage ? "130mm" : "36mm",
-                  bottom: isLastPage ? "96mm" : "28mm",
-                  overflow: "hidden",
-                  zIndex: 1,
-                }}
-              >
-                {pageLines.map((line, lineIndex) => (
-                  <p
-                    key={`line-${pageIndex}-${lineIndex}`}
-                    style={{
-                      margin: line ? "0 0 1.4mm 0" : "0 0 3mm 0",
-                      fontSize: "4.7mm",
-                      lineHeight: 1.5,
-                      color: TEXT_MUTED,
-                    }}
-                  >
-                    {line || "\u00A0"}
-                  </p>
-                ))}
-              </div>
+        {/* ─── CLOSING + SIGNATURE ─── */}
+        <table style={{ width: "100%", borderCollapse: "collapse", tableLayout: "fixed" }}>
+          <tbody>
+            <tr>
+              <td style={{ padding: "6mm 12mm 0 12mm" }}>
+                <p style={{ margin: "0 0 2mm 0", fontSize: "3.6mm", color: "#374151" }}>{closing || "Sincerely,"}</p>
 
-              {isLastPage ? (
-                <div style={{ position: "absolute", left: "20mm", right: "18mm", bottom: "26mm", zIndex: 1 }}>
-                  <p style={{ margin: 0, fontSize: "5.2mm", color: TEXT_PRIMARY }}>{displayClosing}</p>
+                {signatureUrl && (
+                  <img
+                    src={signatureUrl}
+                    alt="Signature"
+                    style={{ height: "14mm", maxWidth: "50mm", objectFit: "contain", display: "block", margin: "2mm 0" }}
+                  />
+                )}
 
-                  <div style={{ marginTop: "16mm", display: "flex", justifyContent: "space-between", alignItems: "flex-end", gap: "8mm" }}>
-                    <div>
-                      <p style={{ margin: 0, fontSize: "5.6mm", fontWeight: 600, color: TEXT_PRIMARY }}>{displaySender}</p>
-                      {senderTitle ? <p style={{ margin: "1.2mm 0 0", fontSize: "4.4mm", color: TEXT_MUTED }}>{safeText(senderTitle, 80)}</p> : null}
-                    </div>
+                <p style={{ margin: "2mm 0 0", fontSize: "3.8mm", fontWeight: 600, color: "#111827" }}>
+                  {senderName || companyName}
+                </p>
+                {senderTitle && (
+                  <p style={{ margin: "0.5mm 0 0", fontSize: "3.2mm", color: "#6b7280" }}>{senderTitle}</p>
+                )}
+              </td>
+            </tr>
+          </tbody>
+        </table>
 
-                    {signatureUrl ? (
-                      <img src={signatureUrl} alt="Signature" style={{ maxWidth: "52mm", maxHeight: "18mm", objectFit: "contain" }} />
-                    ) : (
-                      <p style={{ margin: 0, fontSize: "10mm", fontFamily: "'Brush Script MT', cursive", color: TEXT_PRIMARY }}>{displaySender}</p>
-                    )}
-                  </div>
-                </div>
-              ) : null}
-            </div>
-          );
-        })}
+        {/* ─── FOOTER ─── */}
+        <div
+          style={{
+            position: "absolute",
+            bottom: 0,
+            left: 0,
+            right: 0,
+            padding: "0 12mm 8mm 12mm",
+          }}
+        >
+          <div style={{ height: "0.3mm", width: "100%", backgroundColor: "#e5e7eb", marginBottom: "3mm" }} />
+          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "2.6mm", color: "#9ca3af" }}>
+            <tbody>
+              <tr>
+                {profile?.company_website && (
+                  <td style={{ textAlign: "left" }}>
+                    <span style={{ fontWeight: 700, color: accent }}>W.</span> {profile.company_website}
+                  </td>
+                )}
+                {profile?.company_email && (
+                  <td style={{ textAlign: "center" }}>
+                    <span style={{ fontWeight: 700, color: accent }}>E.</span> {profile.company_email}
+                  </td>
+                )}
+                {profile?.company_phone && (
+                  <td style={{ textAlign: "right" }}>
+                    <span style={{ fontWeight: 700, color: accent }}>T.</span> {profile.company_phone}
+                  </td>
+                )}
+              </tr>
+            </tbody>
+          </table>
+          {(profile?.registration_number || profile?.vat_number) && (
+            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "2.4mm", color: "#9ca3af", marginTop: "1.5mm" }}>
+              <tbody>
+                <tr>
+                  {profile?.registration_number && <td style={{ textAlign: "left" }}>Reg: {profile.registration_number}</td>}
+                  {profile?.vat_number && <td style={{ textAlign: "right" }}>VAT: {profile.vat_number}</td>}
+                </tr>
+              </tbody>
+            </table>
+          )}
+          <div style={{ height: "0.8mm", width: "100%", backgroundColor: accent, marginTop: "3mm" }} />
+        </div>
       </div>
     );
   }
