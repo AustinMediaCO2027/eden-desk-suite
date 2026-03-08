@@ -24,9 +24,9 @@ const encodePayFastValue = (value: string) =>
   encodeURIComponent(value.trim()).replace(/%20/g, "+");
 
 const generatePayFastSignature = async (params: Record<string, string>, passphrase?: string): Promise<string> => {
+  // PayFast requires params in their natural order, NOT sorted alphabetically
   const payload = Object.entries(params)
-    .filter(([, value]) => value !== undefined && value !== null && value !== "")
-    .sort(([keyA], [keyB]) => keyA.localeCompare(keyB))
+    .filter(([key, value]) => key !== "signature" && value !== undefined && value !== null && value !== "")
     .map(([key, value]) => `${key}=${encodePayFastValue(value)}`)
     .join("&");
 
