@@ -223,7 +223,6 @@ const QuoteTemplate5 = forwardRef<HTMLDivElement, QuoteTemplateProps>(
             </tr></tbody>
           </table>
         </div>
-        </div>
       </div>
     );
   }
