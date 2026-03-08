@@ -39,7 +39,10 @@ const generatePayFastSignature = async (params: Record<string, string>, passphra
     ? `${payload}&passphrase=${encodePayFastValue(phrase)}`
     : payload;
 
-  return await md5(fullPayload);
+  console.log("PayFast signature payload:", fullPayload);
+  const sig = await md5(fullPayload);
+  console.log("PayFast generated signature:", sig);
+  return sig;
 };
 
 serve(async (req) => {
