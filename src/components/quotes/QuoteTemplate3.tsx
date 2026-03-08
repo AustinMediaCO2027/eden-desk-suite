@@ -96,7 +96,7 @@ const QuoteTemplate3 = forwardRef<HTMLDivElement, QuoteTemplateProps>(
                     <thead>
                       <tr style={{ backgroundColor: "#f8f9fb" }}>
                         <th style={{ width: "48%", textAlign: "left", fontSize: "2.7mm", color: "#555", fontWeight: 600, padding: "3mm 4mm", borderBottom: "0.3mm solid #e5e7eb" }}>Services</th>
-                        <th style={{ width: "13%", textAlign: "center", fontSize: "2.7mm", color: "#555", fontWeight: 600, padding: "3mm 2mm", borderBottom: "0.3mm solid #e5e7eb" }}>Qty</th>
+                        <th style={{ width: "13%", textAlign: "right", fontSize: "2.7mm", color: "#555", fontWeight: 600, padding: "3mm 2mm", borderBottom: "0.3mm solid #e5e7eb" }}>Qty</th>
                         <th style={{ width: "19%", textAlign: "right", fontSize: "2.7mm", color: "#555", fontWeight: 600, padding: "3mm 2mm", borderBottom: "0.3mm solid #e5e7eb" }}>Rate</th>
                         <th style={{ width: "20%", textAlign: "right", fontSize: "2.7mm", color: "#555", fontWeight: 600, padding: "3mm 4mm", borderBottom: "0.3mm solid #e5e7eb" }}>Line total</th>
                       </tr>
