@@ -149,7 +149,7 @@ serve(async (req) => {
       cycles: "0",
     };
 
-    params.signature = generatePayFastSignature(params, PAYFAST_PASSPHRASE);
+    params.signature = await generatePayFastSignature(params, PAYFAST_PASSPHRASE);
 
     return new Response(
       JSON.stringify({
