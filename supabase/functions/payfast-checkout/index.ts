@@ -2,12 +2,50 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 import { crypto } from "https://deno.land/std@0.168.0/crypto/mod.ts";
-import { encode as hexEncode } from "https://deno.land/std@0.168.0/encoding/hex.ts";
+
+type PayFastPair = [string, string];
+
+const PAYFAST_SIGNATURE_ORDER = [
+  "merchant_id",
+  "merchant_key",
+  "return_url",
+  "cancel_url",
+  "notify_url",
+  "name_first",
+  "name_last",
+  "email_address",
+  "cell_number",
+  "m_payment_id",
+  "amount",
+  "item_name",
+  "item_description",
+  "custom_int1",
+  "custom_int2",
+  "custom_int3",
+  "custom_int4",
+  "custom_int5",
+  "custom_str1",
+  "custom_str2",
+  "custom_str3",
+  "custom_str4",
+  "custom_str5",
+  "email_confirmation",
+  "confirmation_address",
+  "payment_method",
+  "subscription_type",
+  "billing_date",
+  "recurring_amount",
+  "frequency",
+  "cycles",
+  "subscription_notify_email",
+  "subscription_notify_webhook",
+  "subscription_notify_buyer",
+] as const;
 
 async function md5(input: string): Promise<string> {
   const data = new TextEncoder().encode(input);
   const hash = await crypto.subtle.digest("MD5", data);
-  return new TextDecoder().decode(hexEncode(new Uint8Array(hash)));
+  return Array.from(new Uint8Array(hash), (byte) => byte.toString(16).padStart(2, "0")).join("");
 }
 
 const corsHeaders = {
@@ -21,15 +59,34 @@ const formatAmount = (value: unknown, fallback: string) => {
 };
 
 // Match PHP urlencode exactly: encode everything except A-Za-z0-9 -_.
-// encodeURIComponent doesn't encode !'()*~ but PHP urlencode does.
 const encodePayFastValue = (value: string) =>
   encodeURIComponent(value.trim())
     .replace(/%20/g, "+")
-    .replace(/[!'()*~]/g, (c) => `%${c.charCodeAt(0).toString(16).toUpperCase()}`);
+    .replace(/[!'()*~]/g, (char) => `%${char.charCodeAt(0).toString(16).toUpperCase()}`);
 
-const generatePayFastSignature = async (params: Record<string, string>, passphrase?: string): Promise<string> => {
-  // PayFast requires params in their natural order, NOT sorted alphabetically
-  const payload = Object.entries(params)
+const toOrderedPayFastPairs = (params: Record<string, string | null | undefined>): PayFastPair[] => {
+  const keySet = new Set(PAYFAST_SIGNATURE_ORDER);
+
+  const orderedPairs: PayFastPair[] = PAYFAST_SIGNATURE_ORDER.flatMap((key) => {
+    const value = params[key];
+    return value === undefined || value === null || value === "" ? [] : [[key, value]];
+  });
+
+  for (const [key, value] of Object.entries(params)) {
+    if (keySet.has(key as typeof PAYFAST_SIGNATURE_ORDER[number])) {
+      continue;
+    }
+
+    if (value !== undefined && value !== null && value !== "") {
+      orderedPairs.push([key, value]);
+    }
+  }
+
+  return orderedPairs;
+};
+
+const generatePayFastSignature = async (pairs: PayFastPair[], passphrase?: string): Promise<string> => {
+  const payload = pairs
     .filter(([key, value]) => key !== "signature" && value !== undefined && value !== null && value !== "")
     .map(([key, value]) => `${key}=${encodePayFastValue(value)}`)
     .join("&");
@@ -39,10 +96,7 @@ const generatePayFastSignature = async (params: Record<string, string>, passphra
     ? `${payload}&passphrase=${encodePayFastValue(phrase)}`
     : payload;
 
-  console.log("PayFast signature payload:", fullPayload);
-  const sig = await md5(fullPayload);
-  console.log("PayFast generated signature:", sig);
-  return sig;
+  return md5(fullPayload);
 };
 
 serve(async (req) => {
@@ -135,7 +189,15 @@ serve(async (req) => {
       ? formatAmount(trialRecurringAmount, "39.99")
       : formatAmount(amount, "0.00");
 
-    const params: Record<string, string> = {
+    const passphrase = PAYFAST_PASSPHRASE.trim();
+    if (!passphrase) {
+      return new Response(JSON.stringify({ error: "PayFast passphrase is not configured" }), {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const rawParams: Record<string, string | undefined> = {
       merchant_id: PAYFAST_MERCHANT_ID,
       merchant_key: PAYFAST_MERCHANT_KEY,
       return_url: returnUrl || `${req.headers.get("origin") || ""}/dashboard/billing?status=success`,
@@ -143,6 +205,7 @@ serve(async (req) => {
       notify_url: `${Deno.env.get("SUPABASE_URL")}/functions/v1/payfast-itn`,
       name_first: companyName || userEmail?.split("@")[0] || "Eden Desk",
       email_address: userEmail || user.email || "",
+      m_payment_id: `${userId}:${isTrial ? "trial" : planId}:${Date.now()}`,
       amount: paymentAmount,
       item_name: isTrial ? "Starter Plan Trial" : `Eden Desk ${planName} Plan`,
       item_description: isTrial
@@ -150,14 +213,15 @@ serve(async (req) => {
         : `${planName} subscription - ${period}`,
       custom_str1: userId,
       custom_str2: isTrial ? "trial" : (planId || ""),
-      m_payment_id: `${userId}:${isTrial ? "trial" : planId}:${Date.now()}`,
       subscription_type: "1",
       recurring_amount: recurringAmount,
       frequency: isTrial ? "3" : (planId === "yearly" ? "6" : "3"),
       cycles: "0",
     };
 
-    params.signature = await generatePayFastSignature(params, PAYFAST_PASSPHRASE);
+    const orderedPairs = toOrderedPayFastPairs(rawParams);
+    const params = Object.fromEntries(orderedPairs) as Record<string, string>;
+    params.signature = await generatePayFastSignature(orderedPairs, passphrase);
 
     return new Response(
       JSON.stringify({
