@@ -85,7 +85,7 @@ const QuoteTemplate2 = forwardRef<HTMLDivElement, QuoteTemplateProps>(
           <thead>
             <tr>
               <th style={{ width: "50%", textAlign: "left", fontSize: "2.7mm", color: "#888", textTransform: "uppercase", letterSpacing: "0.2mm", padding: "2mm 0", borderBottom: "0.3mm solid #e5e7eb" }}>Item description</th>
-              <th style={{ width: "14%", textAlign: "center", fontSize: "2.7mm", color: "#888", textTransform: "uppercase", letterSpacing: "0.2mm", padding: "2mm 0", borderBottom: "0.3mm solid #e5e7eb" }}>Qty</th>
+              <th style={{ width: "14%", textAlign: "right", fontSize: "2.7mm", color: "#888", textTransform: "uppercase", letterSpacing: "0.2mm", padding: "2mm 0", borderBottom: "0.3mm solid #e5e7eb" }}>Qty</th>
               <th style={{ width: "18%", textAlign: "right", fontSize: "2.7mm", color: "#888", textTransform: "uppercase", letterSpacing: "0.2mm", padding: "2mm 0", borderBottom: "0.3mm solid #e5e7eb" }}>Rate</th>
               <th style={{ width: "18%", textAlign: "right", fontSize: "2.7mm", color: "#888", textTransform: "uppercase", letterSpacing: "0.2mm", padding: "2mm 0", borderBottom: "0.3mm solid #e5e7eb" }}>Amount</th>
             </tr>
