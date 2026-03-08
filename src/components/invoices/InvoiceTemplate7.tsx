@@ -41,21 +41,25 @@ const InvoiceTemplate7 = forwardRef<HTMLDivElement, InvoiceTemplateProps>(
             <tbody>
               <tr>
                 <td style={{ width: "55%", verticalAlign: "middle" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "3mm" }}>
-                    {profile?.logo_url && (
-                      <img src={profile.logo_url} alt="Logo" style={{ height: "14mm", maxWidth: "35mm", objectFit: "contain" }} />
-                    )}
-                    <div>
-                      <p style={{ margin: 0, fontSize: "4.5mm", fontWeight: 700, color: "white", letterSpacing: "0.2mm" }}>
-                        {safeText(profile?.company_name, 60) || "Your Company"}
-                      </p>
-                      {profile?.company_website && (
-                        <p style={{ margin: "0.5mm 0 0", fontSize: "2.6mm", color: "rgba(255,255,255,0.75)" }}>
-                          {safeText(profile.company_website, 50)}
-                        </p>
+                  <table style={{ borderCollapse: "collapse" }}>
+                    <tbody><tr>
+                      {profile?.logo_url && (
+                        <td style={{ verticalAlign: "middle", paddingRight: "3mm" }}>
+                          <img src={profile.logo_url} alt="Logo" style={{ height: "14mm", maxWidth: "35mm", objectFit: "contain" }} />
+                        </td>
                       )}
-                    </div>
-                  </div>
+                      <td style={{ verticalAlign: "middle" }}>
+                        <p style={{ margin: 0, fontSize: "4.5mm", fontWeight: 700, color: "white", letterSpacing: "0.2mm" }}>
+                          {safeText(profile?.company_name, 60) || "Your Company"}
+                        </p>
+                        {profile?.company_website && (
+                          <p style={{ margin: "0.5mm 0 0", fontSize: "2.6mm", color: "rgba(255,255,255,0.75)" }}>
+                            {safeText(profile.company_website, 50)}
+                          </p>
+                        )}
+                      </td>
+                    </tr></tbody>
+                  </table>
                 </td>
                 <td style={{ width: "45%", verticalAlign: "middle", textAlign: "right" }}>
                   <p style={{ margin: 0, fontSize: "9mm", fontWeight: 800, color: "white", letterSpacing: "0.5mm" }}>INVOICE</p>
