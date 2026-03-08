@@ -41,40 +41,42 @@ const QuoteTemplate5 = forwardRef<HTMLDivElement, QuoteTemplateProps>(
         <div style={{
           backgroundColor: accent,
           padding: "12mm 20mm 10mm",
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "flex-start",
         }}>
-          <div>
-            <p style={{
-              margin: 0, fontSize: "14mm", fontWeight: 800,
-              color: "white", letterSpacing: "2mm", lineHeight: 1,
-              textTransform: "uppercase",
-            }}>Quotation</p>
-            <p style={{ margin: "3mm 0 0", fontSize: "3.2mm", color: "rgba(255,255,255,0.6)", letterSpacing: "0.5mm" }}>
-              {safeText(profile?.company_name, 50) || "Your Company"}
-            </p>
-          </div>
-          {/* Monogram / Logo */}
-          <div style={{ textAlign: "right" }}>
-            {profile?.logo_url ? (
-              <img
-                src={profile.logo_url}
-                alt="Logo"
-                style={{ maxHeight: "18mm", maxWidth: "30mm", objectFit: "contain" }}
-              />
-            ) : (
-              <div style={{
-                width: "16mm", height: "16mm",
-                border: "0.6mm solid rgba(255,255,255,0.8)",
-                display: "flex", alignItems: "center", justifyContent: "center",
-                fontSize: "7mm", fontWeight: 800, color: "white",
-                letterSpacing: "0.5mm",
-              }}>
-                {monogram}
-              </div>
-            )}
-          </div>
+          <table style={{ width: "100%", borderCollapse: "collapse" }}>
+            <tbody><tr>
+              <td style={{ verticalAlign: "top" }}>
+                <p style={{
+                  margin: 0, fontSize: "14mm", fontWeight: 800,
+                  color: "white", letterSpacing: "2mm", lineHeight: 1,
+                  textTransform: "uppercase",
+                }}>Quotation</p>
+                <p style={{ margin: "3mm 0 0", fontSize: "3.2mm", color: "rgba(255,255,255,0.6)", letterSpacing: "0.5mm" }}>
+                  {safeText(profile?.company_name, 50) || "Your Company"}
+                </p>
+              </td>
+              <td style={{ verticalAlign: "top", textAlign: "right" }}>
+                {profile?.logo_url ? (
+                  <img
+                    src={profile.logo_url}
+                    alt="Logo"
+                    style={{ maxHeight: "18mm", maxWidth: "30mm", objectFit: "contain" }}
+                  />
+                ) : (
+                  <table style={{ borderCollapse: "collapse", marginLeft: "auto" }}>
+                    <tbody><tr><td style={{
+                      width: "16mm", height: "16mm",
+                      border: "0.6mm solid rgba(255,255,255,0.8)",
+                      textAlign: "center", verticalAlign: "middle",
+                      fontSize: "7mm", fontWeight: 800, color: "white",
+                      letterSpacing: "0.5mm",
+                    }}>
+                      {monogram}
+                    </td></tr></tbody>
+                  </table>
+                )}
+              </td>
+            </tr></tbody>
+          </table>
         </div>
 
         {/* ── Body content ── */}
