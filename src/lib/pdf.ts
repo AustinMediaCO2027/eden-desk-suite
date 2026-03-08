@@ -221,29 +221,11 @@ const renderPrintElement = async (payload: DocumentPDFPayload) => {
     return null;
   }
 
-  if (!isLetterhead) {
-    const restoreA4 = enforceA4Canvas(element);
-    return {
-      element,
-      cleanup: () => {
-        restoreA4();
-        root.unmount();
-        host.remove();
-      },
-    };
-  }
-
-  // For letterhead, set width but allow natural height
-  element.style.width = `${A4_WIDTH_PX}px`;
-  element.style.minWidth = `${A4_WIDTH_PX}px`;
-  element.style.maxWidth = `${A4_WIDTH_PX}px`;
-  element.style.overflow = "visible";
-  element.style.margin = "0";
-  element.style.boxSizing = "border-box";
-
+  const restoreA4 = enforceA4Canvas(element);
   return {
     element,
     cleanup: () => {
+      restoreA4();
       root.unmount();
       host.remove();
     },
