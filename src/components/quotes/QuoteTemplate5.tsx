@@ -16,7 +16,7 @@ const PAGE: CSSProperties = {
 };
 
 const T: CSSProperties = { width: "100%", borderCollapse: "collapse", tableLayout: "fixed" };
-const R: CSSProperties = { textAlign: "right", whiteSpace: "nowrap", fontVariantNumeric: "tabular-nums" };
+const R: CSSProperties = { textAlign: "right", whiteSpace: "nowrap", fontVariantNumeric: "tabular-nums lining-nums", fontFeatureSettings: '"tnum" 1, "lnum" 1' };
 
 /**
  * Quote Template 5 – Bold Minimalist
