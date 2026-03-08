@@ -32,7 +32,7 @@ const generatePayFastSignature = async (params: Record<string, string>, passphra
 
   const phrase = passphrase?.trim();
   const fullPayload = phrase
-    ? `${payload}&passphrase=${phrase}`
+    ? `${payload}&passphrase=${encodePayFastValue(phrase)}`
     : payload;
 
   return await md5(fullPayload);
