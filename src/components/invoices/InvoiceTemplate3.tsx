@@ -128,9 +128,13 @@ const InvoiceTemplate3 = forwardRef<HTMLDivElement, InvoiceTemplateProps>(
                       </tr>
                       <tr>
                         <td colSpan={4} style={{ padding: "2mm 4mm 2mm 0" }}>
-                          <div style={{ backgroundColor: accent, borderRadius: "2mm", padding: "2.5mm 4mm", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                            <span style={{ fontSize: "3.2mm", fontWeight: 700, color: "white" }}>Total due</span>
-                            <span style={{ fontSize: "3.2mm", fontWeight: 700, color: "white" }}>{fmt(total)}</span>
+                          <div style={{ backgroundColor: accent, borderRadius: "2mm", padding: "2.5mm 4mm" }}>
+                            <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                              <tbody><tr>
+                                <td style={{ fontSize: "3.2mm", fontWeight: 700, color: "white", textAlign: "left" }}>Total due</td>
+                                <td style={{ fontSize: "3.2mm", fontWeight: 700, color: "white", textAlign: "right", whiteSpace: "nowrap", fontVariantNumeric: "tabular-nums" }}>{fmt(total)}</td>
+                              </tr></tbody>
+                            </table>
                           </div>
                         </td>
                       </tr>
