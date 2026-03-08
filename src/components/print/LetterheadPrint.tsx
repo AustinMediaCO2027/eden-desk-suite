@@ -5,222 +5,306 @@ interface LetterheadPrintProps extends LetterheadTemplateProps {
   templateStyle?: string;
 }
 
-interface LetterheadPreset {
-  accent: string;
-  darkHeader: boolean;
-  subjectPrefix: string;
-  footerLabels: boolean;
-}
+const DEFAULT_ACCENT = "hsl(358 78% 52%)";
+const PAGE_BACKGROUND = "hsl(0 0% 93%)";
+const TEXT_PRIMARY = "hsl(222 47% 11%)";
+const TEXT_MUTED = "hsl(215 12% 42%)";
+const WHITE = "hsl(0 0% 100%)";
 
-const LETTERHEAD_PRESETS: Record<string, LetterheadPreset> = {
-  classic: {
-    accent: "hsl(206 66% 30%)",
-    darkHeader: false,
-    subjectPrefix: "",
-    footerLabels: true,
-  },
-  corporate: {
-    accent: "hsl(26 77% 45%)",
-    darkHeader: false,
-    subjectPrefix: "Re: ",
-    footerLabels: false,
-  },
-  executive: {
-    accent: "hsl(222 47% 11%)",
-    darkHeader: true,
-    subjectPrefix: "",
-    footerLabels: true,
-  },
-};
-
-const PAGE_STYLE: CSSProperties = {
-  width: "210mm",
-  minWidth: "210mm",
-  padding: "20mm",
-  boxSizing: "border-box",
-  display: "flex",
-  flexDirection: "column",
-  backgroundColor: "white",
-  fontFamily: "'Inter', 'Helvetica Neue', Arial, sans-serif",
-  color: "hsl(222 47% 11%)",
-};
-
-const TABLE_RESET: CSSProperties = {
-  width: "100%",
-  borderCollapse: "collapse",
-  tableLayout: "fixed",
-};
+const MAX_LINE_CHARS = 82;
+const SINGLE_PAGE_LINES_WITH_SUBJECT = 14;
+const SINGLE_PAGE_LINES_NO_SUBJECT = 16;
+const FIRST_PAGE_LINES_WITH_SUBJECT = 20;
+const FIRST_PAGE_LINES_NO_SUBJECT = 22;
+const MIDDLE_PAGE_LINES = 36;
+const LAST_PAGE_LINES = 24;
 
 const safeText = (value: string | null | undefined, max: number) => (value || "").trim().slice(0, max);
 
-const MAX_BODY_SECTION_CHARS = 700;
+const wrapParagraphToLines = (paragraph: string, maxChars: number) => {
+  const words = paragraph.split(/\s+/).filter(Boolean);
+  if (words.length === 0) return [] as string[];
 
-const chunkParagraph = (paragraph: string, maxChars: number) => {
-  const clean = paragraph.trim();
-  if (!clean) return [] as string[];
-  if (clean.length <= maxChars) return [clean];
+  const lines: string[] = [];
+  let current = "";
 
-  const chunks: string[] = [];
-  let start = 0;
-
-  while (start < clean.length) {
-    let end = Math.min(start + maxChars, clean.length);
-
-    if (end < clean.length) {
-      const lastLineBreak = clean.lastIndexOf("\n", end);
-      const lastSpace = clean.lastIndexOf(" ", end);
-      const breakPoint = Math.max(lastLineBreak, lastSpace);
-
-      if (breakPoint > start + Math.floor(maxChars * 0.6)) {
-        end = breakPoint;
+  for (const word of words) {
+    if (word.length > maxChars) {
+      if (current) {
+        lines.push(current);
+        current = "";
       }
+
+      for (let start = 0; start < word.length; start += maxChars) {
+        lines.push(word.slice(start, start + maxChars));
+      }
+      continue;
     }
 
-    const chunk = clean.slice(start, end).trim();
-    if (chunk) chunks.push(chunk);
-
-    start = end;
-    while (start < clean.length && /\s/.test(clean[start])) {
-      start += 1;
+    const next = current ? `${current} ${word}` : word;
+    if (next.length <= maxChars) {
+      current = next;
+      continue;
     }
+
+    if (current) lines.push(current);
+    current = word;
   }
 
-  return chunks;
+  if (current) lines.push(current);
+  return lines;
 };
 
-const splitBodyIntoSections = (bodyText: string) => {
-  return bodyText
-    .replace(/\r/g, "")
+const bodyToLines = (body: string) => {
+  const text = safeText(body.replace(/\r/g, ""), 16000);
+  if (!text) return [] as string[];
+
+  const paragraphs = text
     .split(/\n\n+/)
     .map((paragraph) => paragraph.trim())
-    .filter(Boolean)
-    .flatMap((paragraph) => chunkParagraph(paragraph, MAX_BODY_SECTION_CHARS));
+    .filter(Boolean);
+
+  const lines: string[] = [];
+
+  paragraphs.forEach((paragraph, index) => {
+    lines.push(...wrapParagraphToLines(paragraph, MAX_LINE_CHARS));
+    if (index < paragraphs.length - 1) lines.push("");
+  });
+
+  return lines;
 };
 
+const paginateBodyLines = (lines: string[], hasSubject: boolean) => {
+  if (lines.length === 0) return [[]] as string[][];
+
+  const singlePageLimit = hasSubject ? SINGLE_PAGE_LINES_WITH_SUBJECT : SINGLE_PAGE_LINES_NO_SUBJECT;
+  if (lines.length <= singlePageLimit) {
+    return [lines];
+  }
+
+  const firstPageLimit = hasSubject ? FIRST_PAGE_LINES_WITH_SUBJECT : FIRST_PAGE_LINES_NO_SUBJECT;
+  const pages: string[][] = [lines.slice(0, firstPageLimit)];
+  let cursor = firstPageLimit;
+
+  while (lines.length - cursor > LAST_PAGE_LINES) {
+    pages.push(lines.slice(cursor, cursor + MIDDLE_PAGE_LINES));
+    cursor += MIDDLE_PAGE_LINES;
+  }
+
+  pages.push(lines.slice(cursor));
+  return pages;
+};
+
+const getInitials = (name: string) => {
+  const parts = name
+    .split(" ")
+    .map((part) => part.trim())
+    .filter(Boolean)
+    .slice(0, 2);
+
+  if (parts.length === 0) return "ED";
+  return parts.map((part) => part[0]?.toUpperCase() ?? "").join("");
+};
+
+const pageStyle: CSSProperties = {
+  width: "210mm",
+  minWidth: "210mm",
+  maxWidth: "210mm",
+  height: "297mm",
+  minHeight: "297mm",
+  maxHeight: "297mm",
+  position: "relative",
+  boxSizing: "border-box",
+  overflow: "hidden",
+  backgroundColor: PAGE_BACKGROUND,
+  color: TEXT_PRIMARY,
+  fontFamily: "'Helvetica Neue', Arial, sans-serif",
+};
+
+const renderCornerStripes = (accent: string) => (
+  <>
+    <div style={{ position: "absolute", top: "-42mm", left: "-54mm", width: "150mm", height: "10mm", transform: "rotate(-42deg)", backgroundColor: accent, zIndex: 0 }} />
+    <div style={{ position: "absolute", top: "-35mm", left: "-47mm", width: "150mm", height: "7mm", transform: "rotate(-42deg)", backgroundColor: WHITE, zIndex: 0 }} />
+    <div style={{ position: "absolute", top: "-28mm", left: "-40mm", width: "150mm", height: "10mm", transform: "rotate(-42deg)", backgroundColor: accent, zIndex: 0 }} />
+
+    <div style={{ position: "absolute", bottom: "-42mm", right: "-54mm", width: "150mm", height: "10mm", transform: "rotate(-42deg)", backgroundColor: accent, zIndex: 0 }} />
+    <div style={{ position: "absolute", bottom: "-35mm", right: "-47mm", width: "150mm", height: "7mm", transform: "rotate(-42deg)", backgroundColor: WHITE, zIndex: 0 }} />
+    <div style={{ position: "absolute", bottom: "-28mm", right: "-40mm", width: "150mm", height: "10mm", transform: "rotate(-42deg)", backgroundColor: accent, zIndex: 0 }} />
+  </>
+);
+
 const LetterheadPrint = forwardRef<HTMLDivElement, LetterheadPrintProps>(
-  ({
-    profile,
-    templateStyle = "classic",
-    recipientName,
-    recipientTitle,
-    recipientCompany,
-    recipientAddress,
-    recipientPhone,
-    recipientEmail,
-    date,
-    subject,
-    body,
-    closing,
-    senderName,
-    senderTitle,
-    colorOverride,
-    signatureUrl,
-  }, ref) => {
-    const preset = LETTERHEAD_PRESETS[templateStyle] || LETTERHEAD_PRESETS.classic;
-    const brandColor = colorOverride || profile?.brand_color || preset.accent;
-    const bodyText = safeText(body, 8000);
-    const bodySections = splitBodyIntoSections(bodyText);
+  (
+    {
+      profile,
+      templateStyle = "classic",
+      recipientName,
+      recipientTitle,
+      recipientCompany,
+      recipientAddress,
+      recipientPhone,
+      recipientEmail,
+      date,
+      subject,
+      body,
+      closing,
+      senderName,
+      senderTitle,
+      colorOverride,
+      signatureUrl,
+    },
+    ref
+  ) => {
+    const accent = colorOverride || profile?.brand_color || DEFAULT_ACCENT;
+    const companyName = safeText(profile?.company_name, 90) || "Your Company";
+    const hasSubject = Boolean(safeText(subject, 160));
+
+    const bodyLines = bodyToLines(body);
+    const pagedBody = paginateBodyLines(bodyLines, hasSubject);
+
+    const salutationTarget = safeText(recipientName, 80) || "Sir/Madam";
+    const displayClosing = safeText(closing, 70) || "Thanks and best wishes,";
+    const displaySender = safeText(senderName, 80) || companyName;
 
     return (
-      <div ref={ref} style={PAGE_STYLE} data-print-template="letterhead" data-template-style={templateStyle}>
-        {/* HEADER SECTION */}
-        <div data-pdf-section="header">
-          <table style={{ ...TABLE_RESET, marginBottom: "4mm", backgroundColor: preset.darkHeader ? brandColor : "transparent" }}>
-            <tbody>
-              <tr>
-                <td style={{ width: "56%", verticalAlign: "top", padding: preset.darkHeader ? "4mm" : "0" }}>
-                  {profile?.logo_url ? (
-                    <img src={profile.logo_url} alt="Company logo" style={{ maxHeight: "13mm", maxWidth: "100%", objectFit: "contain", marginBottom: "2mm", filter: preset.darkHeader ? "brightness(0) invert(1)" : "none" }} />
+      <div ref={ref} data-print-template="letterhead" data-template-style={templateStyle}>
+        {pagedBody.map((pageLines, pageIndex) => {
+          const isFirstPage = pageIndex === 0;
+          const isLastPage = pageIndex === pagedBody.length - 1;
+          const initials = getInitials(companyName);
+
+          return (
+            <div key={`letterhead-page-${pageIndex}`} style={pageStyle} data-pdf-section="page">
+              {renderCornerStripes(accent)}
+
+              {isFirstPage ? (
+                <>
+                  <div style={{ position: "absolute", top: "36mm", left: "20mm", right: "18mm", display: "flex", justifyContent: "space-between", gap: "10mm", zIndex: 1 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "6mm", maxWidth: "105mm" }}>
+                      {profile?.logo_url ? (
+                        <img src={profile.logo_url} alt="Company logo" style={{ width: "16mm", height: "16mm", objectFit: "contain" }} />
+                      ) : (
+                        <div
+                          style={{
+                            width: "16mm",
+                            height: "16mm",
+                            borderRadius: "3mm",
+                            backgroundColor: accent,
+                            color: WHITE,
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            fontSize: "4.2mm",
+                            fontWeight: 700,
+                          }}
+                        >
+                          {initials}
+                        </div>
+                      )}
+                      <p style={{ margin: 0, fontSize: "9mm", lineHeight: 1.05, fontWeight: 700, color: TEXT_PRIMARY }}>{companyName}</p>
+                    </div>
+
+                    <div style={{ display: "flex", gap: "4mm", minWidth: "66mm", maxWidth: "66mm" }}>
+                      <div style={{ width: "0.6mm", backgroundColor: TEXT_PRIMARY, opacity: 0.9 }} />
+                      <div style={{ fontSize: "3.6mm", lineHeight: 1.5, color: TEXT_MUTED }}>
+                        {profile?.company_phone ? <p style={{ margin: "0 0 1mm 0" }}>☎ {safeText(profile.company_phone, 40)}</p> : null}
+                        {profile?.company_email ? <p style={{ margin: "0 0 1mm 0" }}>✉ {safeText(profile.company_email, 60)}</p> : null}
+                        {profile?.company_address ? <p style={{ margin: 0, whiteSpace: "pre-wrap" }}>📍 {safeText(profile.company_address, 130)}</p> : null}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div style={{ position: "absolute", top: "87mm", left: "20mm", right: "18mm", display: "flex", justifyContent: "space-between", gap: "8mm", zIndex: 1 }}>
+                    <div style={{ maxWidth: "120mm" }}>
+                      <p style={{ margin: "0 0 4mm 0", fontSize: "4.6mm", fontWeight: 600, color: TEXT_PRIMARY }}>To :</p>
+                      {recipientName ? <p style={{ margin: 0, fontSize: "4.8mm", lineHeight: 1.35, color: TEXT_PRIMARY }}>{safeText(recipientName, 80)}</p> : null}
+                      {recipientTitle ? <p style={{ margin: "0.8mm 0 0", fontSize: "4.2mm", color: TEXT_MUTED }}>{safeText(recipientTitle, 80)}</p> : null}
+                      {recipientCompany ? <p style={{ margin: "0.8mm 0 0", fontSize: "4.2mm", color: TEXT_MUTED }}>{safeText(recipientCompany, 80)}</p> : null}
+                      {recipientAddress ? (
+                        <p style={{ margin: "0.8mm 0 0", fontSize: "4.2mm", color: TEXT_MUTED, whiteSpace: "pre-wrap" }}>{safeText(recipientAddress, 150)}</p>
+                      ) : null}
+                      {recipientPhone ? <p style={{ margin: "0.8mm 0 0", fontSize: "4.2mm", color: TEXT_MUTED }}>{safeText(recipientPhone, 60)}</p> : null}
+                      {recipientEmail ? <p style={{ margin: "0.8mm 0 0", fontSize: "4.2mm", color: TEXT_MUTED }}>{safeText(recipientEmail, 80)}</p> : null}
+                    </div>
+
+                    <p style={{ margin: "31mm 0 0", fontSize: "5.2mm", color: TEXT_PRIMARY, whiteSpace: "nowrap" }}>{safeText(date, 40)}</p>
+                  </div>
+
+                  {hasSubject ? (
+                    <p style={{ position: "absolute", top: "111mm", left: "20mm", right: "18mm", margin: 0, fontSize: "4.8mm", fontWeight: 700, color: TEXT_PRIMARY, zIndex: 1 }}>
+                      {safeText(subject, 160)}
+                    </p>
                   ) : null}
-                  <p style={{ margin: 0, fontSize: "5.2mm", fontWeight: 700, color: preset.darkHeader ? "hsl(0 0% 100%)" : "hsl(222 47% 11%)" }}>{safeText(profile?.company_name, 90) || "Your Company"}</p>
-                  {profile?.company_address ? (
-                    <p style={{ margin: "1.2mm 0 0", fontSize: "3mm", color: preset.darkHeader ? "hsl(0 0% 92%)" : "hsl(215 16% 47%)", whiteSpace: "pre-wrap" }}>{safeText(profile.company_address, 150)}</p>
-                  ) : null}
-                </td>
-                <td style={{ width: "44%", verticalAlign: "top", textAlign: "right", padding: preset.darkHeader ? "4mm" : "0" }}>
-                  {profile?.company_phone ? <p style={{ margin: 0, fontSize: "3mm", color: preset.darkHeader ? "hsl(0 0% 92%)" : "hsl(215 16% 47%)" }}>{safeText(profile.company_phone, 40)}</p> : null}
-                  {profile?.company_email ? <p style={{ margin: "1mm 0 0", fontSize: "3mm", color: preset.darkHeader ? "hsl(0 0% 92%)" : "hsl(215 16% 47%)" }}>{safeText(profile.company_email, 60)}</p> : null}
-                  {profile?.company_website ? <p style={{ margin: "1mm 0 0", fontSize: "3mm", color: preset.darkHeader ? "hsl(0 0% 92%)" : "hsl(215 16% 47%)" }}>{safeText(profile.company_website, 60)}</p> : null}
-                  {profile?.registration_number ? <p style={{ margin: "1mm 0 0", fontSize: "2.8mm", color: preset.darkHeader ? "hsl(0 0% 92%)" : "hsl(215 16% 47%)" }}>Reg: {safeText(profile.registration_number, 40)}</p> : null}
-                </td>
-              </tr>
-            </tbody>
-          </table>
-          <div style={{ height: templateStyle === "corporate" ? "0.8mm" : "0.4mm", width: "100%", backgroundColor: brandColor, marginBottom: "5mm" }} />
-        </div>
 
-        {/* RECIPIENT SECTION */}
-        <div data-pdf-section="recipient">
-          <table style={{ ...TABLE_RESET, marginBottom: "5mm" }}>
-            <tbody>
-              <tr>
-                <td style={{ width: "65%", verticalAlign: "top" }}>
-                  {recipientName ? <p style={{ margin: 0, fontSize: "3.2mm", fontWeight: 600 }}>{safeText(recipientName, 80)}</p> : null}
-                  {recipientTitle ? <p style={{ margin: "0.8mm 0 0", fontSize: "3mm", color: "hsl(215 16% 47%)" }}>{safeText(recipientTitle, 80)}</p> : null}
-                  {recipientCompany ? <p style={{ margin: "0.8mm 0 0", fontSize: "3mm", color: "hsl(215 16% 47%)" }}>{safeText(recipientCompany, 80)}</p> : null}
-                  {recipientAddress ? <p style={{ margin: "0.8mm 0 0", fontSize: "3mm", color: "hsl(215 16% 47%)", whiteSpace: "pre-wrap" }}>{safeText(recipientAddress, 130)}</p> : null}
-                  {recipientPhone ? <p style={{ margin: "0.8mm 0 0", fontSize: "3mm", color: "hsl(215 16% 47%)" }}>{safeText(recipientPhone, 50)}</p> : null}
-                  {recipientEmail ? <p style={{ margin: "0.8mm 0 0", fontSize: "3mm", color: "hsl(215 16% 47%)" }}>{safeText(recipientEmail, 70)}</p> : null}
-                </td>
-                <td style={{ width: "35%", verticalAlign: "top", textAlign: "right" }}>
-                  {date ? <p style={{ margin: 0, fontSize: "3mm", color: "hsl(215 16% 47%)" }}>{safeText(date, 40)}</p> : null}
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+                  <p
+                    style={{
+                      position: "absolute",
+                      top: hasSubject ? "121mm" : "114mm",
+                      left: "20mm",
+                      right: "18mm",
+                      margin: 0,
+                      fontSize: "5.2mm",
+                      color: TEXT_PRIMARY,
+                      zIndex: 1,
+                    }}
+                  >
+                    Dear {salutationTarget},
+                  </p>
+                </>
+              ) : (
+                <div style={{ position: "absolute", top: "25mm", left: "20mm", right: "18mm", display: "flex", justifyContent: "space-between", alignItems: "center", zIndex: 1 }}>
+                  <p style={{ margin: 0, fontSize: "5.2mm", fontWeight: 700, color: TEXT_PRIMARY }}>{companyName}</p>
+                  <p style={{ margin: 0, fontSize: "3.8mm", color: TEXT_MUTED }}>Page {pageIndex + 1}</p>
+                </div>
+              )}
 
-        {/* SUBJECT SECTION */}
-        {subject ? (
-          <div data-pdf-section="subject">
-            <table style={{ ...TABLE_RESET, marginBottom: "4mm" }}>
-              <tbody>
-                <tr>
-                  <td style={{ fontSize: "3.3mm", fontWeight: 700, color: "hsl(215 25% 25%)", paddingBottom: "1.2mm" }}>{preset.subjectPrefix}{safeText(subject, 140)}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        ) : null}
+              <div
+                style={{
+                  position: "absolute",
+                  left: "20mm",
+                  right: "18mm",
+                  top: isFirstPage ? "130mm" : "36mm",
+                  bottom: isLastPage ? "96mm" : "28mm",
+                  overflow: "hidden",
+                  zIndex: 1,
+                }}
+              >
+                {pageLines.map((line, lineIndex) => (
+                  <p
+                    key={`line-${pageIndex}-${lineIndex}`}
+                    style={{
+                      margin: line ? "0 0 1.4mm 0" : "0 0 3mm 0",
+                      fontSize: "4.7mm",
+                      lineHeight: 1.5,
+                      color: TEXT_MUTED,
+                    }}
+                  >
+                    {line || "\u00A0"}
+                  </p>
+                ))}
+              </div>
 
-        {/* BODY PARAGRAPHS - each as its own section for pagination */}
-        {bodySections.map((section, index) => (
-          <div key={`body-${index}`} data-pdf-section="body">
-            <p style={{ fontSize: "3.2mm", lineHeight: 1.65, color: "hsl(215 25% 25%)", whiteSpace: "pre-wrap", margin: index === 0 ? "0 0 3mm 0" : "3mm 0" }}>
-              {section}
-            </p>
-          </div>
-        ))}
+              {isLastPage ? (
+                <div style={{ position: "absolute", left: "20mm", right: "18mm", bottom: "26mm", zIndex: 1 }}>
+                  <p style={{ margin: 0, fontSize: "5.2mm", color: TEXT_PRIMARY }}>{displayClosing}</p>
 
-        {/* CLOSING SECTION */}
-        <div data-pdf-section="closing" style={{ marginTop: "5mm" }}>
-          <p style={{ margin: 0, fontSize: "3.2mm", color: "hsl(215 25% 25%)" }}>{safeText(closing, 60) || "Sincerely,"}</p>
-          {signatureUrl ? <img src={signatureUrl} alt="Signature" style={{ maxHeight: "12mm", maxWidth: "48mm", objectFit: "contain", marginTop: "2mm", marginBottom: "2mm" }} /> : null}
-          <p style={{ margin: "1mm 0 0", fontWeight: 600, fontSize: "3.2mm" }}>{safeText(senderName, 80) || safeText(profile?.company_name, 80)}</p>
-          {senderTitle ? <p style={{ margin: "0.8mm 0 0", fontSize: "3mm", color: "hsl(215 16% 47%)" }}>{safeText(senderTitle, 80)}</p> : null}
-        </div>
+                  <div style={{ marginTop: "16mm", display: "flex", justifyContent: "space-between", alignItems: "flex-end", gap: "8mm" }}>
+                    <div>
+                      <p style={{ margin: 0, fontSize: "5.6mm", fontWeight: 600, color: TEXT_PRIMARY }}>{displaySender}</p>
+                      {senderTitle ? <p style={{ margin: "1.2mm 0 0", fontSize: "4.4mm", color: TEXT_MUTED }}>{safeText(senderTitle, 80)}</p> : null}
+                    </div>
 
-        {/* FOOTER SECTION */}
-        <div data-pdf-section="footer" style={{ borderTop: "0.3mm solid hsl(220 13% 87%)", paddingTop: "3mm", marginTop: "8mm" }}>
-          <table style={TABLE_RESET}>
-            <tbody>
-              <tr>
-                <td style={{ width: "33.33%", fontSize: "2.8mm", color: "hsl(215 16% 47%)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                  {preset.footerLabels ? <span style={{ color: brandColor, fontWeight: 700 }}>W. </span> : null}
-                  {safeText(profile?.company_website, 60)}
-                </td>
-                <td style={{ width: "33.33%", fontSize: "2.8mm", color: "hsl(215 16% 47%)", textAlign: "center", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                  {preset.footerLabels ? <span style={{ color: brandColor, fontWeight: 700 }}>T. </span> : null}
-                  {safeText(profile?.company_phone, 40)}
-                </td>
-                <td style={{ width: "33.33%", fontSize: "2.8mm", color: "hsl(215 16% 47%)", textAlign: "right", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                  {preset.footerLabels ? <span style={{ color: brandColor, fontWeight: 700 }}>E. </span> : null}
-                  {safeText(profile?.company_email, 60)}
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+                    {signatureUrl ? (
+                      <img src={signatureUrl} alt="Signature" style={{ maxWidth: "52mm", maxHeight: "18mm", objectFit: "contain" }} />
+                    ) : (
+                      <p style={{ margin: 0, fontSize: "10mm", fontFamily: "'Brush Script MT', cursive", color: TEXT_PRIMARY }}>{displaySender}</p>
+                    )}
+                  </div>
+                </div>
+              ) : null}
+            </div>
+          );
+        })}
       </div>
     );
   }
