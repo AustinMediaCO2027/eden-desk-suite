@@ -20,8 +20,12 @@ const formatAmount = (value: unknown, fallback: string) => {
   return Number.isFinite(parsed) ? parsed.toFixed(2) : fallback;
 };
 
+// Match PHP urlencode exactly: encode everything except A-Za-z0-9 -_.
+// encodeURIComponent doesn't encode !'()*~ but PHP urlencode does.
 const encodePayFastValue = (value: string) =>
-  encodeURIComponent(value.trim()).replace(/%20/g, "+");
+  encodeURIComponent(value.trim())
+    .replace(/%20/g, "+")
+    .replace(/[!'()*~]/g, (c) => `%${c.charCodeAt(0).toString(16).toUpperCase()}`);
 
 const generatePayFastSignature = async (params: Record<string, string>, passphrase?: string): Promise<string> => {
   // PayFast requires params in their natural order, NOT sorted alphabetically
@@ -35,7 +39,10 @@ const generatePayFastSignature = async (params: Record<string, string>, passphra
     ? `${payload}&passphrase=${encodePayFastValue(phrase)}`
     : payload;
 
-  return await md5(fullPayload);
+  console.log("PayFast signature payload:", fullPayload);
+  const sig = await md5(fullPayload);
+  console.log("PayFast generated signature:", sig);
+  return sig;
 };
 
 serve(async (req) => {
