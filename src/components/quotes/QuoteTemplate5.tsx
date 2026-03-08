@@ -207,20 +207,22 @@ const QuoteTemplate5 = forwardRef<HTMLDivElement, QuoteTemplateProps>(
           position: "absolute", left: 0, right: 0, bottom: 0,
           backgroundColor: accent,
           padding: "4mm 20mm",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          gap: "10mm",
+          textAlign: "center",
         }}>
-          {profile?.company_phone && (
-            <span style={{ fontSize: "2.8mm", color: "white" }}>📞 {safeText(profile.company_phone, 30)}</span>
-          )}
-          {profile?.company_email && (
-            <span style={{ fontSize: "2.8mm", color: "white" }}>✉ {safeText(profile.company_email, 50)}</span>
-          )}
-          {profile?.company_website && (
-            <span style={{ fontSize: "2.8mm", color: "white" }}>🌐 {safeText(profile.company_website, 50)}</span>
-          )}
+          <table style={{ width: "100%", borderCollapse: "collapse" }}>
+            <tbody><tr>
+              {profile?.company_phone && (
+                <td style={{ fontSize: "2.8mm", color: "white", textAlign: "center" }}>📞 {safeText(profile.company_phone, 30)}</td>
+              )}
+              {profile?.company_email && (
+                <td style={{ fontSize: "2.8mm", color: "white", textAlign: "center" }}>✉ {safeText(profile.company_email, 50)}</td>
+              )}
+              {profile?.company_website && (
+                <td style={{ fontSize: "2.8mm", color: "white", textAlign: "center" }}>🌐 {safeText(profile.company_website, 50)}</td>
+              )}
+            </tr></tbody>
+          </table>
+        </div>
         </div>
       </div>
     );
