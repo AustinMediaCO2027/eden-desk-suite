@@ -256,13 +256,25 @@ const SECTION_GAP_MM = 2;
 const MIN_SLICE_HEIGHT_PX = 8;
 
 const renderSectionCanvas = async (section: HTMLElement) => {
+  const sectionHeight = Math.max(section.scrollHeight || 0, section.offsetHeight || 0, A4_HEIGHT_PX);
+
   return html2canvas(section, {
     scale: 2,
     useCORS: true,
     backgroundColor: "#ffffff",
     logging: false,
     width: A4_WIDTH_PX,
+    height: sectionHeight,
+    windowWidth: A4_WIDTH_PX,
+    windowHeight: sectionHeight,
+    scrollX: 0,
+    scrollY: 0,
   });
+};
+
+const appendFullPageSection = (pdf: jsPDF, canvas: HTMLCanvasElement) => {
+  const imgData = canvas.toDataURL("image/png");
+  pdf.addImage(imgData, "PNG", 0, 0, A4_WIDTH_MM, A4_HEIGHT_MM, undefined, "FAST");
 };
 
 const appendCanvasToPdf = (pdf: jsPDF, canvas: HTMLCanvasElement, startY: number) => {
@@ -338,6 +350,27 @@ const buildSectionBasedPdf = async (payload: DocumentPDFPayload) => {
       orientation: "portrait",
       compress: true,
     });
+
+    const allSectionsArePages = sections.every((section) => section.dataset.pdfSection === "page");
+
+    if (allSectionsArePages) {
+      for (let index = 0; index < sections.length; index += 1) {
+        const section = sections[index];
+        const canvas = await renderSectionCanvas(section);
+
+        if (!canvas.width || !canvas.height) {
+          continue;
+        }
+
+        if (index > 0) {
+          pdf.addPage();
+        }
+
+        appendFullPageSection(pdf, canvas);
+      }
+
+      return pdf;
+    }
 
     let currentY = MARGIN_MM;
 
