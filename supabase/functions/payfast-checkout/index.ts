@@ -22,7 +22,7 @@ const formatAmount = (value: unknown, fallback: string) => {
 const encodePayFastValue = (value: string) =>
   encodeURIComponent(value.trim()).replace(/%20/g, "+");
 
-const generatePayFastSignature = (params: Record<string, string>, passphrase?: string) => {
+const generatePayFastSignature = async (params: Record<string, string>, passphrase?: string): Promise<string> => {
   const payload = Object.entries(params)
     .filter(([, value]) => value !== undefined && value !== null && value !== "")
     .sort(([keyA], [keyB]) => keyA.localeCompare(keyB))
@@ -34,7 +34,7 @@ const generatePayFastSignature = (params: Record<string, string>, passphrase?: s
     ? `${payload}&passphrase=${encodePayFastValue(phrase)}`
     : payload;
 
-  return md5(fullPayload);
+  return await md5(fullPayload);
 };
 
 serve(async (req) => {
