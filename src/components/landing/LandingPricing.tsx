@@ -7,7 +7,7 @@ import { useCurrency } from "@/hooks/useCurrency";
 const planData = [
   {
     name: "Standard",
-    zarPrice: 39.99,
+    zarPrice: 49.99,
     period: "/month",
     description: "Perfect for freelancers",
     features: ["Create invoices", "Create quotes", "Download PDF", "Email sending"],

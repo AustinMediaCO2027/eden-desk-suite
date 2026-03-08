@@ -13,9 +13,9 @@ import { CurrencySwitcher } from "@/components/CurrencySwitcher";
 const plans = [
   {
     name: "Standard",
-    zarPrice: 39.99,
+    zarPrice: 49.99,
     period: "/month",
-    payfastAmount: "39.99",
+    payfastAmount: "49.99",
     features: ["Create invoices", "Create quotes", "Download PDF", "Email sending"],
     planId: "standard",
   },
