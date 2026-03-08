@@ -1,12 +1,13 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
+import { crypto } from "https://deno.land/std@0.168.0/crypto/mod.ts";
+import { encode as hexEncode } from "https://deno.land/std@0.168.0/encoding/hex.ts";
+
 async function md5(input: string): Promise<string> {
   const data = new TextEncoder().encode(input);
   const hash = await crypto.subtle.digest("MD5", data);
-  return [...new Uint8Array(hash)]
-    .map(b => b.toString(16).padStart(2, "0"))
-    .join("");
+  return new TextDecoder().decode(hexEncode(new Uint8Array(hash)));
 }
 
 const corsHeaders = {
@@ -23,9 +24,9 @@ const encodePayFastValue = (value: string) =>
   encodeURIComponent(value.trim()).replace(/%20/g, "+");
 
 const generatePayFastSignature = async (params: Record<string, string>, passphrase?: string): Promise<string> => {
+  // PayFast requires params in their natural order, NOT sorted alphabetically
   const payload = Object.entries(params)
-    .filter(([, value]) => value !== undefined && value !== null && value !== "")
-    .sort(([keyA], [keyB]) => keyA.localeCompare(keyB))
+    .filter(([key, value]) => key !== "signature" && value !== undefined && value !== null && value !== "")
     .map(([key, value]) => `${key}=${encodePayFastValue(value)}`)
     .join("&");
 
