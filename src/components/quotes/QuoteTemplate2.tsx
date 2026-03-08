@@ -16,7 +16,7 @@ const PAGE: CSSProperties = {
 };
 
 const T: CSSProperties = { width: "100%", borderCollapse: "collapse", tableLayout: "fixed" };
-const R: CSSProperties = { textAlign: "right", whiteSpace: "nowrap", fontVariantNumeric: "tabular-nums" };
+const R: CSSProperties = { textAlign: "right", whiteSpace: "nowrap", fontVariantNumeric: "tabular-nums lining-nums", fontFeatureSettings: '"tnum" 1, "lnum" 1' };
 
 /**
  * Quote Template 2 – Modern Blue
@@ -85,7 +85,7 @@ const QuoteTemplate2 = forwardRef<HTMLDivElement, QuoteTemplateProps>(
           <thead>
             <tr>
               <th style={{ width: "50%", textAlign: "left", fontSize: "2.7mm", color: "#888", textTransform: "uppercase", letterSpacing: "0.2mm", padding: "2mm 0", borderBottom: "0.3mm solid #e5e7eb" }}>Item description</th>
-              <th style={{ width: "14%", textAlign: "center", fontSize: "2.7mm", color: "#888", textTransform: "uppercase", letterSpacing: "0.2mm", padding: "2mm 0", borderBottom: "0.3mm solid #e5e7eb" }}>Qty</th>
+              <th style={{ width: "14%", textAlign: "right", fontSize: "2.7mm", color: "#888", textTransform: "uppercase", letterSpacing: "0.2mm", padding: "2mm 0", borderBottom: "0.3mm solid #e5e7eb" }}>Qty</th>
               <th style={{ width: "18%", textAlign: "right", fontSize: "2.7mm", color: "#888", textTransform: "uppercase", letterSpacing: "0.2mm", padding: "2mm 0", borderBottom: "0.3mm solid #e5e7eb" }}>Rate</th>
               <th style={{ width: "18%", textAlign: "right", fontSize: "2.7mm", color: "#888", textTransform: "uppercase", letterSpacing: "0.2mm", padding: "2mm 0", borderBottom: "0.3mm solid #e5e7eb" }}>Amount</th>
             </tr>
@@ -97,9 +97,9 @@ const QuoteTemplate2 = forwardRef<HTMLDivElement, QuoteTemplateProps>(
                   <p style={{ margin: 0, fontSize: "3.2mm", fontWeight: 600 }}>{safeText(item.description, 70)}</p>
                   {item.details && <p style={{ margin: "0.5mm 0 0", fontSize: "2.7mm", color: "#888" }}>{safeText(item.details, 80)}</p>}
                 </td>
-                <td style={{ ...R, textAlign: "center", padding: "2.5mm 0", borderBottom: "0.2mm solid #f3f4f6", fontSize: "3.1mm", color: "#555" }}>{Number(item.quantity || 0)}</td>
-                <td style={{ ...R, padding: "2.5mm 0", borderBottom: "0.2mm solid #f3f4f6", fontSize: "3.1mm", color: "#555" }}>{fmt(Number(item.rate || 0))}</td>
-                <td style={{ ...R, padding: "2.5mm 0", borderBottom: "0.2mm solid #f3f4f6", fontSize: "3.1mm", fontWeight: 600 }}>{fmt(item.amount)}</td>
+                <td style={{ ...R, padding: "2.5mm 0", borderBottom: "0.2mm solid #f3f4f6", fontSize: "3.1mm", color: "#555", verticalAlign: "top" }}>{Number(item.quantity || 0)}</td>
+                <td style={{ ...R, padding: "2.5mm 0", borderBottom: "0.2mm solid #f3f4f6", fontSize: "3.1mm", color: "#555", verticalAlign: "top" }}>{fmt(Number(item.rate || 0))}</td>
+                <td style={{ ...R, padding: "2.5mm 0", borderBottom: "0.2mm solid #f3f4f6", fontSize: "3.1mm", fontWeight: 600, verticalAlign: "top" }}>{fmt(item.amount)}</td>
               </tr>
             ))}
           </tbody>
