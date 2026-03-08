@@ -18,12 +18,6 @@ export interface LetterheadTemplateProps {
   signatureUrl?: string;
 }
 
-export const LETTERHEAD_TEMPLATES = [
-  { value: "classic", label: "Classic", desc: "Logo left, title right. Blue accent. Clean footer with contact icons." },
-  { value: "corporate", label: "Corporate", desc: "Bold logo header with horizontal rule. Orange accent wave footer." },
-  { value: "executive", label: "Executive", desc: "Dark header band with logo and contact. Formal professional style." },
-];
-
 export const LETTERHEAD_COLORS = [
   { value: "#1A5276", label: "Blue" },
   { value: "#1A1A1A", label: "Black" },

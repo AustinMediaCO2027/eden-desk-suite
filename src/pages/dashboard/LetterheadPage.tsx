@@ -10,14 +10,15 @@ import { Textarea } from "@/components/ui/textarea";
 import { Plus, Trash2, Download, Save, ArrowLeft, X, Bot, Send, Palette, Mail, FileText } from "lucide-react";
 import LogoUploadWidget from "@/components/dashboard/LogoUploadWidget";
 import SignatureUploadWidget from "@/components/dashboard/SignatureUploadWidget";
-import { downloadDocumentPDF, generateDocumentPDFBase64 } from "@/lib/pdf";
+import { downloadDocumentPDF } from "@/lib/pdf";
 import LetterheadPreview from "@/components/letterhead/LetterheadPreview";
-import { LETTERHEAD_TEMPLATES, LETTERHEAD_COLORS } from "@/components/letterhead/LetterheadTypes";
+import { LETTERHEAD_COLORS } from "@/components/letterhead/LetterheadTypes";
 import ClientSelector from "@/components/dashboard/ClientSelector";
 import { useGenerationLimit } from "@/hooks/useGenerationLimit";
 import PaywallDialog from "@/components/PaywallDialog";
 import { useSubscription } from "@/hooks/useSubscription";
 import UpgradeDialog from "@/components/UpgradeDialog";
+import SendLetterheadDialog from "@/components/dashboard/SendLetterheadDialog";
 
 interface LetterheadForm {
   id?: string;
@@ -66,12 +67,8 @@ const LetterheadPage = () => {
   const [previewing, setPreviewing] = useState(false);
   const [aiLoading, setAiLoading] = useState(false);
   const [aiPrompt, setAiPrompt] = useState("");
-  const [previewTemplate, setPreviewTemplate] = useState("");
   const [previewColor, setPreviewColor] = useState("");
-  const [sending, setSending] = useState(false);
-  const [sendEmail, setSendEmail] = useState("");
-  const [showSendForm, setShowSendForm] = useState(false);
-
+  const [showSendDialog, setShowSendDialog] = useState(false);
 
   const fetchLetterheads = async () => {
     if (!user) return;
@@ -161,123 +158,8 @@ const LetterheadPage = () => {
     }
   };
 
-  const handleSendEmail = async () => {
-    if (!sendEmail.trim() || !editing) return;
-    setSending(true);
-    try {
-      const subject = editing.subject || editing.title || "Letterhead";
-      const activeTemplate = previewTemplate || profile?.template_style || "classic";
-      const pdfBase64 = await generateDocumentPDFBase64({
-        type: "letterhead",
-        templateStyle: activeTemplate,
-        profile,
-        recipientName: editing.recipient_name,
-        recipientTitle: editing.recipient_title,
-        recipientCompany: editing.recipient_company,
-        recipientAddress: editing.recipient_address,
-        recipientPhone: editing.recipient_phone,
-        recipientEmail: editing.recipient_email,
-        date: editing.date,
-        subject: editing.subject,
-        body: editing.body,
-        closing: editing.closing,
-        senderName: editing.sender_name,
-        senderTitle: editing.sender_title,
-        colorOverride: previewColor || undefined,
-        signatureUrl: editing.signature_url || undefined,
-      });
-      if (!pdfBase64) {
-        throw new Error("PDF generation failed. Please try again.");
-      }
-      const htmlBody = `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <div style="border-bottom: 2px solid #e5e7eb; padding-bottom: 16px; margin-bottom: 24px;">
-            ${profile?.logo_url ? `<img src="${profile.logo_url}" alt="Logo" style="height: 40px; margin-bottom: 8px;" />` : ""}
-            <h2 style="margin: 0; font-size: 18px; color: #111;">${profile?.company_name || "Your Company"}</h2>
-            ${profile?.company_address ? `<p style="margin: 2px 0; font-size: 12px; color: #666;">${profile.company_address}</p>` : ""}
-          </div>
-          ${editing.date ? `<p style="font-size: 14px; color: #444; margin-bottom: 16px;">${editing.date}</p>` : ""}
-          ${editing.recipient_name ? `
-            <div style="margin-bottom: 16px; font-size: 14px;">
-              <p style="margin: 0; font-weight: bold;">${editing.recipient_name}</p>
-              ${editing.recipient_title ? `<p style="margin: 0; color: #666;">${editing.recipient_title}</p>` : ""}
-              ${editing.recipient_company ? `<p style="margin: 0; color: #666;">${editing.recipient_company}</p>` : ""}
-              ${editing.recipient_address ? `<p style="margin: 0; color: #666;">${editing.recipient_address}</p>` : ""}
-            </div>
-          ` : ""}
-          ${editing.recipient_name ? `<p style="font-size: 14px; margin-bottom: 16px;">Dear ${editing.recipient_name},</p>` : ""}
-          <div style="font-size: 14px; line-height: 1.6; color: #333; white-space: pre-wrap;">${editing.body}</div>
-          <div style="margin-top: 32px; font-size: 14px;">
-            <p style="margin-bottom: 24px;">${editing.closing}</p>
-            <p style="font-weight: bold; margin: 0;">${editing.sender_name || profile?.company_name || ""}</p>
-            ${editing.sender_title ? `<p style="margin: 0; color: #666;">${editing.sender_title}</p>` : ""}
-          </div>
-          <div style="border-top: 1px solid #e5e7eb; margin-top: 32px; padding-top: 12px; font-size: 11px; color: #999; text-align: center;">
-            ${profile?.company_phone ? `${profile.company_phone}` : ""}
-            ${profile?.company_email ? ` | ${profile.company_email}` : ""}
-            ${profile?.company_website ? ` | ${profile.company_website}` : ""}
-          </div>
-        </div>
-      `;
-      const attachments = pdfBase64
-        ? [{ filename: `letterhead-${(editing.title || "document").replace(/[^a-z0-9_-]/gi, "-").toLowerCase()}.pdf`, content: pdfBase64, content_type: "application/pdf" }]
-        : undefined;
-
-      const { data, error } = await supabase.functions.invoke("send-email", {
-        body: {
-          to: sendEmail,
-          subject,
-          html: htmlBody,
-          from_name: profile?.company_name || "Eden Desk",
-          from_email: profile?.company_email || undefined,
-          attachments,
-        },
-      });
-
-      if (error || data?.error) {
-        let parsedPayload: any = null;
-        if (error?.message) {
-          const jsonStart = error.message.indexOf("{");
-          if (jsonStart !== -1) {
-            try {
-              parsedPayload = JSON.parse(error.message.slice(jsonStart));
-            } catch {
-              parsedPayload = null;
-            }
-          }
-        }
-
-        const detailedMessage =
-          data?.message ||
-          parsedPayload?.message ||
-          data?.details?.message ||
-          parsedPayload?.details?.message ||
-          data?.error ||
-          parsedPayload?.error ||
-          error?.message ||
-          "Failed to send email";
-
-        const errorCode = data?.code || parsedPayload?.code;
-        if (errorCode === "RESEND_SANDBOX_RESTRICTION" || errorCode === "RESEND_DOMAIN_NOT_VERIFIED") {
-          throw new Error(`${detailedMessage}. Please verify your sender domain DNS, then try again.`);
-        }
-
-        throw new Error(detailedMessage);
-      }
-
-      toast({ title: "Sent!", description: `Letterhead emailed to ${sendEmail}` });
-      setShowSendForm(false);
-      setSendEmail("");
-    } catch (err: any) {
-      toast({ title: "Send Error", description: err.message, variant: "destructive" });
-    } finally {
-      setSending(false);
-    }
-  };
-
   // Preview mode
   if (previewing && editing) {
-    const activeTemplate = previewTemplate || profile?.template_style || "classic";
     return (
       <div className="space-y-4">
         <div className="flex gap-2 flex-wrap items-center">
@@ -291,7 +173,6 @@ const LetterheadPage = () => {
                 {
                   type: "letterhead",
                   profile,
-                  templateStyle: activeTemplate,
                   recipientName: editing.recipient_name,
                   recipientTitle: editing.recipient_title,
                   recipientCompany: editing.recipient_company,
@@ -313,46 +194,40 @@ const LetterheadPage = () => {
           >
             <Download className="h-4 w-4 mr-1" /> Download PDF
           </Button>
-          <Button size="sm" variant="outline" onClick={() => { setShowSendForm(!showSendForm); setSendEmail(editing.recipient_email || ""); }}>
+          <Button size="sm" variant="outline" onClick={() => setShowSendDialog(true)}>
             <Send className="h-4 w-4 mr-1" /> Send
           </Button>
         </div>
 
-        {showSendForm && (
-          <div className="rounded-xl border border-border bg-card p-4 flex gap-2 items-end">
-            <div className="flex-1 space-y-1">
-              <Label className="text-xs">Recipient Email</Label>
-              <Input value={sendEmail} onChange={e => setSendEmail(e.target.value)} placeholder="email@example.com" className="bg-secondary" />
-            </div>
-            <Button onClick={handleSendEmail} disabled={sending || !sendEmail.trim()}>
-              {sending ? "Sending..." : "Send Email"}
-            </Button>
-          </div>
+        {showSendDialog && (
+          <SendLetterheadDialog
+            recipientEmail={editing.recipient_email}
+            recipientName={editing.recipient_name}
+            subject={editing.subject}
+            body={editing.body}
+            date={editing.date}
+            recipientTitle={editing.recipient_title}
+            recipientCompany={editing.recipient_company}
+            recipientAddress={editing.recipient_address}
+            recipientPhone={editing.recipient_phone}
+            closing={editing.closing}
+            senderName={editing.sender_name}
+            senderTitle={editing.sender_title}
+            signatureUrl={editing.signature_url || undefined}
+            colorOverride={previewColor || undefined}
+            title={editing.title}
+            profile={profile}
+            onClose={() => setShowSendDialog(false)}
+          />
         )}
 
-        {/* Template + Color switcher */}
+        {/* Color switcher */}
         <div className="rounded-xl border border-border bg-card p-4">
           <div className="flex items-center gap-2 mb-3">
             <Palette className="h-4 w-4 text-muted-foreground" />
-            <p className="text-sm font-medium">Choose Template</p>
+            <p className="text-sm font-medium">Accent Colour</p>
           </div>
-          <div className="flex gap-2 flex-wrap mb-4">
-            {LETTERHEAD_TEMPLATES.map(t => (
-              <button
-                key={t.value}
-                onClick={() => setPreviewTemplate(t.value)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                  activeTemplate === t.value
-                    ? "bg-foreground text-background"
-                    : "bg-secondary text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                {t.label}
-              </button>
-            ))}
-          </div>
-          <div className="flex items-center gap-2">
-            <p className="text-xs text-muted-foreground mr-1">Colour:</p>
+          <div className="flex items-center gap-2 flex-wrap">
             {LETTERHEAD_COLORS.map(c => (
               <button
                 key={c.value}
@@ -370,7 +245,6 @@ const LetterheadPage = () => {
         <div className="rounded-lg overflow-hidden border border-border shadow-lg">
           <LetterheadPreview
             id="letterhead-preview"
-            templateStyle={activeTemplate}
             profile={profile}
             recipientName={editing.recipient_name}
             recipientTitle={editing.recipient_title}
@@ -460,7 +334,7 @@ const LetterheadPage = () => {
         </div>
 
         {/* Closing */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label>Closing</Label>
             <Input value={editing.closing} onChange={e => setEditing({ ...editing, closing: e.target.value })} className="bg-secondary" />
@@ -468,17 +342,19 @@ const LetterheadPage = () => {
           <div className="space-y-2">
             <Label>Sender Name</Label>
             <Input value={editing.sender_name} onChange={e => setEditing({ ...editing, sender_name: e.target.value })} className="bg-secondary" placeholder="Your name" />
+          </div>
         </div>
 
-        <SignatureUploadWidget
-          signatureUrl={editing.signature_url || null}
-          onUploaded={(url) => setEditing({ ...editing, signature_url: url })}
-          onRemoved={() => setEditing({ ...editing, signature_url: "" })}
-        />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label>Sender Title</Label>
             <Input value={editing.sender_title} onChange={e => setEditing({ ...editing, sender_title: e.target.value })} className="bg-secondary" placeholder="e.g. CEO" />
           </div>
+          <SignatureUploadWidget
+            signatureUrl={editing.signature_url || null}
+            onUploaded={(url) => setEditing({ ...editing, signature_url: url })}
+            onRemoved={() => setEditing({ ...editing, signature_url: "" })}
+          />
         </div>
 
         {/* AI Draft */}
@@ -542,11 +418,11 @@ const LetterheadPage = () => {
           <div className="space-y-2 max-w-md">
             <h3 className="text-lg font-semibold">Create Professional Letterheads</h3>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              Design branded letterheads with your company logo, colours, and details. Choose from Classic, Corporate, or Executive templates — then download as PDF or email directly.
+              Design branded letterheads with your company logo, colours, and details. Customise accent colours, then download as PDF or email directly.
             </p>
           </div>
           <div className="flex flex-wrap justify-center gap-3 text-xs text-muted-foreground">
-            <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-muted/50"><FileText className="h-3.5 w-3.5" /> 3 Templates</span>
+            <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-muted/50"><FileText className="h-3.5 w-3.5" /> Professional Layout</span>
             <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-muted/50"><Palette className="h-3.5 w-3.5" /> Custom Colours</span>
             <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-muted/50"><Download className="h-3.5 w-3.5" /> PDF Export</span>
             <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-muted/50"><Send className="h-3.5 w-3.5" /> Email Direct</span>
