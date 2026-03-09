@@ -100,10 +100,10 @@ const InvoiceTemplate5 = forwardRef<HTMLDivElement, InvoiceTemplateProps>(
           <table style={T}>
             <thead>
               <tr style={{ backgroundColor: "#f8f9fb" }}>
-                <th style={{ width: "44%", textAlign: "left", fontSize: "2.7mm", color: "#555", fontWeight: 600, padding: "3mm 4mm", borderBottom: "0.3mm solid #e5e7eb" }}>Description</th>
-                <th style={{ width: "10%", textAlign: "center", fontSize: "2.7mm", color: "#555", fontWeight: 600, padding: "3mm 2mm", borderBottom: "0.3mm solid #e5e7eb" }}>Qty</th>
+                <th style={{ width: taxRate > 0 ? "44%" : "50%", textAlign: "left", fontSize: "2.7mm", color: "#555", fontWeight: 600, padding: "3mm 4mm", borderBottom: "0.3mm solid #e5e7eb" }}>Description</th>
+                <th style={{ width: taxRate > 0 ? "10%" : "14%", textAlign: "center", fontSize: "2.7mm", color: "#555", fontWeight: 600, padding: "3mm 2mm", borderBottom: "0.3mm solid #e5e7eb" }}>Qty</th>
                 <th style={{ width: "17%", textAlign: "right", fontSize: "2.7mm", color: "#555", fontWeight: 600, padding: "3mm 2mm", borderBottom: "0.3mm solid #e5e7eb" }}>Price</th>
-                <th style={{ width: "12%", textAlign: "right", fontSize: "2.7mm", color: "#555", fontWeight: 600, padding: "3mm 2mm", borderBottom: "0.3mm solid #e5e7eb" }}>Tax</th>
+                {taxRate > 0 && <th style={{ width: "12%", textAlign: "right", fontSize: "2.7mm", color: "#555", fontWeight: 600, padding: "3mm 2mm", borderBottom: "0.3mm solid #e5e7eb" }}>Tax</th>}
                 <th style={{ width: "17%", textAlign: "right", fontSize: "2.7mm", color: "#555", fontWeight: 600, padding: "3mm 4mm", borderBottom: "0.3mm solid #e5e7eb" }}>Amount</th>
               </tr>
             </thead>
@@ -118,7 +118,7 @@ const InvoiceTemplate5 = forwardRef<HTMLDivElement, InvoiceTemplateProps>(
                     </td>
                     <td style={{ ...R, textAlign: "center", padding: "3.5mm 2mm", borderBottom: "0.2mm solid #f0f0f0", fontSize: "3mm", color: "#555" }}>{Number(item.quantity || 0)}</td>
                     <td style={{ ...R, padding: "3.5mm 2mm", borderBottom: "0.2mm solid #f0f0f0", fontSize: "3mm", color: "#555" }}>{fmt(Number(item.rate || 0))}</td>
-                    <td style={{ ...R, padding: "3.5mm 2mm", borderBottom: "0.2mm solid #f0f0f0", fontSize: "3mm", color: "#555" }}>{fmt(itemTax)}</td>
+                    {taxRate > 0 && <td style={{ ...R, padding: "3.5mm 2mm", borderBottom: "0.2mm solid #f0f0f0", fontSize: "3mm", color: "#555" }}>{fmt(itemTax)}</td>}
                     <td style={{ ...R, padding: "3.5mm 4mm", borderBottom: "0.2mm solid #f0f0f0", fontSize: "3mm", color: "#1a1a1a" }}>{fmt(item.amount)}</td>
                   </tr>
                 );
