@@ -27,6 +27,7 @@ import NotFound from "./pages/NotFound";
 import SharedFilePage from "./pages/SharedFilePage";
 import ResetPassword from "./pages/ResetPassword";
 import TermsPage from "./pages/TermsPage";
+import InvestorPage from "./pages/InvestorPage";
 import { useReferralTracking } from "./hooks/useReferralTracking";
 
 const queryClient = new QueryClient();
@@ -52,6 +53,7 @@ const App = () => (
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/affiliate" element={<AffiliatePage />} />
             <Route path="/terms" element={<TermsPage />} />
+            <Route path="/investors" element={<InvestorPage />} />
             <Route
               path="/dashboard"
               element={
