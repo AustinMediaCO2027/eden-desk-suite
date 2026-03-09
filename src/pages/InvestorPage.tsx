@@ -269,7 +269,7 @@ const InvestorPage = () => {
             </div>
           </div>
           <div className="rounded-2xl overflow-hidden">
-            <img src={partnershipImg} alt="Business partnership" className="w-full h-80 object-cover rounded-2xl" />
+            <img src={coffeeShopImg} alt="Small business environment" className="w-full h-80 object-cover rounded-2xl" />
           </div>
         </div>
       </section>
