@@ -131,7 +131,7 @@ const InvoicesPage = () => {
       date: inv.date || "",
       due_date: inv.due_date || "",
       items: (inv.items as LineItem[]) || [emptyLineItem()],
-      tax_rate: inv.tax_rate || 15,
+      tax_rate: inv.tax_rate ?? 15,
       notes: inv.notes || "",
       status: inv.status || "draft",
     });
