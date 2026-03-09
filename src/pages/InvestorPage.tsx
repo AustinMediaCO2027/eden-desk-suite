@@ -24,9 +24,8 @@ import {
   Globe,
   Heart,
 } from "lucide-react";
-import businessTeamImg from "@/assets/investor/business-team.jpg";
-import entrepreneurImg from "@/assets/investor/entrepreneur.jpg";
-import partnershipImg from "@/assets/investor/partnership.jpg";
+import coffeeShopImg from "@/assets/investor/coffee-shop.jpg";
+import businessPaymentImg from "@/assets/investor/business-payment.jpg";
 
 const InvestorPage = () => {
   const { theme, toggleTheme } = useTheme();
@@ -56,7 +55,7 @@ const InvestorPage = () => {
       {/* Hero */}
       <section className="relative pt-32 pb-20 overflow-hidden">
         <div className="absolute inset-0 z-0">
-          <img src={businessTeamImg} alt="Business team in boardroom" className="w-full h-full object-cover opacity-20" />
+          <img src={coffeeShopImg} alt="Small business owner at work" className="w-full h-full object-cover opacity-20" />
           <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-background/95 to-background" />
         </div>
         <div className="container mx-auto px-6 relative z-10 text-center max-w-4xl">
@@ -152,7 +151,7 @@ const InvestorPage = () => {
         <div className="container mx-auto px-6">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div className="rounded-2xl overflow-hidden">
-              <img src={entrepreneurImg} alt="Entrepreneur working" className="w-full h-80 object-cover rounded-2xl" />
+              <img src={businessPaymentImg} alt="Business payment processing" className="w-full h-80 object-cover rounded-2xl" />
             </div>
             <div>
               <div className="flex items-center gap-2 mb-4">
@@ -270,7 +269,7 @@ const InvestorPage = () => {
             </div>
           </div>
           <div className="rounded-2xl overflow-hidden">
-            <img src={partnershipImg} alt="Business partnership" className="w-full h-80 object-cover rounded-2xl" />
+            <img src={coffeeShopImg} alt="Small business environment" className="w-full h-80 object-cover rounded-2xl" />
           </div>
         </div>
       </section>
