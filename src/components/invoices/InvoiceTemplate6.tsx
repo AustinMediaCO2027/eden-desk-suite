@@ -107,8 +107,12 @@ const InvoiceTemplate6 = forwardRef<HTMLDivElement, InvoiceTemplateProps>(
                 </tr>
               ))}
               {/* Totals inside table */}
-              <tr><td colSpan={2} /><td style={{ ...R, padding: "2.5mm 0 1mm", fontSize: "3mm", color: "#888", fontWeight: 600 }}>Subtotal</td><td style={{ ...R, padding: "2.5mm 0 1mm", fontSize: "3mm" }}>{fmt(subtotal)}</td></tr>
-              <tr><td colSpan={2} /><td style={{ ...R, padding: "1mm 0", fontSize: "3mm", color: "#888" }}>Tax ({taxRate}%)</td><td style={{ ...R, padding: "1mm 0", fontSize: "3mm" }}>{fmt(taxAmount)}</td></tr>
+              {taxRate > 0 && (
+                <>
+                  <tr><td colSpan={2} /><td style={{ ...R, padding: "2.5mm 0 1mm", fontSize: "3mm", color: "#888", fontWeight: 600 }}>Subtotal</td><td style={{ ...R, padding: "2.5mm 0 1mm", fontSize: "3mm" }}>{fmt(subtotal)}</td></tr>
+                  <tr><td colSpan={2} /><td style={{ ...R, padding: "1mm 0", fontSize: "3mm", color: "#888" }}>Tax ({taxRate}%)</td><td style={{ ...R, padding: "1mm 0", fontSize: "3mm" }}>{fmt(taxAmount)}</td></tr>
+                </>
+              )}
               <tr><td colSpan={2} /><td style={{ ...R, padding: "1mm 0", fontSize: "3mm", color: "#888", borderTop: "0.3mm solid #e5e7eb" }}>Total</td><td style={{ ...R, padding: "1mm 0", fontSize: "3mm", fontWeight: 600, borderTop: "0.3mm solid #e5e7eb" }}>{fmt(total)}</td></tr>
               <tr><td colSpan={2} /><td style={{ ...R, padding: "2mm 0 1mm", fontSize: "3.2mm", fontWeight: 700 }}>Amount due</td><td style={{ ...R, padding: "2mm 0 1mm", fontSize: "3.2mm", fontWeight: 700, borderTop: "0.4mm solid #1a1a1a" }}>{fmt(total)}</td></tr>
             </tbody>
