@@ -209,7 +209,7 @@ const InvoiceTemplate1 = forwardRef<HTMLDivElement, InvoiceTemplateProps>(
           {notes && (
             <div style={{ marginBottom: "3mm" }}>
               <p style={{ margin: 0, fontSize: "2.6mm", color: accent, fontWeight: 600 }}>Terms & Conditions</p>
-              <p style={{ margin: "1mm 0 0", fontSize: "2.7mm", color: "#888", whiteSpace: "pre-wrap", maxHeight: "12mm", overflow: "hidden" }}>{safeText(notes, 200)}</p>
+              <p style={{ margin: "1mm 0 0", fontSize: "2.7mm", color: "#888", whiteSpace: "pre-wrap" }}>{safeText(notes, 3000)}</p>
             </div>
           )}
           <div style={{ borderTop: "0.3mm solid #e5e7eb", paddingTop: "3mm" }}>

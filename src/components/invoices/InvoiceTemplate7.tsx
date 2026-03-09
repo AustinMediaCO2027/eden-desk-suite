@@ -223,8 +223,8 @@ const InvoiceTemplate7 = forwardRef<HTMLDivElement, InvoiceTemplateProps>(
                 <td style={{ width: "55%", verticalAlign: "bottom" }}>
                   <p style={{ margin: 0, fontSize: "3.2mm", fontWeight: 700, color: accent }}>Terms and Conditions</p>
                   {notes && (
-                    <p style={{ margin: "1.5mm 0 0", fontSize: "2.6mm", color: "#888", whiteSpace: "pre-wrap", maxHeight: "14mm", overflow: "hidden", lineHeight: 1.5 }}>
-                      {safeText(notes, 250)}
+                     <p style={{ margin: "1.5mm 0 0", fontSize: "2.6mm", color: "#888", whiteSpace: "pre-wrap", lineHeight: 1.5 }}>
+                       {safeText(notes, 3000)}
                     </p>
                   )}
                 </td>

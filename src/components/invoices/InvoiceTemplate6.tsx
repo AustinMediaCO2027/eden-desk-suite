@@ -124,7 +124,7 @@ const InvoiceTemplate6 = forwardRef<HTMLDivElement, InvoiceTemplateProps>(
                 <tr>
                   <td style={{ width: "45%", verticalAlign: "top" }}>
                     <p style={{ margin: 0, fontSize: "3mm", fontWeight: 700 }}>Thank you for the business!</p>
-                    {notes && <p style={{ margin: "1mm 0 0", fontSize: "2.7mm", color: "#888", whiteSpace: "pre-wrap", maxHeight: "10mm", overflow: "hidden" }}>{safeText(notes, 140)}</p>}
+                    {notes && <p style={{ margin: "1mm 0 0", fontSize: "2.7mm", color: "#888", whiteSpace: "pre-wrap" }}>{safeText(notes, 3000)}</p>}
                   </td>
                   <td style={{ width: "55%", verticalAlign: "top" }}>
                     {profile?.bank_name ? (

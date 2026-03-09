@@ -182,7 +182,7 @@ const InvoiceTemplate5 = forwardRef<HTMLDivElement, InvoiceTemplateProps>(
                     <p style={{ margin: "1mm 0 0", fontSize: "2.8mm", fontWeight: 600, color: accent }}>Please use as {safeText(documentNumber, 30)} as a reference number</p>
                   </td>
                   <td style={{ width: "45%", verticalAlign: "top", textAlign: "right" }}>
-                    {notes && <p style={{ margin: 0, fontSize: "2.7mm", color: "#888", whiteSpace: "pre-wrap", maxHeight: "12mm", overflow: "hidden" }}>{safeText(notes, 160)}</p>}
+                    {notes && <p style={{ margin: 0, fontSize: "2.7mm", color: "#888", whiteSpace: "pre-wrap" }}>{safeText(notes, 3000)}</p>}
                   </td>
                 </tr>
               </tbody>
