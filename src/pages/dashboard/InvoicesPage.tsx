@@ -131,7 +131,7 @@ const InvoicesPage = () => {
       date: inv.date || "",
       due_date: inv.due_date || "",
       items: (inv.items as LineItem[]) || [emptyLineItem()],
-      tax_rate: inv.tax_rate || 15,
+      tax_rate: inv.tax_rate ?? 15,
       notes: inv.notes || "",
       status: inv.status || "draft",
     });
@@ -401,7 +401,7 @@ const InvoicesPage = () => {
                     {inv.status}
                   </span>
                 </div>
-                <Button variant="ghost" size="sm" title="Duplicate" onClick={(e) => { e.stopPropagation(); setEditing({ ...emptyInvoice(), client_name: inv.client_name, client_email: inv.client_email || "", client_address: inv.client_address || "", items: (inv.items as LineItem[]) || [emptyLineItem()], tax_rate: inv.tax_rate || 15, notes: inv.notes || "", status: "draft" }); }}>
+                <Button variant="ghost" size="sm" title="Duplicate" onClick={(e) => { e.stopPropagation(); setEditing({ ...emptyInvoice(), client_name: inv.client_name, client_email: inv.client_email || "", client_address: inv.client_address || "", items: (inv.items as LineItem[]) || [emptyLineItem()], tax_rate: inv.tax_rate ?? 15, notes: inv.notes || "", status: "draft" }); }}>
                   <Copy className="h-4 w-4" />
                 </Button>
                 <Button variant="ghost" size="sm" onClick={(e) => { e.stopPropagation(); loadInvoice(inv); setPreviewing(true); }}>
