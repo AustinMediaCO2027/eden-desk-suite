@@ -24,9 +24,8 @@ import {
   Globe,
   Heart,
 } from "lucide-react";
-import businessTeamImg from "@/assets/investor/business-team.jpg";
-import entrepreneurImg from "@/assets/investor/entrepreneur.jpg";
-import partnershipImg from "@/assets/investor/partnership.jpg";
+import coffeeShopImg from "@/assets/investor/coffee-shop.jpg";
+import businessPaymentImg from "@/assets/investor/business-payment.jpg";
 
 const InvestorPage = () => {
   const { theme, toggleTheme } = useTheme();
