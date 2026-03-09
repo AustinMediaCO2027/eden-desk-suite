@@ -136,14 +136,18 @@ const InvoiceTemplate7 = forwardRef<HTMLDivElement, InvoiceTemplateProps>(
                 <td style={{ width: "50%", verticalAlign: "top" }}>
                   <table style={T}>
                     <tbody>
-                      <tr>
-                        <td style={{ fontSize: "3mm", color: "#888", padding: "1.5mm 0" }}>Sub total</td>
-                        <td style={{ ...R, fontSize: "3mm", padding: "1.5mm 0" }}>{fmt(subtotal)}</td>
-                      </tr>
-                      <tr>
-                        <td style={{ fontSize: "3mm", color: "#888", padding: "1.5mm 0" }}>Tax ({taxRate}%)</td>
-                        <td style={{ ...R, fontSize: "3mm", padding: "1.5mm 0" }}>{fmt(taxAmount)}</td>
-                      </tr>
+                      {taxRate > 0 && (
+                        <>
+                          <tr>
+                            <td style={{ fontSize: "3mm", color: "#888", padding: "1.5mm 0" }}>Sub total</td>
+                            <td style={{ ...R, fontSize: "3mm", padding: "1.5mm 0" }}>{fmt(subtotal)}</td>
+                          </tr>
+                          <tr>
+                            <td style={{ fontSize: "3mm", color: "#888", padding: "1.5mm 0" }}>Tax ({taxRate}%)</td>
+                            <td style={{ ...R, fontSize: "3mm", padding: "1.5mm 0" }}>{fmt(taxAmount)}</td>
+                          </tr>
+                        </>
+                      )}
                       <tr>
                         <td colSpan={2} style={{ padding: "1mm 0 0" }}>
                           <div style={{ backgroundColor: accent, borderRadius: "2mm", padding: "2.5mm 4mm", marginTop: "1mm" }}>
