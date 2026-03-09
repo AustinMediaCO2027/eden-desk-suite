@@ -118,14 +118,18 @@ const InvoiceTemplate3 = forwardRef<HTMLDivElement, InvoiceTemplateProps>(
                         </tr>
                       ))}
                       {/* Subtotal rows inside table */}
-                      <tr>
-                        <td colSpan={3} style={{ textAlign: "right", padding: "2mm 2mm 1mm 0", fontSize: "3mm", color: "#888" }}>Subtotal</td>
-                        <td style={{ ...R, padding: "2mm 4mm 1mm", fontSize: "3mm" }}>{fmt(subtotal)}</td>
-                      </tr>
-                      <tr>
-                        <td colSpan={3} style={{ textAlign: "right", padding: "1mm 2mm 1mm 0", fontSize: "3mm", color: "#888" }}>Tax ({taxRate}%)</td>
-                        <td style={{ ...R, padding: "1mm 4mm", fontSize: "3mm" }}>{fmt(taxAmount)}</td>
-                      </tr>
+                      {taxRate > 0 && (
+                        <>
+                          <tr>
+                            <td colSpan={3} style={{ textAlign: "right", padding: "2mm 2mm 1mm 0", fontSize: "3mm", color: "#888" }}>Subtotal</td>
+                            <td style={{ ...R, padding: "2mm 4mm 1mm", fontSize: "3mm" }}>{fmt(subtotal)}</td>
+                          </tr>
+                          <tr>
+                            <td colSpan={3} style={{ textAlign: "right", padding: "1mm 2mm 1mm 0", fontSize: "3mm", color: "#888" }}>Tax ({taxRate}%)</td>
+                            <td style={{ ...R, padding: "1mm 4mm", fontSize: "3mm" }}>{fmt(taxAmount)}</td>
+                          </tr>
+                        </>
+                      )}
                       <tr>
                         <td colSpan={4} style={{ padding: "2mm 4mm 2mm 0" }}>
                           <div style={{ backgroundColor: accent, borderRadius: "2mm", padding: "2.5mm 4mm" }}>

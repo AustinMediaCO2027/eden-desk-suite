@@ -350,8 +350,12 @@ const InvoicesPage = () => {
             <Input type="number" value={editing.tax_rate} onChange={e => setEditing({ ...editing, tax_rate: Number(e.target.value) })} className="bg-secondary" />
           </div>
           <div className="space-y-1 text-right">
-            <p className="text-sm text-muted-foreground">Subtotal: R{subtotal.toFixed(2)}</p>
-            <p className="text-sm text-muted-foreground">Tax: R{taxAmount.toFixed(2)}</p>
+            {editing.tax_rate > 0 && (
+              <>
+                <p className="text-sm text-muted-foreground">Subtotal: R{subtotal.toFixed(2)}</p>
+                <p className="text-sm text-muted-foreground">Tax: R{taxAmount.toFixed(2)}</p>
+              </>
+            )}
             <p className="text-lg font-bold">Total: R{total.toFixed(2)}</p>
           </div>
         </div>
