@@ -358,7 +358,7 @@ const InvoicesPage = () => {
 
         <div className="space-y-2">
           <Label>Notes / Terms</Label>
-          <Textarea value={editing.notes} onChange={e => setEditing({ ...editing, notes: e.target.value })} className="bg-secondary" rows={3} placeholder="Payment terms, thank you message, etc." />
+          <Textarea value={editing.notes} onChange={e => setEditing({ ...editing, notes: e.target.value })} className="bg-secondary" rows={6} placeholder="Payment terms, thank you message, etc." />
         </div>
 
         <div className="flex gap-2">

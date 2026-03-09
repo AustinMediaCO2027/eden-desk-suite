@@ -148,7 +148,7 @@ const InvoiceTemplate3 = forwardRef<HTMLDivElement, InvoiceTemplateProps>(
 
         {/* Notes */}
         {notes && (
-          <p style={{ margin: "0 0 4mm", fontSize: "2.8mm", color: "#888" }}>{safeText(notes, 200)}</p>
+          <p style={{ margin: "0 0 4mm", fontSize: "2.8mm", color: "#888", whiteSpace: "pre-wrap" }}>{safeText(notes, 3000)}</p>
         )}
 
         {/* Footer */}
