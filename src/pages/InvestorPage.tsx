@@ -55,7 +55,7 @@ const InvestorPage = () => {
       {/* Hero */}
       <section className="relative pt-32 pb-20 overflow-hidden">
         <div className="absolute inset-0 z-0">
-          <img src={businessTeamImg} alt="Business team in boardroom" className="w-full h-full object-cover opacity-20" />
+          <img src={coffeeShopImg} alt="Small business owner at work" className="w-full h-full object-cover opacity-20" />
           <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-background/95 to-background" />
         </div>
         <div className="container mx-auto px-6 relative z-10 text-center max-w-4xl">
