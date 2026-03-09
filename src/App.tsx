@@ -27,6 +27,7 @@ import NotFound from "./pages/NotFound";
 import SharedFilePage from "./pages/SharedFilePage";
 import ResetPassword from "./pages/ResetPassword";
 import TermsPage from "./pages/TermsPage";
+import InvestorPage from "./pages/InvestorPage";
 import { useReferralTracking } from "./hooks/useReferralTracking";
 
 const queryClient = new QueryClient();
