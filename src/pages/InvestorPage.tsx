@@ -151,7 +151,7 @@ const InvestorPage = () => {
         <div className="container mx-auto px-6">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div className="rounded-2xl overflow-hidden">
-              <img src={entrepreneurImg} alt="Entrepreneur working" className="w-full h-80 object-cover rounded-2xl" />
+              <img src={businessPaymentImg} alt="Business payment processing" className="w-full h-80 object-cover rounded-2xl" />
             </div>
             <div>
               <div className="flex items-center gap-2 mb-4">
