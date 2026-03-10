@@ -31,9 +31,9 @@ const schema = z.object({
 });
 
 const commissionTiers = [
-  { plan: "Standard", amount: "R10", desc: "per subscriber/month" },
-  { plan: "Silver", amount: "R20", desc: "per subscriber/month" },
-  { plan: "Premium", amount: "R30", desc: "per subscriber/month" },
+  { plan: "Standard", amount: "25%", desc: "per subscriber/month" },
+  { plan: "Silver", amount: "25%", desc: "per subscriber/month" },
+  { plan: "Premium", amount: "25%", desc: "per subscriber/month" },
 ];
 
 const howItWorks = [
