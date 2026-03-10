@@ -120,7 +120,8 @@ Deno.serve(async (req) => {
       });
     }
 
-    const amount = COMMISSION_MAP[plan] || 10;
+    const planPrice = PLAN_PRICES[plan] || 49.99;
+    const amount = Math.round(planPrice * COMMISSION_RATE * 100) / 100;
     const now = new Date();
 
     const updateData: Record<string, any> = {
