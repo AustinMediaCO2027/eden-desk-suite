@@ -5,12 +5,14 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const COMMISSION_MAP: Record<string, number> = {
-  standard: 10,
-  silver: 20,
-  premium: 30,
-  yearly: 30,
+const PLAN_PRICES: Record<string, number> = {
+  standard: 49.99,
+  silver: 85.99,
+  premium: 99.99,
+  yearly: 985,
 };
+
+const COMMISSION_RATE = 0.25; // 25%
 
 const MAX_COMMISSIONS = 3;
 
@@ -118,7 +120,8 @@ Deno.serve(async (req) => {
       });
     }
 
-    const amount = COMMISSION_MAP[plan] || 10;
+    const planPrice = PLAN_PRICES[plan] || 49.99;
+    const amount = Math.round(planPrice * COMMISSION_RATE * 100) / 100;
     const now = new Date();
 
     const updateData: Record<string, any> = {
