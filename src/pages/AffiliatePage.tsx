@@ -123,7 +123,7 @@ const AffiliatePage = () => {
         {/* Commission Tiers */}
         <div className="mb-16">
           <h2 className="text-lg font-bold text-center mb-2">Commission Structure</h2>
-          <p className="text-xs text-muted-foreground text-center mb-8">Earn for the first 3 billing cycles per referred subscriber</p>
+          <p className="text-xs text-muted-foreground text-center mb-8">Earn 25% commission for the first 3 billing cycles per referred subscriber</p>
           <div className="grid grid-cols-3 gap-4">
             {commissionTiers.map(t => (
               <div key={t.plan} className="rounded-xl border border-border/40 bg-card/30 p-5 text-center">
