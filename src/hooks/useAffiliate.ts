@@ -38,31 +38,52 @@ export const useAffiliate = () => {
   const [isAdmin, setIsAdmin] = useState(false);
 
   const fetchAffiliate = useCallback(async () => {
-    if (!user) { setLoading(false); return; }
+    if (!user) {
+      setAffiliate(null);
+      return;
+    }
+
     const { data } = await supabase
       .from("affiliates" as any)
       .select("*")
       .eq("user_id", user.id)
-      .single();
-    setAffiliate(data as any);
+      .maybeSingle();
+
+    setAffiliate((data as any) ?? null);
+  }, [user]);
+
+  const loadAccessState = useCallback(async () => {
+    if (!user) {
+      setAffiliate(null);
+      setIsAdmin(false);
+      setLoading(false);
+      return;
+    }
+
+    setLoading(true);
+
+    const [affiliateResult, adminResult] = await Promise.all([
+      supabase
+        .from("affiliates" as any)
+        .select("*")
+        .eq("user_id", user.id)
+        .maybeSingle(),
+      supabase
+        .from("user_roles" as any)
+        .select("role")
+        .eq("user_id", user.id)
+        .eq("role", "admin")
+        .maybeSingle(),
+    ]);
+
+    setAffiliate((affiliateResult.data as any) ?? null);
+    setIsAdmin(!!adminResult.data);
     setLoading(false);
   }, [user]);
 
-  const checkAdmin = useCallback(async () => {
-    if (!user) return;
-    const { data } = await supabase
-      .from("user_roles" as any)
-      .select("role")
-      .eq("user_id", user.id)
-      .eq("role", "admin")
-      .maybeSingle();
-    setIsAdmin(!!data);
-  }, [user]);
-
   useEffect(() => {
-    fetchAffiliate();
-    checkAdmin();
-  }, [fetchAffiliate, checkAdmin]);
+    loadAccessState();
+  }, [loadAccessState]);
 
   const updatePayoutSettings = async (settings: {
     payment_method: string;
