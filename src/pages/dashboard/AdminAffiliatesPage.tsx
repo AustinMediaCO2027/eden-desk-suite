@@ -18,30 +18,35 @@ const AdminAffiliatesPage = () => {
   const [summaryStats, setSummaryStats] = useState({ total: 0, approved: 0, pending: 0, totalCommissions: 0, totalReferrals: 0 });
 
   const fetchAll = async () => {
-    const { data: apps } = await supabase
-      .from("affiliates").select("*").eq("status", "pending").order("created_at", { ascending: false });
-    setApplications(apps || []);
+    const [appsRes, activeRes, payoutsRes, totalRes, referralCountRes, commRes] = await Promise.all([
+      supabase.from("affiliates").select("*").eq("status", "pending").order("created_at", { ascending: false }),
+      supabase.from("affiliates").select("*").eq("status", "approved").order("created_at", { ascending: false }),
+      supabase.from("payouts").select("*, affiliates(full_name, email, pending_balance, paid_earnings)").order("created_at", { ascending: false }),
+      supabase.from("affiliates").select("*", { count: "exact", head: true }),
+      supabase.from("referrals").select("*", { count: "exact", head: true }),
+      supabase.from("commissions").select("amount"),
+    ]);
 
-    const { data: active } = await supabase
-      .from("affiliates").select("*").eq("status", "approved").order("created_at", { ascending: false });
-    setActiveAffiliates(active || []);
+    const error = appsRes.error || activeRes.error || payoutsRes.error || totalRes.error || referralCountRes.error || commRes.error;
+    if (error) {
+      toast({ title: "Failed to load affiliate admin data", description: error.message, variant: "destructive" });
+      return;
+    }
 
-    const { data: pays } = await supabase
-      .from("payouts").select("*, affiliates(full_name, email)").order("created_at", { ascending: false });
-    setPayouts(pays || []);
+    const apps = appsRes.data || [];
+    const active = activeRes.data || [];
+    const pays = payoutsRes.data || [];
+    const totalComm = commRes.data?.reduce((s: number, c: any) => s + (c.amount || 0), 0) || 0;
 
-    // Summary stats
-    const { count: total } = await supabase.from("affiliates").select("*", { count: "exact", head: true });
-    const { count: referralCount } = await supabase.from("referrals").select("*", { count: "exact", head: true });
-    const { data: commData } = await supabase.from("commissions").select("amount");
-    const totalComm = commData?.reduce((s: number, c: any) => s + (c.amount || 0), 0) || 0;
-
+    setApplications(apps);
+    setActiveAffiliates(active);
+    setPayouts(pays);
     setSummaryStats({
-      total: total || 0,
-      approved: active?.length || 0,
-      pending: apps?.length || 0,
+      total: totalRes.count || 0,
+      approved: active.length,
+      pending: apps.length,
       totalCommissions: totalComm,
-      totalReferrals: referralCount || 0,
+      totalReferrals: referralCountRes.count || 0,
     });
   };
 
