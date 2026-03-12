@@ -68,6 +68,15 @@ const AffiliatePage = () => {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } else {
       setSubmitted(true);
+      // Notify admins (fire-and-forget)
+      supabase.functions.invoke("notify-admin-affiliate", {
+        body: {
+          applicant_name: result.data.full_name,
+          applicant_email: result.data.email,
+          applicant_country: result.data.country,
+          promotion_method: result.data.promotion_method,
+        },
+      }).catch(() => {});
     }
   };
 
