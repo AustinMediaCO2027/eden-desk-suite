@@ -70,10 +70,13 @@ export const DashboardLayout = () => {
         <div className="flex items-center gap-2.5 px-5 pt-5 pb-4">
           <img src={edenIcon} alt="Eden Desk" className="h-8 w-8 rounded-lg" />
           <span className="text-lg font-bold text-sidebar-foreground tracking-tight">Eden Desk</span>
-          {/* Mobile close */}
-          <button className="lg:hidden ml-auto text-sidebar-foreground/60" onClick={() => setSidebarOpen(false)}>
-            <X className="h-5 w-5" />
-          </button>
+          <div className="ml-auto flex items-center gap-1">
+            <NotificationBell />
+            {/* Mobile close */}
+            <button className="lg:hidden text-sidebar-foreground/60" onClick={() => setSidebarOpen(false)}>
+              <X className="h-5 w-5" />
+            </button>
+          </div>
         </div>
 
         {/* Navigation */}
