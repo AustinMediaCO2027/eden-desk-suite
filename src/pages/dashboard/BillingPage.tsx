@@ -84,7 +84,8 @@ const BillingPage = () => {
       const form = document.createElement("form");
       form.method = "POST";
       form.action = data.paymentUrl;
-      form.target = "_top";
+      // _top is blocked inside preview iframe sandbox and throws SecurityError
+      form.target = "_self";
 
       Object.entries(data.params as Record<string, string>).forEach(([key, value]) => {
         const input = document.createElement("input");
