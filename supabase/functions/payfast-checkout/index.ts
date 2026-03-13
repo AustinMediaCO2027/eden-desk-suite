@@ -60,7 +60,7 @@ const formatAmount = (value: unknown, fallback: string) => {
 
 // Match PHP urlencode exactly: encode everything except A-Za-z0-9 -_.
 const encodePayFastValue = (value: string) =>
-  encodeURIComponent(value.trim())
+  encodeURIComponent(value)
     .replace(/%20/g, "+")
     .replace(/[!'()*~]/g, (char) => `%${char.charCodeAt(0).toString(16).toUpperCase()}`);
 
