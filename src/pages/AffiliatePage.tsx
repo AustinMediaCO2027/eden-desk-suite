@@ -9,24 +9,34 @@ import { Check, ArrowLeft, Link2, BarChart3, DollarSign, Users, Zap, Globe } fro
 import edenDarkLogo from "@/assets/eden_dark_logo.png";
 import { z } from "zod";
 
-const safeUrlSchema = (domain: string) =>
-  z.string().max(500)
-    .refine(val => !val || val.startsWith("https://"), "Must use HTTPS")
-    .refine(val => !val || new URL(val).hostname.includes(domain), `Must be a valid ${domain} URL`)
-    .optional()
-    .or(z.literal(""));
+const optionalUrl = (domain?: string) =>
+  z.string().max(500).optional().default("").transform(val => val?.trim() ?? "").pipe(
+    z.string().refine(val => {
+      if (!val) return true;
+      try {
+        const url = new URL(val);
+        if (url.protocol !== "https:") return false;
+        if (domain && !url.hostname.includes(domain)) return false;
+        return true;
+      } catch {
+        return false;
+      }
+    }, domain ? `Must be a valid HTTPS ${domain} URL` : "Must be a valid HTTPS URL")
+  );
 
 const schema = z.object({
   full_name: z.string().trim().min(1, "Name is required").max(100),
   email: z.string().trim().email("Invalid email").max(255),
   country: z.string().trim().min(1, "Country is required").max(100),
-  website: z.string().max(500).refine(val => !val || val.startsWith("https://"), "Must use HTTPS").optional().or(z.literal("")),
+  website: optionalUrl(),
   promotion_method: z.string().max(500).optional(),
   audience_type: z.string().max(500).optional(),
-  instagram_url: safeUrlSchema("instagram.com"),
-  youtube_url: z.string().max(500).refine(val => !val || val.startsWith("https://"), "Must use HTTPS").refine(val => !val || val.includes("youtube.com") || val.includes("youtu.be"), "Must be a YouTube URL").optional().or(z.literal("")),
-  tiktok_url: safeUrlSchema("tiktok.com"),
-  linkedin_url: safeUrlSchema("linkedin.com"),
+  instagram_url: optionalUrl("instagram.com"),
+  youtube_url: optionalUrl().pipe(
+    z.string().refine(val => !val || val.includes("youtube.com") || val.includes("youtu.be"), "Must be a YouTube URL")
+  ),
+  tiktok_url: optionalUrl("tiktok.com"),
+  linkedin_url: optionalUrl("linkedin.com"),
   audience_size: z.string().max(100).optional(),
 });
 

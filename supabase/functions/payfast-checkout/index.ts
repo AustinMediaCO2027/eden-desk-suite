@@ -184,10 +184,11 @@ serve(async (req) => {
       }
     }
 
-    const paymentAmount = isTrial ? "0.00" : formatAmount(amount, "0.00");
     const recurringAmount = isTrial
-      ? formatAmount(trialRecurringAmount, "39.99")
+      ? formatAmount(trialRecurringAmount, "49.99")
       : formatAmount(amount, "0.00");
+    // PayFast requires minimum R5 — for trials, charge recurring amount upfront (first month)
+    const paymentAmount = isTrial ? recurringAmount : formatAmount(amount, "0.00");
 
     const passphrase = PAYFAST_PASSPHRASE.trim();
     if (!passphrase) {
