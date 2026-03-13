@@ -197,10 +197,6 @@ serve(async (req) => {
       });
     }
 
-    // Compute billing_date as today's day of month (1-28 for PayFast)
-    const today = new Date();
-    const billingDay = Math.min(today.getDate(), 28).toString();
-
     const rawParams: Record<string, string | undefined> = {
       merchant_id: PAYFAST_MERCHANT_ID,
       merchant_key: PAYFAST_MERCHANT_KEY,
