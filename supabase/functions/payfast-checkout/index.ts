@@ -208,9 +208,9 @@ serve(async (req) => {
       email_address: userEmail || user.email || "",
       m_payment_id: `${userId}:${isTrial ? "trial" : planId}:${Date.now()}`,
       amount: paymentAmount,
-      item_name: isTrial ? "Starter Plan Trial" : `Eden Desk ${planName} Plan`,
+      item_name: isTrial ? "Eden Desk Starter Plan" : `Eden Desk ${planName} Plan`,
       item_description: isTrial
-        ? `7-day trial (R0.00 today), then R${recurringAmount} monthly`
+        ? `Starter plan - R${recurringAmount}/month recurring`
         : `${planName} subscription - ${period}`,
       custom_str1: userId,
       custom_str2: isTrial ? "trial" : (planId || ""),
