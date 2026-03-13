@@ -207,19 +207,17 @@ serve(async (req) => {
       return_url: returnUrl || `${req.headers.get("origin") || ""}/dashboard/billing?status=success`,
       cancel_url: cancelUrl || `${req.headers.get("origin") || ""}/dashboard/billing?status=cancelled`,
       notify_url: `${Deno.env.get("SUPABASE_URL")}/functions/v1/payfast-itn`,
-      name_first: (companyName || userEmail?.split("@")[0] || "Customer").substring(0, 100),
+      name_first: (companyName || userEmail?.split("@")[0] || "Eden Desk").substring(0, 100),
       email_address: userEmail || user.email || "",
       m_payment_id: `${userId}:${isTrial ? "trial" : planId}:${Date.now()}`,
       amount: paymentAmount,
-      item_name: isTrial ? "Eden Desk Trial" : `Eden Desk ${planName} Plan`,
+      item_name: isTrial ? "Starter Plan Trial" : `Eden Desk ${planName} Plan`,
       item_description: isTrial
-        ? `7-day free trial then R${recurringAmount} monthly`
+        ? `7-day trial (R0.00 today), then R${recurringAmount} monthly`
         : `${planName} subscription - ${period}`,
       custom_str1: userId,
       custom_str2: isTrial ? "trial" : (planId || ""),
-      // Use subscription_type 2 for proper recurring billing
-      subscription_type: "2",
-      billing_date: billingDay,
+      subscription_type: "1",
       recurring_amount: recurringAmount,
       frequency: isTrial ? "3" : (planId === "yearly" ? "6" : "3"),
       cycles: "0",
