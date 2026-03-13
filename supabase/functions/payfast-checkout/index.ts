@@ -184,11 +184,10 @@ serve(async (req) => {
       }
     }
 
+    const paymentAmount = isTrial ? "0.00" : formatAmount(amount, "0.00");
     const recurringAmount = isTrial
-      ? formatAmount(trialRecurringAmount, "49.99")
+      ? formatAmount(trialRecurringAmount, "39.99")
       : formatAmount(amount, "0.00");
-    // PayFast requires minimum R5 — for trials, charge recurring amount upfront (first month)
-    const paymentAmount = isTrial ? recurringAmount : formatAmount(amount, "0.00");
 
     const passphrase = PAYFAST_PASSPHRASE.trim();
     if (!passphrase) {
@@ -198,23 +197,29 @@ serve(async (req) => {
       });
     }
 
+    // Compute billing_date as today's day of month (1-28 for PayFast)
+    const today = new Date();
+    const billingDay = Math.min(today.getDate(), 28).toString();
+
     const rawParams: Record<string, string | undefined> = {
       merchant_id: PAYFAST_MERCHANT_ID,
       merchant_key: PAYFAST_MERCHANT_KEY,
       return_url: returnUrl || `${req.headers.get("origin") || ""}/dashboard/billing?status=success`,
       cancel_url: cancelUrl || `${req.headers.get("origin") || ""}/dashboard/billing?status=cancelled`,
       notify_url: `${Deno.env.get("SUPABASE_URL")}/functions/v1/payfast-itn`,
-      name_first: companyName || userEmail?.split("@")[0] || "Eden Desk",
+      name_first: (companyName || userEmail?.split("@")[0] || "Customer").substring(0, 100),
       email_address: userEmail || user.email || "",
       m_payment_id: `${userId}:${isTrial ? "trial" : planId}:${Date.now()}`,
       amount: paymentAmount,
-      item_name: isTrial ? "Eden Desk Starter Plan" : `Eden Desk ${planName} Plan`,
+      item_name: isTrial ? "Eden Desk Trial" : `Eden Desk ${planName} Plan`,
       item_description: isTrial
-        ? `Starter plan - R${recurringAmount}/month recurring`
+        ? `7-day free trial then R${recurringAmount} monthly`
         : `${planName} subscription - ${period}`,
       custom_str1: userId,
       custom_str2: isTrial ? "trial" : (planId || ""),
-      subscription_type: "1",
+      // Use subscription_type 2 for proper recurring billing
+      subscription_type: "2",
+      billing_date: billingDay,
       recurring_amount: recurringAmount,
       frequency: isTrial ? "3" : (planId === "yearly" ? "6" : "3"),
       cycles: "0",
