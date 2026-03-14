@@ -136,21 +136,37 @@ serve(async (req) => {
       }
     }
 
+    // Process commission for referred users on successful billing
     try {
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("referred_by_affiliate_id")
-        .eq("user_id", userId)
-        .single();
+      if (planId !== "trial" && planId !== "free") {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("referred_by_affiliate_id")
+          .eq("user_id", userId)
+          .single();
 
-      if (profile?.referred_by_affiliate_id) {
-        await supabase.functions.invoke("process-commission", {
-          body: {
-            affiliateId: profile.referred_by_affiliate_id,
-            userId,
-            planId,
-          },
-        });
+        if (profile?.referred_by_affiliate_id) {
+          console.log("Processing commission for referral", { userId, planId, affiliateId: profile.referred_by_affiliate_id });
+
+          // Call process-commission with the correct field names it expects
+          const commissionUrl = `${Deno.env.get("SUPABASE_URL")}/functions/v1/process-commission`;
+          const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+
+          const commResp = await fetch(commissionUrl, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${serviceKey}`,
+            },
+            body: JSON.stringify({
+              user_id: userId,
+              plan: planId,
+            }),
+          });
+
+          const commResult = await commResp.text();
+          console.log("Commission result:", commResult);
+        }
       }
     } catch (commErr) {
       console.error("Commission processing error (non-fatal):", commErr);

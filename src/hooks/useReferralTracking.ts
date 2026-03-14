@@ -31,49 +31,36 @@ export const useReferralTracking = () => {
     }
   }, []);
 
-  // On login: link referral to profile
+  // On login: link referral via server-side function (bypasses RLS)
   useEffect(() => {
     if (!user) return;
     const ref = getStoredRef();
     if (!ref) return;
 
     const linkReferral = async () => {
-      // Check if already linked
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("referred_by_affiliate_id")
-        .eq("user_id", user.id)
-        .single();
+      try {
+        const { data, error } = await supabase.rpc("link_referral", {
+          _affiliate_code: ref,
+        });
 
-      if (profile?.referred_by_affiliate_id) return; // already linked
+        if (error) {
+          console.error("Referral link error:", error);
+          return;
+        }
 
-      // Look up affiliate
-      const { data: affiliate } = await supabase
-        .from("affiliates")
-        .select("id, user_id")
-        .eq("affiliate_code", ref)
-        .eq("status", "approved")
-        .single();
+        const result = data as any;
+        if (result?.success || result?.skipped) {
+          // Clear storage on success or if already linked
+          localStorage.removeItem(REF_KEY);
+          localStorage.removeItem(REF_TS_KEY);
+        }
 
-      if (!affiliate) return;
-      if (affiliate.user_id === user.id) return; // self-referral blocked
-
-      await supabase
-        .from("profiles")
-        .update({ referred_by_affiliate_id: affiliate.id } as any)
-        .eq("user_id", user.id);
-
-      // Create referral record
-      await supabase.from("referrals" as any).insert({
-        affiliate_id: affiliate.id,
-        referred_user_id: user.id,
-        subscription_plan: "",
-        is_active: true,
-      });
-
-      // Clear storage
-      localStorage.removeItem(REF_KEY);
-      localStorage.removeItem(REF_TS_KEY);
+        if (result?.success) {
+          console.log("Referral linked successfully");
+        }
+      } catch (err) {
+        console.error("Referral link failed:", err);
+      }
     };
 
     linkReferral();
