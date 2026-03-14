@@ -58,6 +58,20 @@ const formatAmount = (value: unknown, fallback: string) => {
   return Number.isFinite(parsed) ? parsed.toFixed(2) : fallback;
 };
 
+const formatBillingDate = (daysFromNow = 0) => {
+  const target = new Date();
+  target.setDate(target.getDate() + daysFromNow);
+  const year = target.getFullYear();
+  const month = String(target.getMonth() + 1).padStart(2, "0");
+  const day = String(target.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
+
+const sanitizePaymentReference = (value: string) =>
+  value
+    .replace(/[^A-Za-z0-9\-_\/]/g, "_")
+    .slice(0, 100);
+
 // Match PHP urlencode exactly: encode everything except A-Za-z0-9 -_.
 const encodePayFastValue = (value: string) =>
   encodeURIComponent(value)
