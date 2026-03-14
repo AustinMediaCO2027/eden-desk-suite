@@ -148,6 +148,7 @@ serve(async (req) => {
     const PAYFAST_MERCHANT_ID = Deno.env.get("PAYFAST_MERCHANT_ID");
     const PAYFAST_MERCHANT_KEY = Deno.env.get("PAYFAST_MERCHANT_KEY");
     const PAYFAST_PASSPHRASE = Deno.env.get("PAYFAST_PASSPHRASE") || "";
+    const PAYFAST_PROCESS_URL_OVERRIDE = Deno.env.get("PAYFAST_PROCESS_URL")?.trim();
 
     if (!PAYFAST_MERCHANT_ID || !PAYFAST_MERCHANT_KEY) {
       return new Response(JSON.stringify({ error: "PayFast merchant credentials are not configured" }), {
@@ -155,6 +156,22 @@ serve(async (req) => {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+
+    const isSandboxMerchant = PAYFAST_MERCHANT_ID === "10000100";
+    const paymentUrl = PAYFAST_PROCESS_URL_OVERRIDE || (isSandboxMerchant
+      ? "https://sandbox.payfast.co.za/eng/process"
+      : "https://www.payfast.co.za/eng/process");
+
+    console.log("PayFast checkout config", {
+      paymentUrl,
+      merchantIdLength: PAYFAST_MERCHANT_ID.length,
+      merchantIdPrefix: PAYFAST_MERCHANT_ID.slice(0, 4),
+      merchantIdSuffix: PAYFAST_MERCHANT_ID.slice(-2),
+      merchantKeyLength: PAYFAST_MERCHANT_KEY.length,
+      merchantKeyPrefix: PAYFAST_MERCHANT_KEY.slice(0, 4),
+      merchantKeySuffix: PAYFAST_MERCHANT_KEY.slice(-2),
+      usingPassphrase: Boolean(PAYFAST_PASSPHRASE.trim()),
+    });
 
     const body = await req.json();
     const {
