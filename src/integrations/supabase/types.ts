@@ -910,6 +910,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      link_referral: { Args: { _affiliate_code: string }; Returns: Json }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
