@@ -58,6 +58,20 @@ const formatAmount = (value: unknown, fallback: string) => {
   return Number.isFinite(parsed) ? parsed.toFixed(2) : fallback;
 };
 
+const formatBillingDate = (daysFromNow = 0) => {
+  const target = new Date();
+  target.setDate(target.getDate() + daysFromNow);
+  const year = target.getFullYear();
+  const month = String(target.getMonth() + 1).padStart(2, "0");
+  const day = String(target.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
+
+const sanitizePaymentReference = (value: string) =>
+  value
+    .replace(/[^A-Za-z0-9\-_\/]/g, "_")
+    .slice(0, 100);
+
 // Match PHP urlencode exactly: encode everything except A-Za-z0-9 -_.
 const encodePayFastValue = (value: string) =>
   encodeURIComponent(value)
@@ -134,6 +148,7 @@ serve(async (req) => {
     const PAYFAST_MERCHANT_ID = Deno.env.get("PAYFAST_MERCHANT_ID");
     const PAYFAST_MERCHANT_KEY = Deno.env.get("PAYFAST_MERCHANT_KEY");
     const PAYFAST_PASSPHRASE = Deno.env.get("PAYFAST_PASSPHRASE") || "";
+    const PAYFAST_PROCESS_URL_OVERRIDE = Deno.env.get("PAYFAST_PROCESS_URL")?.trim();
 
     if (!PAYFAST_MERCHANT_ID || !PAYFAST_MERCHANT_KEY) {
       return new Response(JSON.stringify({ error: "PayFast merchant credentials are not configured" }), {
@@ -141,6 +156,22 @@ serve(async (req) => {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+
+    const isSandboxMerchant = PAYFAST_MERCHANT_ID === "10000100";
+    const paymentUrl = PAYFAST_PROCESS_URL_OVERRIDE || (isSandboxMerchant
+      ? "https://sandbox.payfast.co.za/eng/process"
+      : "https://www.payfast.co.za/eng/process");
+
+    console.log("PayFast checkout config", {
+      paymentUrl,
+      merchantIdLength: PAYFAST_MERCHANT_ID.length,
+      merchantIdPrefix: PAYFAST_MERCHANT_ID.slice(0, 4),
+      merchantIdSuffix: PAYFAST_MERCHANT_ID.slice(-2),
+      merchantKeyLength: PAYFAST_MERCHANT_KEY.length,
+      merchantKeyPrefix: PAYFAST_MERCHANT_KEY.slice(0, 4),
+      merchantKeySuffix: PAYFAST_MERCHANT_KEY.slice(-2),
+      usingPassphrase: Boolean(PAYFAST_PASSPHRASE.trim()),
+    });
 
     const body = await req.json();
     const {
@@ -197,26 +228,51 @@ serve(async (req) => {
       });
     }
 
+    const origin = (req.headers.get("origin") || "").trim();
+    const normalizedEmail = (userEmail || user.email || "").trim();
+
+    if (!normalizedEmail) {
+      return new Response(JSON.stringify({ error: "A valid email address is required for PayFast checkout" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const trimmedCompanyName = (companyName || "").trim();
+    const fallbackName = normalizedEmail.split("@")[0] || "Customer";
+    const [firstNameRaw, ...lastNameParts] = (trimmedCompanyName || fallbackName).split(/\s+/);
+    const firstName = (firstNameRaw || "Customer").substring(0, 100);
+    const lastName = (lastNameParts.join(" ") || "Customer").substring(0, 100);
+
+    const rawReference = `${userId}_${isTrial ? "trial" : (planId || "plan")}_${Date.now()}`;
+    const billingDate = formatBillingDate(isTrial ? 7 : 0);
+
     const rawParams: Record<string, string | undefined> = {
       merchant_id: PAYFAST_MERCHANT_ID,
       merchant_key: PAYFAST_MERCHANT_KEY,
-      return_url: (returnUrl || `${req.headers.get("origin") || ""}/dashboard/billing?status=success`).trim(),
-      cancel_url: (cancelUrl || `${req.headers.get("origin") || ""}/dashboard/billing?status=cancelled`).trim(),
+      return_url: (returnUrl || `${origin}/dashboard/billing?status=success`).trim(),
+      cancel_url: (cancelUrl || `${origin}/dashboard/billing?status=cancelled`).trim(),
       notify_url: `${Deno.env.get("SUPABASE_URL")}/functions/v1/payfast-itn`,
-      name_first: (companyName || userEmail?.split("@")[0] || "Eden Desk").trim().substring(0, 100),
-      email_address: (userEmail || user.email || "").trim(),
-      m_payment_id: `${userId}:${isTrial ? "trial" : planId}:${Date.now()}`,
+      name_first: firstName,
+      name_last: lastName,
+      email_address: normalizedEmail,
+      m_payment_id: sanitizePaymentReference(rawReference),
       amount: paymentAmount,
-      item_name: isTrial ? "Starter Plan Trial" : `Eden Desk ${planName} Plan`,
+      item_name: (isTrial ? "Starter Plan Trial" : `Eden Desk ${planName} Plan`).substring(0, 100),
       item_description: isTrial
         ? `7-day trial (R0.00 today), then R${recurringAmount} monthly`
         : `${planName} subscription - ${period}`,
       custom_str1: userId,
       custom_str2: isTrial ? "trial" : (planId || ""),
+      payment_method: "cc",
       subscription_type: "1",
+      billing_date: billingDate,
       recurring_amount: recurringAmount,
       frequency: isTrial ? "3" : (planId === "yearly" ? "6" : "3"),
       cycles: "0",
+      subscription_notify_email: "true",
+      subscription_notify_webhook: "true",
+      subscription_notify_buyer: "true",
     };
 
     const orderedPairs = toOrderedPayFastPairs(rawParams);
@@ -225,7 +281,7 @@ serve(async (req) => {
 
     return new Response(
       JSON.stringify({
-        paymentUrl: "https://www.payfast.co.za/eng/process",
+        paymentUrl,
         openInNewTab: true,
         params,
       }),
