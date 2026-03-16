@@ -27,11 +27,11 @@ export const LandingHero = () => {
         </div>
 
         <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-[5.5rem] font-extrabold leading-[1.05] mb-8 animate-fade-in tracking-tight max-w-4xl" style={{ animationDelay: "0.1s" }}>
-          Run Your
+          Create Professional
           <br />
-          Business From
+          Invoices Online
           <br />
-          <span className="text-muted-foreground/40">One Desk.</span>
+          <span className="text-muted-foreground/40">in 10 Seconds.</span>
         </h1>
 
         <p className="text-lg md:text-xl text-muted-foreground max-w-lg mb-12 animate-fade-in leading-relaxed" style={{ animationDelay: "0.2s" }}>
