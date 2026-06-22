@@ -50,7 +50,7 @@ export const DashboardMockup = () => {
                 key={label}
                 className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs transition-colors ${
                   active
-                    ? "bg-sidebar-accent text-foreground font-medium"
+                    ? "bg-brand/10 text-brand font-medium border-l-2 border-brand -ml-0.5 pl-[calc(0.75rem+2px)]"
                     : "text-muted-foreground"
                 }`}
               >
@@ -79,8 +79,8 @@ export const DashboardMockup = () => {
             {stats.map(({ icon: Icon, label, value, desc }) => (
               <div key={label} className="rounded-xl border border-border bg-card p-4">
                 <div className="flex items-center gap-2 mb-3">
-                  <div className="h-7 w-7 rounded-md bg-secondary flex items-center justify-center">
-                    <Icon className="h-3.5 w-3.5" />
+                  <div className="h-7 w-7 rounded-md bg-brand/10 flex items-center justify-center">
+                    <Icon className="h-3.5 w-3.5 text-brand" />
                   </div>
                   <span className="text-[10px] font-medium">{label}</span>
                 </div>

@@ -33,7 +33,7 @@ export const LandingHowItWorks = () => {
 
       <div className="container mx-auto px-6 relative z-10">
         <div className="text-center mb-20">
-          <p className="text-[10px] text-muted-foreground uppercase tracking-[0.25em] mb-5 font-medium">How It Works</p>
+          <p className="text-[10px] text-brand uppercase tracking-[0.25em] mb-5 font-semibold">How It Works</p>
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-5">
             Three simple steps
           </h2>
@@ -46,14 +46,14 @@ export const LandingHowItWorks = () => {
           {steps.map(({ num, icon: Icon, title, description }, i) => (
             <div key={num} className="relative group">
               {i < steps.length - 1 && (
-                <div className="hidden md:block absolute top-14 left-[60%] w-[80%] h-[1px] bg-gradient-to-r from-border/40 to-transparent" />
+                <div className="hidden md:block absolute top-14 left-[60%] w-[80%] h-[1px] bg-gradient-to-r from-brand/30 to-transparent" />
               )}
               
-              <div className="rounded-2xl border border-border/40 bg-background/60 backdrop-blur-sm p-8 md:p-9 transition-all duration-300 hover:bg-background/80 hover:border-border/70 hover:-translate-y-2 hover:shadow-[0_20px_60px_-20px_rgba(255,255,255,0.06)]">
+              <div className="rounded-2xl border border-border/40 bg-background/60 backdrop-blur-sm p-8 md:p-9 transition-all duration-300 hover:bg-background/80 hover:border-brand/40 hover:-translate-y-2 hover:shadow-[0_20px_60px_-20px_hsl(var(--brand)/0.15)]">
                 <div className="flex items-center gap-5 mb-7">
                   <span className="text-4xl font-extrabold text-foreground/10">{num}</span>
-                  <div className="h-12 w-12 rounded-2xl border border-border/40 bg-card/40 flex items-center justify-center group-hover:border-foreground/15 group-hover:bg-card/60 transition-all duration-300">
-                    <Icon className="h-5 w-5 text-foreground/80" strokeWidth={1.5} />
+                  <div className="h-12 w-12 rounded-2xl border border-brand/30 bg-brand/5 flex items-center justify-center group-hover:border-brand/50 group-hover:bg-brand/10 transition-all duration-300">
+                    <Icon className="h-5 w-5 text-brand" strokeWidth={1.75} />
                   </div>
                 </div>
                 <h3 className="text-xl font-bold mb-3">{title}</h3>

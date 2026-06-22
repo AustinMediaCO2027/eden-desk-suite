@@ -51,6 +51,9 @@
     --eden-surface-hover: 0 0% 95%;
     --eden-glow: 0 0% 9%;
     --eden-subtle: 0 0% 55%;
+
+    --brand: 32 95% 55%;
+    --brand-foreground: 20 15% 7%;
   }
 
   .dark {
@@ -97,6 +100,9 @@
     --eden-surface-hover: 0 0% 12%;
     --eden-glow: 0 0% 100%;
     --eden-subtle: 0 0% 40%;
+
+    --brand: 32 95% 55%;
+    --brand-foreground: 20 15% 7%;
   }
 }
 
@@ -137,6 +143,18 @@
     background: hsl(var(--accent));
     border-color: hsl(var(--border));
     transform: translateY(-2px);
+  }
+
+  .eden-brand-glow {
+    box-shadow: 0 0 40px hsl(var(--brand) / 0.25);
+  }
+
+  .eden-brand-glow:hover {
+    box-shadow: 0 0 60px hsl(var(--brand) / 0.35);
+  }
+
+  .eden-brand-text-glow {
+    text-shadow: 0 0 50px hsl(var(--brand) / 0.35);
   }
 
   /* Hide scrollbar in sidebar */

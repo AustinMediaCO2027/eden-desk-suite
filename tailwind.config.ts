@@ -66,6 +66,10 @@ export default {
           glow: "hsl(var(--eden-glow))",
           subtle: "hsl(var(--eden-subtle))",
         },
+        brand: {
+          DEFAULT: "hsl(var(--brand))",
+          foreground: "hsl(var(--brand-foreground))",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
