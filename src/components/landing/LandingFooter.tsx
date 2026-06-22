@@ -15,10 +15,10 @@ export const LandingFooter = () => {
           <div>
             <h4 className="text-sm font-semibold mb-4">Product</h4>
             <div className="space-y-3">
-              <a href="#features" className="block text-sm text-muted-foreground hover:text-foreground transition-colors">Features</a>
-              <a href="#pricing" className="block text-sm text-muted-foreground hover:text-foreground transition-colors">Pricing</a>
-              <a href="#how-it-works" className="block text-sm text-muted-foreground hover:text-foreground transition-colors">How It Works</a>
-              <a href="#faq" className="block text-sm text-muted-foreground hover:text-foreground transition-colors">FAQ</a>
+              <a href="#features" className="block text-sm text-muted-foreground hover:text-brand transition-colors">Features</a>
+              <a href="#pricing" className="block text-sm text-muted-foreground hover:text-brand transition-colors">Pricing</a>
+              <a href="#how-it-works" className="block text-sm text-muted-foreground hover:text-brand transition-colors">How It Works</a>
+              <a href="#faq" className="block text-sm text-muted-foreground hover:text-brand transition-colors">FAQ</a>
             </div>
           </div>
           <div>
@@ -34,11 +34,11 @@ export const LandingFooter = () => {
           <div>
             <h4 className="text-sm font-semibold mb-4">Company</h4>
             <div className="space-y-3">
-              <a href="mailto:support@edendesk.com" className="block text-sm text-muted-foreground hover:text-foreground transition-colors">support@edendesk.com</a>
-              <Link to="/affiliate" className="block text-sm text-muted-foreground hover:text-foreground transition-colors">Affiliate Program</Link>
-              <Link to="/terms" className="block text-sm text-muted-foreground hover:text-foreground transition-colors">Terms</Link>
-              <Link to="/terms" className="block text-sm text-muted-foreground hover:text-foreground transition-colors">Privacy</Link>
-              <Link to="/investors" className="block text-sm text-muted-foreground hover:text-foreground transition-colors">Investors</Link>
+              <a href="mailto:support@edendesk.com" className="block text-sm text-muted-foreground hover:text-brand transition-colors">support@edendesk.com</a>
+              <Link to="/affiliate" className="block text-sm text-muted-foreground hover:text-brand transition-colors">Affiliate Program</Link>
+              <Link to="/terms" className="block text-sm text-muted-foreground hover:text-brand transition-colors">Terms</Link>
+              <Link to="/terms" className="block text-sm text-muted-foreground hover:text-brand transition-colors">Privacy</Link>
+              <Link to="/investors" className="block text-sm text-muted-foreground hover:text-brand transition-colors">Investors</Link>
             </div>
           </div>
         </div>
