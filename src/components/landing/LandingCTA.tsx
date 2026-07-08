@@ -20,11 +20,7 @@ export const LandingCTA = () => {
           <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-background/50 to-background/90" />
 
           {/* Glow effects */}
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[1px] bg-gradient-to-r from-transparent via-brand/40 to-transparent" />
-          <div
-            className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[300px] opacity-25 pointer-events-none"
-            style={{ background: "radial-gradient(ellipse at center, hsl(var(--brand) / 0.4) 0%, transparent 70%)", filter: "blur(40px)" }}
-          />
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[1px] bg-gradient-to-r from-transparent via-foreground/20 to-transparent" />
 
           <h2 className="text-4xl md:text-5xl lg:text-7xl font-extrabold mb-6 relative z-10 leading-tight">
             Ready to streamline
@@ -36,7 +32,7 @@ export const LandingCTA = () => {
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 relative z-10">
             <Link to="/auth?mode=signup">
-              <Button size="lg" className="text-base px-12 h-14 gap-2.5 bg-brand text-brand-foreground hover:bg-brand/90 rounded-xl font-semibold eden-brand-glow transition-all duration-300">
+              <Button size="lg" className="text-base px-12 h-14 gap-2.5 bg-foreground text-background hover:bg-foreground/90 rounded-xl font-semibold shadow-[0_0_40px_rgba(255,255,255,0.1)] hover:shadow-[0_0_60px_rgba(255,255,255,0.15)] transition-all duration-300">
                 Get Started
                 <ArrowRight className="h-4 w-4" />
               </Button>

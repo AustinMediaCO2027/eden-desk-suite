@@ -37,7 +37,7 @@ export const LandingFAQ = () => {
     <section id="faq" className="py-28 md:py-36 border-t border-border/30">
       <div className="container mx-auto px-6 max-w-3xl">
         <div className="text-center mb-20">
-          <p className="text-[10px] text-brand uppercase tracking-[0.2em] mb-4 font-semibold">FAQ</p>
+          <p className="text-[10px] text-muted-foreground uppercase tracking-[0.2em] mb-4">FAQ</p>
           <h2 className="text-3xl md:text-5xl lg:text-6xl font-extrabold">
             Questions? Answers.
           </h2>
@@ -45,7 +45,7 @@ export const LandingFAQ = () => {
 
         <Accordion type="single" collapsible className="space-y-3">
           {faqs.map((faq, i) => (
-            <AccordionItem key={i} value={`faq-${i}`} className="border border-border/40 rounded-2xl px-6 data-[state=open]:bg-brand/5 data-[state=open]:border-brand/30">
+            <AccordionItem key={i} value={`faq-${i}`} className="border border-border/40 rounded-2xl px-6 data-[state=open]:bg-card/30">
               <AccordionTrigger className="text-left text-sm font-semibold hover:no-underline py-5">
                 {faq.q}
               </AccordionTrigger>

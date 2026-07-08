@@ -55,7 +55,7 @@ export const LandingPricing = () => {
 
       <div className="container mx-auto px-6 relative z-10">
         <div className="text-center mb-20">
-          <p className="text-[10px] text-brand uppercase tracking-[0.2em] mb-4 font-semibold">Pricing</p>
+          <p className="text-[10px] text-muted-foreground uppercase tracking-[0.2em] mb-4">Pricing</p>
           <h2 className="text-3xl md:text-5xl lg:text-6xl font-extrabold mb-5">
             Plans that grow with you
           </h2>
@@ -70,12 +70,12 @@ export const LandingPricing = () => {
               key={plan.name}
               className={`relative rounded-2xl border p-8 flex flex-col transition-all duration-300 hover:-translate-y-1 ${
                 plan.highlighted
-                  ? "border-brand/40 bg-card/40 eden-brand-glow"
+                  ? "border-foreground/30 bg-card/40 shadow-[0_0_40px_rgba(255,255,255,0.03)]"
                   : "border-border/40 bg-card/20 hover:border-border"
               }`}
             >
               {plan.badge && (
-                <span className="absolute -top-3 left-1/2 -translate-x-1/2 text-[10px] font-semibold bg-brand text-brand-foreground px-4 py-1 rounded-full uppercase tracking-wider">
+                <span className="absolute -top-3 left-1/2 -translate-x-1/2 text-[10px] font-semibold bg-foreground text-background px-4 py-1 rounded-full uppercase tracking-wider">
                   {plan.badge}
                 </span>
               )}
@@ -93,7 +93,7 @@ export const LandingPricing = () => {
               <ul className="space-y-3.5 mb-10 flex-1">
                 {plan.features.map((f) => (
                   <li key={f} className="flex items-start gap-3 text-sm text-muted-foreground">
-                    <Check className={`h-4 w-4 mt-0.5 shrink-0 ${plan.highlighted ? "text-brand" : "text-foreground"}`} />
+                    <Check className="h-4 w-4 text-foreground mt-0.5 shrink-0" />
                     {f}
                   </li>
                 ))}
@@ -102,7 +102,7 @@ export const LandingPricing = () => {
                 <Button
                   className={`w-full rounded-xl h-11 ${
                     plan.highlighted
-                      ? "bg-brand text-brand-foreground hover:bg-brand/90"
+                      ? "bg-foreground text-background hover:bg-foreground/90 shadow-[0_0_20px_rgba(255,255,255,0.08)]"
                       : "border-border/60"
                   }`}
                   variant={plan.highlighted ? "default" : "outline"}

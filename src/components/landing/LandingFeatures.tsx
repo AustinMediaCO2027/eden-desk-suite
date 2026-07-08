@@ -1,4 +1,5 @@
 import { Receipt, FileText, CalendarDays, Bot, Mail, Shield, Zap, Globe } from "lucide-react";
+import featureIconX from "@/assets/feature-icon-x.jpeg";
 import abstractBg from "@/assets/abstract-bg.jpg";
 
 const features = [
@@ -59,24 +60,24 @@ export const LandingFeatures = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 text-center">
             <div>
               <p className="text-[10px] text-muted-foreground uppercase tracking-[0.25em] mb-3 font-medium">Active Users</p>
-              <p className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-brand leading-none">17K+</p>
+              <p className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-foreground leading-none">17K+</p>
               <p className="text-xs md:text-sm text-muted-foreground mt-2">Across 120+ countries</p>
             </div>
             <div className="md:border-x border-border/20 md:px-8">
               <p className="text-[10px] text-muted-foreground uppercase tracking-[0.25em] mb-3 font-medium">Documents Created</p>
-              <p className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-brand leading-none">Real-time</p>
+              <p className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-foreground leading-none">Real-time</p>
               <p className="text-xs md:text-sm text-muted-foreground mt-2">Instant generation & delivery</p>
             </div>
             <div>
               <p className="text-[10px] text-muted-foreground uppercase tracking-[0.25em] mb-3 font-medium">System Reliability</p>
-              <p className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-brand leading-none">99%</p>
+              <p className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-foreground leading-none">99%</p>
               <p className="text-xs md:text-sm text-muted-foreground mt-2">Uptime you can rely on</p>
             </div>
           </div>
         </div>
 
         <div className="text-center mb-14 md:mb-20">
-          <p className="text-[10px] text-brand uppercase tracking-[0.25em] mb-5 font-semibold">Features</p>
+          <p className="text-[10px] text-muted-foreground uppercase tracking-[0.25em] mb-5 font-medium">Features</p>
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold mb-5">
             Everything Your Business Needs
           </h2>
@@ -86,13 +87,13 @@ export const LandingFeatures = () => {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 md:gap-6">
-          {features.map(({ icon: Icon, title, description }) => (
+          {features.map(({ title, description }) => (
             <div
               key={title}
-              className="group rounded-2xl border border-border/40 bg-gradient-to-b from-card/30 to-transparent p-7 md:p-8 transition-all duration-300 hover:from-card/60 hover:border-brand/40 hover:-translate-y-2 hover:shadow-[0_20px_60px_-20px_hsl(var(--brand)/0.15)]"
+              className="group rounded-2xl border border-border/40 bg-gradient-to-b from-card/30 to-transparent p-7 md:p-8 transition-all duration-300 hover:from-card/60 hover:border-border/70 hover:-translate-y-2 hover:shadow-[0_20px_60px_-20px_rgba(255,255,255,0.06)]"
             >
-              <div className="h-12 w-12 md:h-14 md:w-14 rounded-2xl border border-brand/20 bg-brand/5 flex items-center justify-center mb-6 md:mb-7 group-hover:bg-brand/10 group-hover:border-brand/40 transition-all duration-300">
-                <Icon className="h-5 w-5 md:h-6 md:w-6 text-brand" strokeWidth={1.75} />
+              <div className="h-12 w-12 md:h-14 md:w-14 rounded-2xl overflow-hidden mb-6 md:mb-7">
+                <img src={featureIconX} alt="" className="h-full w-full object-cover" />
               </div>
               <h3 className="text-base md:text-lg font-bold mb-2 md:mb-3">{title}</h3>
               <p className="text-sm text-muted-foreground leading-relaxed">{description}</p>
