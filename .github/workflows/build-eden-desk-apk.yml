@@ -36,18 +36,35 @@ jobs:
         run: yes | sdkmanager "platform-tools" "platforms;android-35" "build-tools;35.0.0"
 
       - name: Compile installable debug APK
-        run: gradle -p android-wrapper --no-daemon clean assembleDebug --stacktrace
-
-      - name: Prepare named APK
+        id: compile
+        continue-on-error: true
+        shell: bash
         run: |
           mkdir -p release-artifacts
+          set +e
+          gradle -p android-wrapper --no-daemon clean assembleDebug --stacktrace 2>&1 | tee release-artifacts/gradle-build.log
+          status=${PIPESTATUS[0]}
+          echo "exit_code=$status" >> "$GITHUB_OUTPUT"
+          tail -n 250 release-artifacts/gradle-build.log > release-artifacts/gradle-build-tail.txt
+          exit 0
+
+      - name: Prepare named APK
+        if: steps.compile.outputs.exit_code == '0'
+        run: |
           cp android-wrapper/app/build/outputs/apk/debug/app-debug.apk release-artifacts/EdenDesk-test.apk
           sha256sum release-artifacts/EdenDesk-test.apk > release-artifacts/EdenDesk-test.apk.sha256
 
-      - name: Upload APK
+      - name: Upload APK and build diagnostics
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: EdenDesk-test-apk
           path: release-artifacts/
           if-no-files-found: error
           retention-days: 30
+
+      - name: Fail when compilation failed
+        if: steps.compile.outputs.exit_code != '0'
+        run: |
+          echo "Android compilation failed. See gradle-build-tail.txt in the uploaded artifact."
+          exit 1
