@@ -1,1 +1,0 @@
-ALTER TABLE public.letterheads ADD COLUMN signature_url text DEFAULT '';
