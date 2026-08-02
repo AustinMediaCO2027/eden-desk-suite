@@ -19,3 +19,7 @@ project_id = "ezbgywgmcowmhwmyrldm"
     verify_jwt = false
   [functions.email-diagnostics]
     verify_jwt = false
+  [functions.paypal-verify-subscription]
+    verify_jwt = false
+  [functions.paypal-webhook]
+    verify_jwt = false

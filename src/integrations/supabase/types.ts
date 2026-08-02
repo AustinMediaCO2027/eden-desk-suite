@@ -540,6 +540,7 @@ export type Database = {
           bank_account_type: string | null
           bank_branch_code: string | null
           bank_name: string | null
+          billing_country: string | null
           brand_color: string | null
           company_address: string | null
           company_email: string | null
@@ -579,6 +580,7 @@ export type Database = {
           bank_account_type?: string | null
           bank_branch_code?: string | null
           bank_name?: string | null
+          billing_country?: string | null
           brand_color?: string | null
           company_address?: string | null
           company_email?: string | null
@@ -618,6 +620,7 @@ export type Database = {
           bank_account_type?: string | null
           bank_branch_code?: string | null
           bank_name?: string | null
+          billing_country?: string | null
           brand_color?: string | null
           company_address?: string | null
           company_email?: string | null
@@ -657,6 +660,30 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      provider_webhook_events: {
+        Row: {
+          created_at: string
+          event_id: string
+          event_type: string | null
+          id: string
+          provider: string
+        }
+        Insert: {
+          created_at?: string
+          event_id: string
+          event_type?: string | null
+          id?: string
+          provider: string
+        }
+        Update: {
+          created_at?: string
+          event_id?: string
+          event_type?: string | null
+          id?: string
+          provider?: string
+        }
+        Relationships: []
       }
       quotes: {
         Row: {
@@ -758,6 +785,72 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      subscriptions: {
+        Row: {
+          billing_start_date: string | null
+          cancellation_status: string
+          cancelled_at: string | null
+          country: string | null
+          created_at: string
+          currency: string
+          id: string
+          provider: string
+          provider_plan_id: string | null
+          provider_reference: string | null
+          provider_subscription_id: string | null
+          recurring_price: number
+          renewal_date: string | null
+          selected_plan: string
+          subscription_status: string
+          trial_end_date: string | null
+          trial_start_date: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          billing_start_date?: string | null
+          cancellation_status?: string
+          cancelled_at?: string | null
+          country?: string | null
+          created_at?: string
+          currency?: string
+          id?: string
+          provider: string
+          provider_plan_id?: string | null
+          provider_reference?: string | null
+          provider_subscription_id?: string | null
+          recurring_price?: number
+          renewal_date?: string | null
+          selected_plan: string
+          subscription_status?: string
+          trial_end_date?: string | null
+          trial_start_date?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          billing_start_date?: string | null
+          cancellation_status?: string
+          cancelled_at?: string | null
+          country?: string | null
+          created_at?: string
+          currency?: string
+          id?: string
+          provider?: string
+          provider_plan_id?: string | null
+          provider_reference?: string | null
+          provider_subscription_id?: string | null
+          recurring_price?: number
+          renewal_date?: string | null
+          selected_plan?: string
+          subscription_status?: string
+          trial_end_date?: string | null
+          trial_start_date?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       tasks: {
         Row: {

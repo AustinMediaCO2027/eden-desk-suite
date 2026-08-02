@@ -12,7 +12,7 @@ const faqs = [
   },
   {
     q: "How does the 7-day free trial work?",
-    a: "Sign up and get instant access to the Silver plan features for 7 days. No credit card required. After the trial, choose a plan that fits your needs.",
+    a: "Every plan starts with a 3-month free trial. Your payment details are collected at checkout, but you are not charged today. Billing begins automatically after the 3-month free trial unless you cancel before renewal.",
   },
   {
     q: "Can I send documents via email?",

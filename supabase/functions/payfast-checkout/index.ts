@@ -67,6 +67,22 @@ const formatBillingDate = (daysFromNow = 0) => {
   return `${year}-${month}-${day}`;
 };
 
+const formatDateOnly = (target: Date) => {
+  const year = target.getFullYear();
+  const month = String(target.getMonth() + 1).padStart(2, "0");
+  const day = String(target.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
+
+const addMonthsUtc = (date: Date, months: number) => {
+  const d = new Date(date.getTime());
+  const day = d.getDate();
+  d.setMonth(d.getMonth() + months);
+  if (d.getDate() < day) d.setDate(0);
+  return d;
+};
+
+
 const sanitizePaymentReference = (value: string) =>
   value
     .replace(/[^A-Za-z0-9\-_\/]/g, "_")
@@ -186,6 +202,7 @@ serve(async (req) => {
       returnUrl,
       cancelUrl,
       trialRecurringAmount,
+      country,
     } = body ?? {};
 
     if (!userId || user.id !== userId) {
@@ -200,14 +217,25 @@ serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
-    if (isTrial) {
+    // Server-side source of truth for South African subscription pricing (ZAR).
+    const PAYFAST_PLAN_PRICES: Record<string, number> = {
+      standard: 29.99,
+      silver: 49.99,
+      premium: 99.99,
+    };
+
+    // Subscription plans always start with a 3-month free trial (R0.00 today).
+    const isSubscriptionPlan = typeof planId === "string" && planId in PAYFAST_PLAN_PRICES;
+    const TRIAL_MONTHS = 3;
+
+    if (isTrial || isSubscriptionPlan) {
       const { data: profile } = await adminSupabase
         .from("profiles")
         .select("trial_used")
         .eq("user_id", userId)
         .single();
 
-      if (profile?.trial_used) {
+      if (profile?.trial_used && isTrial) {
         return new Response(JSON.stringify({ error: "Trial already used" }), {
           status: 400,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -215,10 +243,15 @@ serve(async (req) => {
       }
     }
 
-    const paymentAmount = isTrial ? "0.00" : formatAmount(amount, "0.00");
-    const recurringAmount = isTrial
-      ? formatAmount(trialRecurringAmount, "39.99")
+    const paymentAmount = isSubscriptionPlan || isTrial
+      ? "0.00"
       : formatAmount(amount, "0.00");
+    const recurringAmount = isSubscriptionPlan
+      ? PAYFAST_PLAN_PRICES[planId as string].toFixed(2)
+      : isTrial
+        ? formatAmount(trialRecurringAmount, "39.99")
+        : formatAmount(amount, "0.00");
+
 
     const passphrase = PAYFAST_PASSPHRASE.trim();
     if (!passphrase) {
@@ -245,7 +278,11 @@ serve(async (req) => {
     const lastName = (lastNameParts.join(" ") || "Customer").substring(0, 100);
 
     const rawReference = `${userId}_${isTrial ? "trial" : (planId || "plan")}_${Date.now()}`;
-    const billingDate = formatBillingDate(isTrial ? 7 : 0);
+    const trialStart = new Date();
+    const trialEnd = addMonthsUtc(trialStart, TRIAL_MONTHS);
+    const billingDate = isSubscriptionPlan
+      ? formatDateOnly(trialEnd)
+      : formatBillingDate(isTrial ? 7 : 0);
 
     const rawParams: Record<string, string | undefined> = {
       merchant_id: PAYFAST_MERCHANT_ID,
@@ -259,16 +296,21 @@ serve(async (req) => {
       m_payment_id: sanitizePaymentReference(rawReference),
       amount: paymentAmount,
       item_name: (isTrial ? "Starter Plan Trial" : `Eden Desk ${planName} Plan`).substring(0, 100),
-      item_description: isTrial
-        ? `7-day trial (R0.00 today), then R${recurringAmount} monthly`
-        : `${planName} subscription - ${period}`,
+      item_description: isSubscriptionPlan
+        ? `3-month free trial (R0.00 today), then R${recurringAmount} monthly`
+        : isTrial
+          ? `7-day trial (R0.00 today), then R${recurringAmount} monthly`
+          : `${planName} subscription - ${period}`,
       custom_str1: userId,
       custom_str2: isTrial ? "trial" : (planId || ""),
+      custom_str3: isSubscriptionPlan ? String(TRIAL_MONTHS) : undefined,
+      custom_str4: country ? String(country).toUpperCase().substring(0, 10) : undefined,
       payment_method: "cc",
       subscription_type: "1",
       billing_date: billingDate,
       recurring_amount: recurringAmount,
       frequency: isTrial ? "3" : (planId === "yearly" ? "6" : "3"),
+
       cycles: "0",
       subscription_notify_email: "true",
       subscription_notify_webhook: "true",
