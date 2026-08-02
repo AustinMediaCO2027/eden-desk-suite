@@ -46,7 +46,7 @@ const testimonials = [
 
 export const LandingTestimonials = () => {
   return (
-    <section className="py-28 md:py-40 border-t border-border/20">
+    <section id="testimonials" className="py-28 md:py-40 border-t border-border/20">
       <div className="container mx-auto px-6">
         <div className="text-center mb-20">
           <p className="text-[10px] text-muted-foreground uppercase tracking-[0.25em] mb-5 font-medium">Testimonials</p>
