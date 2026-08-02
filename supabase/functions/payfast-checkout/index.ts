@@ -303,8 +303,8 @@ serve(async (req) => {
     const rawParams: Record<string, string | undefined> = {
       merchant_id: PAYFAST_MERCHANT_ID,
       merchant_key: PAYFAST_MERCHANT_KEY,
-      return_url: (returnUrl || `${origin}/dashboard/billing?status=success`).trim(),
-      cancel_url: (cancelUrl || `${origin}/dashboard/billing?status=cancelled`).trim(),
+      return_url: safeUrl(returnUrl, `${origin}/dashboard/billing?status=success`),
+      cancel_url: safeUrl(cancelUrl, `${origin}/dashboard/billing?status=cancelled`),
       notify_url: `${Deno.env.get("SUPABASE_URL")}/functions/v1/payfast-itn`,
       name_first: firstName,
       name_last: lastName,
