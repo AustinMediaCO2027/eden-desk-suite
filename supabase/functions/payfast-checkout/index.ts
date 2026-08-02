@@ -301,15 +301,29 @@ serve(async (req) => {
     const trimmedCompanyName = (companyName || "").trim();
     const fallbackName = normalizedEmail.split("@")[0] || "Customer";
     const [firstNameRaw, ...lastNameParts] = (trimmedCompanyName || fallbackName).split(/\s+/);
-    const firstName = (firstNameRaw || "Customer").substring(0, 100);
-    const lastName = (lastNameParts.join(" ") || "Customer").substring(0, 100);
+    // PayFast / acquirer descriptors only accept plain latin text.
+    const sanitizeText = (value: string, max: number) =>
+      value
+        .normalize("NFKD")
+        .replace(/[^A-Za-z0-9 .\-]/g, " ")
+        .replace(/\s+/g, " ")
+        .trim()
+        .substring(0, max);
+    const firstName = sanitizeText(firstNameRaw || "Customer", 100) || "Customer";
+    const lastName = sanitizeText(lastNameParts.join(" ") || "Customer", 100) || "Customer";
 
-    const rawReference = `${userId}_${isTrial ? "trial" : (planId || "plan")}_${Date.now()}`;
+    // Keep the merchant reference short and strictly alphanumeric.
+    const rawReference = `${userId.replace(/-/g, "").slice(0, 12)}-${isTrial ? "trial" : (planId || "plan")}-${Date.now().toString(36)}`;
     const trialStart = new Date();
     const trialEnd = addMonthsUtc(trialStart, TRIAL_MONTHS);
     const billingDate = isSubscriptionPlan
       ? formatDateOnly(trialEnd)
       : formatBillingDate(isTrial ? 7 : 0);
+
+    // Empty string means "let PayFast decide" (it already restricts recurring
+    // billing to cards). Forcing "cc" makes some valid cards fail at the
+    // acquirer with a generic processing error.
+    const paymentMethodOverride = (Deno.env.get("PAYFAST_PAYMENT_METHOD") || "").trim().toLowerCase();
 
     const rawParams: Record<string, string | undefined> = {
       merchant_id: PAYFAST_MERCHANT_ID,
@@ -322,17 +336,20 @@ serve(async (req) => {
       email_address: normalizedEmail,
       m_payment_id: sanitizePaymentReference(rawReference),
       amount: paymentAmount,
-      item_name: (isTrial ? "Starter Plan Trial" : `Eden Desk ${planName} Plan`).substring(0, 100),
-      item_description: isSubscriptionPlan
-        ? `3-month free trial (R0.00 today), then R${recurringAmount} monthly`
-        : isTrial
-          ? `7-day trial (R0.00 today), then R${recurringAmount} monthly`
-          : `${planName} subscription - ${period}`,
+      item_name: sanitizeText(isTrial ? "Starter Plan Trial" : `Eden Desk ${planName} Plan`, 100),
+      item_description: sanitizeText(
+        isSubscriptionPlan
+          ? `3 month free trial then R${recurringAmount} per month`
+          : isTrial
+            ? `7 day trial then R${recurringAmount} per month`
+            : `${planName} subscription ${period}`,
+        255,
+      ),
       custom_str1: userId,
       custom_str2: isTrial ? "trial" : (planId || ""),
       custom_str3: isSubscriptionPlan ? String(TRIAL_MONTHS) : undefined,
       custom_str4: country ? String(country).toUpperCase().substring(0, 10) : undefined,
-      payment_method: "cc",
+      payment_method: paymentMethodOverride || undefined,
       subscription_type: "1",
       billing_date: billingDate,
       recurring_amount: recurringAmount,
@@ -343,6 +360,7 @@ serve(async (req) => {
       subscription_notify_webhook: "true",
       subscription_notify_buyer: "true",
     };
+
 
     const orderedPairs = toOrderedPayFastPairs(rawParams);
     const params = Object.fromEntries(orderedPairs) as Record<string, string>;
