@@ -271,7 +271,8 @@ serve(async (req) => {
 
     // Process commission for referred users on successful billing
     try {
-      if (planId !== "trial" && planId !== "free") {
+      const gross = Number(params.get("amount_gross") || "0");
+      if (planId !== "trial" && planId !== "free" && Number.isFinite(gross) && gross > 0) {
         const { data: profile } = await supabase
           .from("profiles")
           .select("referred_by_affiliate_id")
