@@ -3,7 +3,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
 import { supabase } from "@/integrations/supabase/client";
 import {
-  Receipt,
+  FileSpreadsheet,
   FileText,
   CalendarDays,
   Check,
@@ -171,7 +171,7 @@ const DashboardHome = () => {
   };
 
   const quickActions = [
-    { label: "New Invoice", icon: Receipt, to: "/dashboard/invoices", color: "bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400" },
+    { label: "New Invoice", icon: FileSpreadsheet, to: "/dashboard/invoices", color: "bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400" },
     { label: "New Quote", icon: FileText, to: "/dashboard/quotes", color: "bg-violet-50 dark:bg-violet-500/10 text-violet-600 dark:text-violet-400" },
     { label: "Letterhead", icon: Mail, to: "/dashboard/letterhead", color: "bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400" },
     { label: "AI Agent", icon: Bot, to: "/dashboard/ai", color: "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400" },
@@ -359,7 +359,7 @@ const DashboardHome = () => {
             {invoices.length === 0 ? (
               <div className="p-8 text-center">
                 <div className="w-10 h-10 rounded-xl bg-muted/50 flex items-center justify-center mx-auto mb-3">
-                  <Receipt className="h-5 w-5 text-muted-foreground" />
+                  <FileSpreadsheet className="h-5 w-5 text-muted-foreground" />
                 </div>
                 <p className="text-xs font-medium mb-1">No invoices yet</p>
                 <p className="text-[10px] text-muted-foreground mb-3">Create your first invoice to start tracking.</p>
@@ -380,7 +380,7 @@ const DashboardHome = () => {
                   >
                     <div className="flex items-center gap-3 min-w-0">
                       <div className="h-7 w-7 rounded-md bg-muted/50 flex items-center justify-center shrink-0">
-                        <Receipt className="h-3.5 w-3.5 text-muted-foreground" />
+                        <FileSpreadsheet className="h-3.5 w-3.5 text-muted-foreground" />
                       </div>
                       <div className="min-w-0">
                         <p className="text-xs font-medium truncate">{inv.invoice_number}</p>
