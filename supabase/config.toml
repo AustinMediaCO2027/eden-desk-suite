@@ -23,3 +23,7 @@ project_id = "ezbgywgmcowmhwmyrldm"
     verify_jwt = false
   [functions.paypal-webhook]
     verify_jwt = false
+  [functions.paypal-config]
+    verify_jwt = false
+  [functions.paypal-diag]
+    verify_jwt = false
