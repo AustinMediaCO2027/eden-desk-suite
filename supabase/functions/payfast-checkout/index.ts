@@ -67,6 +67,22 @@ const formatBillingDate = (daysFromNow = 0) => {
   return `${year}-${month}-${day}`;
 };
 
+const formatDateOnly = (target: Date) => {
+  const year = target.getFullYear();
+  const month = String(target.getMonth() + 1).padStart(2, "0");
+  const day = String(target.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
+
+const addMonthsUtc = (date: Date, months: number) => {
+  const d = new Date(date.getTime());
+  const day = d.getDate();
+  d.setMonth(d.getMonth() + months);
+  if (d.getDate() < day) d.setDate(0);
+  return d;
+};
+
+
 const sanitizePaymentReference = (value: string) =>
   value
     .replace(/[^A-Za-z0-9\-_\/]/g, "_")
