@@ -41,10 +41,11 @@ const SharedFilePage = () => {
       const fileData = payload;
 
 
-      setFile(data.file);
-      setPreviewUrl(data.url ?? null);
+      setFile(fileData.file);
+      setPreviewUrl(fileData.url ?? null);
       setStatus("ok");
     };
+
 
     fetchFile();
   }, [token]);
