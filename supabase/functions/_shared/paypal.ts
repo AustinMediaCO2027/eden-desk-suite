@@ -18,12 +18,19 @@ export const paypalApiBase = () =>
     ? "https://api-m.sandbox.paypal.com"
     : "https://api-m.paypal.com";
 
+export class PayPalAuthError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "PayPalAuthError";
+  }
+}
+
 export const getPayPalAccessToken = async (): Promise<string> => {
   const clientId = (Deno.env.get("PAYPAL_CLIENT_ID") || PAYPAL_CLIENT_ID).trim();
   const secret = (Deno.env.get("PAYPAL_CLIENT_SECRET") || "").trim();
 
   if (!secret) {
-    throw new Error("PayPal credentials are not configured");
+    throw new PayPalAuthError("PayPal credentials are not configured");
   }
 
   const res = await fetch(`${paypalApiBase()}/v1/oauth2/token`, {
@@ -37,11 +44,11 @@ export const getPayPalAccessToken = async (): Promise<string> => {
 
   if (!res.ok) {
     console.error("PayPal token request failed", { status: res.status });
-    throw new Error("Could not authenticate with PayPal");
+    throw new PayPalAuthError("PayPal credentials were rejected by PayPal");
   }
 
   const data = await res.json();
-  if (!data?.access_token) throw new Error("Could not authenticate with PayPal");
+  if (!data?.access_token) throw new PayPalAuthError("PayPal did not return an access token");
   return data.access_token as string;
 };
 
