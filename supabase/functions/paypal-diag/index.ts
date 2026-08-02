@@ -1,5 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { PAYPAL_CLIENT_ID } from "../_shared/paypal.ts";
+import { getPayPalAccessToken, paypalApiBase, PAYPAL_PLAN_IDS } from "../_shared/paypal.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -9,35 +9,21 @@ const corsHeaders = {
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
-  const clientId = (Deno.env.get("PAYPAL_CLIENT_ID") || PAYPAL_CLIENT_ID).trim();
-  const secret = (Deno.env.get("PAYPAL_CLIENT_SECRET") || "").trim();
-
-  const results: Record<string, unknown> = {
-    clientIdSource: Deno.env.get("PAYPAL_CLIENT_ID") ? "env" : "hardcoded",
-    clientIdPrefix: clientId.slice(0, 6),
-    clientIdLength: clientId.length,
-    secretPresent: Boolean(secret),
-    secretLength: secret.length,
-    paypalEnv: Deno.env.get("PAYPAL_ENV") || "(unset)",
-  };
-
-  for (const base of ["https://api-m.paypal.com", "https://api-m.sandbox.paypal.com"]) {
-    try {
-      const res = await fetch(`${base}/v1/oauth2/token`, {
-        method: "POST",
-        headers: {
-          Authorization: `Basic ${btoa(`${clientId}:${secret}`)}`,
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-        body: "grant_type=client_credentials",
+  const out: Record<string, unknown> = {};
+  try {
+    const token = await getPayPalAccessToken();
+    for (const [plan, id] of Object.entries(PAYPAL_PLAN_IDS)) {
+      const res = await fetch(`${paypalApiBase()}/v1/billing/plans/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
       });
-      results[base] = res.status;
-    } catch (e) {
-      results[base] = `error: ${e instanceof Error ? e.message : "unknown"}`;
+      const data = res.ok ? await res.json() : null;
+      out[plan] = { status: res.status, planStatus: data?.status ?? null };
     }
+  } catch (e) {
+    out.error = e instanceof Error ? e.message : "unknown";
   }
 
-  return new Response(JSON.stringify(results), {
+  return new Response(JSON.stringify(out), {
     headers: { ...corsHeaders, "Content-Type": "application/json" },
   });
 });
