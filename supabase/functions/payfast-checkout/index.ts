@@ -262,7 +262,11 @@ serve(async (req) => {
     const lastName = (lastNameParts.join(" ") || "Customer").substring(0, 100);
 
     const rawReference = `${userId}_${isTrial ? "trial" : (planId || "plan")}_${Date.now()}`;
-    const billingDate = formatBillingDate(isTrial ? 7 : 0);
+    const trialStart = new Date();
+    const trialEnd = addMonthsUtc(trialStart, TRIAL_MONTHS);
+    const billingDate = isSubscriptionPlan
+      ? formatDateOnly(trialEnd)
+      : formatBillingDate(isTrial ? 7 : 0);
 
     const rawParams: Record<string, string | undefined> = {
       merchant_id: PAYFAST_MERCHANT_ID,
@@ -276,16 +280,21 @@ serve(async (req) => {
       m_payment_id: sanitizePaymentReference(rawReference),
       amount: paymentAmount,
       item_name: (isTrial ? "Starter Plan Trial" : `Eden Desk ${planName} Plan`).substring(0, 100),
-      item_description: isTrial
-        ? `7-day trial (R0.00 today), then R${recurringAmount} monthly`
-        : `${planName} subscription - ${period}`,
+      item_description: isSubscriptionPlan
+        ? `3-month free trial (R0.00 today), then R${recurringAmount} monthly`
+        : isTrial
+          ? `7-day trial (R0.00 today), then R${recurringAmount} monthly`
+          : `${planName} subscription - ${period}`,
       custom_str1: userId,
       custom_str2: isTrial ? "trial" : (planId || ""),
+      custom_str3: isSubscriptionPlan ? String(TRIAL_MONTHS) : undefined,
+      custom_str4: country ? String(country).toUpperCase().substring(0, 10) : undefined,
       payment_method: "cc",
       subscription_type: "1",
       billing_date: billingDate,
       recurring_amount: recurringAmount,
       frequency: isTrial ? "3" : (planId === "yearly" ? "6" : "3"),
+
       cycles: "0",
       subscription_notify_email: "true",
       subscription_notify_webhook: "true",
