@@ -4,9 +4,16 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Download, FileText, AlertTriangle } from "lucide-react";
 
+type SharedFileMeta = {
+  file_name: string;
+  file_type: string;
+  file_size: number;
+  share_expiry: string;
+};
+
 const SharedFilePage = () => {
   const { token } = useParams<{ token: string }>();
-  const [file, setFile] = useState<any>(null);
+  const [file, setFile] = useState<SharedFileMeta | null>(null);
   const [status, setStatus] = useState<"loading" | "ok" | "expired" | "revoked">("loading");
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
@@ -14,44 +21,34 @@ const SharedFilePage = () => {
     const fetchFile = async () => {
       if (!token) { setStatus("revoked"); return; }
 
-      const { data, error } = await supabase
-        .from("user_files")
-        .select("*")
-        .eq("share_token", token)
-        .maybeSingle();
+      const { data, error } = await supabase.functions.invoke("shared-file", {
+        body: { token },
+      });
 
-      if (error || !data) { setStatus("revoked"); return; }
-
-      if (data.share_expiry && new Date(data.share_expiry) < new Date()) {
-        setStatus("expired");
+      if (error || !data || data.status !== "ok") {
+        setStatus(data?.status === "expired" ? "expired" : "revoked");
         return;
       }
 
-      setFile(data);
+      setFile(data.file);
+      setPreviewUrl(data.url ?? null);
       setStatus("ok");
-
-      // Get download URL for preview
-      const { data: dlData } = await supabase.storage
-        .from("user-files")
-        .createSignedUrl(data.storage_path, 3600);
-
-      if (dlData?.signedUrl) setPreviewUrl(dlData.signedUrl);
     };
 
     fetchFile();
   }, [token]);
 
   const handleDownload = async () => {
-    if (!file) return;
-    const { data } = await supabase.storage.from("user-files").download(file.storage_path);
-    if (data) {
-      const url = URL.createObjectURL(data);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = file.file_name;
-      a.click();
-      URL.revokeObjectURL(url);
-    }
+    if (!file || !previewUrl) return;
+    const res = await fetch(previewUrl);
+    if (!res.ok) return;
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = file.file_name;
+    a.click();
+    URL.revokeObjectURL(url);
   };
 
   const isImage = file?.file_type?.startsWith("image/");
