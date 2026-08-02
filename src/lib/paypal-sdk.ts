@@ -1,4 +1,29 @@
 import { PAYPAL_CLIENT_ID } from "@/config/plans";
+import { supabase } from "@/integrations/supabase/client";
+
+let clientIdPromise: Promise<string> | null = null;
+
+/**
+ * Resolves the PayPal client ID from the backend so the SDK always uses the
+ * same PayPal app the server verifies subscriptions against. Falls back to the
+ * bundled client ID if the config endpoint is unreachable.
+ */
+const resolveClientId = (): Promise<string> => {
+  if (clientIdPromise) return clientIdPromise;
+
+  clientIdPromise = (async () => {
+    try {
+      const { data, error } = await supabase.functions.invoke("paypal-config", { method: "GET" });
+      if (error) throw error;
+      const id = typeof data?.clientId === "string" ? data.clientId.trim() : "";
+      return id || PAYPAL_CLIENT_ID;
+    } catch {
+      return PAYPAL_CLIENT_ID;
+    }
+  })();
+
+  return clientIdPromise;
+};
 
 const SDK_SCRIPT_ID = "paypal-sdk-script";
 
@@ -19,7 +44,7 @@ export const loadPayPalSdk = (): Promise<any> => {
 
   if (sdkPromise) return sdkPromise;
 
-  sdkPromise = new Promise((resolve, reject) => {
+  sdkPromise = resolveClientId().then((clientId) => new Promise((resolve, reject) => {
     const existing = document.getElementById(SDK_SCRIPT_ID) as HTMLScriptElement | null;
 
     const handleLoad = () => {
@@ -45,8 +70,9 @@ export const loadPayPalSdk = (): Promise<any> => {
     script.async = true;
     script.addEventListener("load", handleLoad);
     script.addEventListener("error", handleError);
+    script.src = `https://www.paypal.com/sdk/js?client-id=${clientId}&vault=true&intent=subscription`;
     document.head.appendChild(script);
-  });
+  }));
 
   return sdkPromise;
 };
