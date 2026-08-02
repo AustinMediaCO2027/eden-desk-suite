@@ -316,10 +316,17 @@ export const CheckoutDialog = ({ open, onOpenChange, plan }: CheckoutDialogProps
             )}
 
             {provider === "payfast" ? (
-              <Button className="w-full" onClick={startPayFast} disabled={payfastLoading}>
-                {payfastLoading ? "Redirecting to PayFast..." : "Continue with PayFast"}
-              </Button>
+              <div className="space-y-2">
+                <Button className="w-full" onClick={startPayFast} disabled={payfastLoading}>
+                  {payfastLoading ? "Redirecting to PayFast..." : "Continue with PayFast"}
+                </Button>
+                <p className="text-[11px] leading-snug text-muted-foreground">
+                  Use a credit or cheque card that is enabled for online (3D Secure) purchases. R0.00 is
+                  charged today — the card is only verified so billing can start after the free trial.
+                </p>
+              </div>
             ) : (
+
               <div className="space-y-2">
                 {(paypalLoading || verifying) && (
                   <div className="flex items-center gap-2 text-xs text-muted-foreground">
