@@ -5,7 +5,7 @@ import { useProfile } from "@/hooks/useProfile";
 import { useTheme } from "@/hooks/useTheme";
 import {
   LayoutDashboard,
-  Receipt,
+  FileSpreadsheet,
   FileText,
   Mail,
   CalendarDays,
@@ -28,7 +28,7 @@ import { NotificationBell } from "@/components/dashboard/NotificationBell";
 
 const navItems = [
   { to: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
-  { to: "/dashboard/invoices", icon: Receipt, label: "Invoices" },
+  { to: "/dashboard/invoices", icon: FileSpreadsheet, label: "Invoices" },
   { to: "/dashboard/quotes", icon: FileText, label: "Quotes" },
   { to: "/dashboard/letterhead", icon: Mail, label: "Letterheads" },
   { to: "/dashboard/clients", icon: Users, label: "Clients" },
