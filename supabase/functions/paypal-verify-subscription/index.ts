@@ -5,6 +5,7 @@ import {
   PAYPAL_PLAN_PRICES,
   addMonths,
   getPayPalAccessToken,
+  PayPalAuthError,
   paypalApiBase,
 } from "../_shared/paypal.ts";
 
@@ -67,7 +68,24 @@ serve(async (req) => {
     const expectedPlanId = PAYPAL_PLAN_IDS[selectedPlan];
     const recurringPrice = PAYPAL_PLAN_PRICES[selectedPlan];
 
-    const accessToken = await getPayPalAccessToken();
+    let accessToken: string;
+    try {
+      accessToken = await getPayPalAccessToken();
+    } catch (authError) {
+      console.error(
+        "PayPal auth failed:",
+        authError instanceof Error ? authError.message : "unknown",
+      );
+      return json(
+        {
+          success: false,
+          error:
+            "PayPal is not configured correctly on the server. Please try again later or contact support.",
+        },
+        503,
+      );
+    }
+
     const subRes = await fetch(
       `${paypalApiBase()}/v1/billing/subscriptions/${encodeURIComponent(subscriptionId)}`,
       { headers: { Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json" } },

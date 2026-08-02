@@ -30,7 +30,28 @@ serve(async (req) => {
       return new Response("NOT_CONFIGURED", { status: 500, headers: corsHeaders });
     }
 
-    const accessToken = await getPayPalAccessToken();
+    const requiredHeaders = [
+      "paypal-auth-algo",
+      "paypal-cert-url",
+      "paypal-transmission-id",
+      "paypal-transmission-sig",
+      "paypal-transmission-time",
+    ];
+    if (requiredHeaders.some((h) => !req.headers.get(h))) {
+      console.error("PayPal webhook: missing signature headers");
+      return new Response("MISSING_SIGNATURE_HEADERS", { status: 400, headers: corsHeaders });
+    }
+
+    let accessToken: string;
+    try {
+      accessToken = await getPayPalAccessToken();
+    } catch (authError) {
+      console.error(
+        "PayPal webhook auth failed:",
+        authError instanceof Error ? authError.message : "unknown",
+      );
+      return new Response("PAYPAL_AUTH_FAILED", { status: 503, headers: corsHeaders });
+    }
 
     const verifyRes = await fetch(`${paypalApiBase()}/v1/notifications/verify-webhook-signature`, {
       method: "POST",
