@@ -62,9 +62,11 @@ export const LandingPricing = () => {
               </div>
               <div className="mb-8">
                 <span className="text-4xl font-extrabold">Free</span>
-                <span className="text-muted-foreground text-sm ml-1">/3 months</span>
+                {!plan.isFree && (
+                  <span className="text-muted-foreground text-sm ml-1">/3 months</span>
+                )}
                 <p className="text-sm text-muted-foreground mt-1">
-                  then R{plan.zarPrice.toFixed(2)}/pm
+                  {plan.isFree ? "Free forever" : `then R${plan.zarPrice.toFixed(2)}/pm`}
                 </p>
               </div>
               <ul className="space-y-3.5 mb-10 flex-1">
@@ -82,7 +84,9 @@ export const LandingPricing = () => {
                     : "border-border/60"
                 }`}
                 variant={plan.highlighted ? "default" : "outline"}
-                onClick={() => handleGetStarted(plan.key)}
+                onClick={() =>
+                  plan.isFree ? navigate("/auth?mode=signup") : handleGetStarted(plan.key)
+                }
               >
                 Get started for free
               </Button>
