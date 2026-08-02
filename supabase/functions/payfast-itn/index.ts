@@ -188,16 +188,6 @@ serve(async (req) => {
       // marks the initial 3-month setup in custom_str3; do not infer it from
       // amount_gross because production uses a small card-verification payment
       // to avoid issuer response code 06 on zero-value authorisations.
-      const grossAmount = Number(params.get("amount_gross") || "0");
-      const isSetup = params.get("custom_str3") === String(TRIAL_MONTHS)
-        && !(await supabase
-          .from("subscriptions")
-          .select("id")
-          .eq("provider", "payfast")
-          .eq("user_id", userId)
-          .eq("selected_plan", planId)
-          .maybeSingle()).data;
-
       const { data: existing } = await supabase
         .from("subscriptions")
         .select("id, trial_start_date, trial_end_date")
@@ -205,6 +195,8 @@ serve(async (req) => {
         .eq("user_id", userId)
         .eq("selected_plan", planId)
         .maybeSingle();
+
+      const isSetup = params.get("custom_str3") === String(TRIAL_MONTHS) && !existing;
 
       const now = new Date();
       const trialStart = isSetup
