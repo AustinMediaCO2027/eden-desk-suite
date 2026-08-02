@@ -184,10 +184,10 @@ serve(async (req) => {
         console.log(`Trial activated for user ${userId}`);
       }
     } else if (isSubscriptionPlan) {
-      // Subscription set-up (R0.00 today) or a post-trial recurring payment.
-      const grossAmount = Number(params.get("amount_gross") || "0");
-      const isSetup = !Number.isFinite(grossAmount) || grossAmount <= 0;
-
+      // Subscription set-up or a post-trial recurring payment. The checkout
+      // marks the initial 3-month setup in custom_str3; do not infer it from
+      // amount_gross because production uses a small card-verification payment
+      // to avoid issuer response code 06 on zero-value authorisations.
       const { data: existing } = await supabase
         .from("subscriptions")
         .select("id, trial_start_date, trial_end_date")
@@ -195,6 +195,8 @@ serve(async (req) => {
         .eq("user_id", userId)
         .eq("selected_plan", planId)
         .maybeSingle();
+
+      const isSetup = params.get("custom_str3") === String(TRIAL_MONTHS) && !existing;
 
       const now = new Date();
       const trialStart = isSetup
@@ -272,7 +274,8 @@ serve(async (req) => {
     // Process commission for referred users on successful billing
     try {
       const gross = Number(params.get("amount_gross") || "0");
-      if (planId !== "trial" && planId !== "free" && Number.isFinite(gross) && gross > 0) {
+      const isVerificationPayment = params.get("custom_str3") === String(TRIAL_MONTHS) && gross <= 1;
+      if (planId !== "trial" && planId !== "free" && !isVerificationPayment && Number.isFinite(gross) && gross > 0) {
         const { data: profile } = await supabase
           .from("profiles")
           .select("referred_by_affiliate_id")

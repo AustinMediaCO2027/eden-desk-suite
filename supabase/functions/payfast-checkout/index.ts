@@ -243,14 +243,16 @@ serve(async (req) => {
       }
     }
 
-    // Some issuers reject R0.00 (zero value) card authorisations with a generic
-    // processing error. PAYFAST_TRIAL_INITIAL_AMOUNT allows switching the trial
-    // set-up charge to a small verification amount without a code change.
-    const rawTrialInitial = (Deno.env.get("PAYFAST_TRIAL_INITIAL_AMOUNT") || "0.00").trim();
+    // A number of South African issuers return acquirer response 06 for R0.00
+    // recurring-card authorisations even though PayFast supports them. Use a
+    // small real verification payment by default so 3DS runs as a conventional
+    // card transaction. The subscription's first recurring bill remains three
+    // months away.
+    const rawTrialInitial = (Deno.env.get("PAYFAST_TRIAL_INITIAL_AMOUNT") || "1.00").trim();
     const parsedTrialInitial = Number(rawTrialInitial);
-    const trialInitialAmount = Number.isFinite(parsedTrialInitial) && parsedTrialInitial > 0
+    const trialInitialAmount = Number.isFinite(parsedTrialInitial) && parsedTrialInitial >= 1
       ? parsedTrialInitial.toFixed(2)
-      : "0.00";
+      : "1.00";
 
     const paymentAmount = isSubscriptionPlan || isTrial
       ? trialInitialAmount
@@ -339,7 +341,7 @@ serve(async (req) => {
       item_name: sanitizeText(isTrial ? "Starter Plan Trial" : `Eden Desk ${planName} Plan`, 100),
       item_description: sanitizeText(
         isSubscriptionPlan
-          ? `3 month free trial then R${recurringAmount} per month`
+          ? `R${paymentAmount} card verification then R${recurringAmount} per month after 3 months`
           : isTrial
             ? `7 day trial then R${recurringAmount} per month`
             : `${planName} subscription ${period}`,
