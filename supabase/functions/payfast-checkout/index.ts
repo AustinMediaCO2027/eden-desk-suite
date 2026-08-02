@@ -186,6 +186,7 @@ serve(async (req) => {
       returnUrl,
       cancelUrl,
       trialRecurringAmount,
+      country,
     } = body ?? {};
 
     if (!userId || user.id !== userId) {
@@ -200,14 +201,25 @@ serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
-    if (isTrial) {
+    // Server-side source of truth for South African subscription pricing (ZAR).
+    const PAYFAST_PLAN_PRICES: Record<string, number> = {
+      standard: 29.99,
+      silver: 49.99,
+      premium: 99.99,
+    };
+
+    // Subscription plans always start with a 3-month free trial (R0.00 today).
+    const isSubscriptionPlan = typeof planId === "string" && planId in PAYFAST_PLAN_PRICES;
+    const TRIAL_MONTHS = 3;
+
+    if (isTrial || isSubscriptionPlan) {
       const { data: profile } = await adminSupabase
         .from("profiles")
         .select("trial_used")
         .eq("user_id", userId)
         .single();
 
-      if (profile?.trial_used) {
+      if (profile?.trial_used && isTrial) {
         return new Response(JSON.stringify({ error: "Trial already used" }), {
           status: 400,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -215,10 +227,15 @@ serve(async (req) => {
       }
     }
 
-    const paymentAmount = isTrial ? "0.00" : formatAmount(amount, "0.00");
-    const recurringAmount = isTrial
-      ? formatAmount(trialRecurringAmount, "39.99")
+    const paymentAmount = isSubscriptionPlan || isTrial
+      ? "0.00"
       : formatAmount(amount, "0.00");
+    const recurringAmount = isSubscriptionPlan
+      ? PAYFAST_PLAN_PRICES[planId as string].toFixed(2)
+      : isTrial
+        ? formatAmount(trialRecurringAmount, "39.99")
+        : formatAmount(amount, "0.00");
+
 
     const passphrase = PAYFAST_PASSPHRASE.trim();
     if (!passphrase) {
