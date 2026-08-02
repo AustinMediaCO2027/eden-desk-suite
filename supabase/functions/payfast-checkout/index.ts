@@ -243,14 +243,25 @@ serve(async (req) => {
       }
     }
 
+    // Some issuers reject R0.00 (zero value) card authorisations with a generic
+    // processing error. PAYFAST_TRIAL_INITIAL_AMOUNT allows switching the trial
+    // set-up charge to a small verification amount without a code change.
+    const rawTrialInitial = (Deno.env.get("PAYFAST_TRIAL_INITIAL_AMOUNT") || "0.00").trim();
+    const parsedTrialInitial = Number(rawTrialInitial);
+    const trialInitialAmount = Number.isFinite(parsedTrialInitial) && parsedTrialInitial > 0
+      ? parsedTrialInitial.toFixed(2)
+      : "0.00";
+
     const paymentAmount = isSubscriptionPlan || isTrial
-      ? "0.00"
+      ? trialInitialAmount
       : formatAmount(amount, "0.00");
     const recurringAmount = isSubscriptionPlan
       ? PAYFAST_PLAN_PRICES[planId as string].toFixed(2)
       : isTrial
         ? formatAmount(trialRecurringAmount, "39.99")
         : formatAmount(amount, "0.00");
+
+
 
 
     const passphrase = PAYFAST_PASSPHRASE.trim();
