@@ -3,12 +3,8 @@ import { Navigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { LandingHero } from "@/components/landing/LandingHero";
 import { LogoMarquee } from "@/components/landing/LogoMarquee";
-import { LandingFeatures } from "@/components/landing/LandingFeatures";
-import { LandingHowItWorks } from "@/components/landing/LandingHowItWorks";
 import { LandingPricing } from "@/components/landing/LandingPricing";
 import { LandingTestimonials } from "@/components/landing/LandingTestimonials";
-import { LandingCTA } from "@/components/landing/LandingCTA";
-import { LandingFAQ } from "@/components/landing/LandingFAQ";
 import { LandingFooter } from "@/components/landing/LandingFooter";
 import { LandingNav } from "@/components/landing/LandingNav";
 import { useTheme } from "@/hooks/useTheme";
@@ -68,12 +64,8 @@ const Index = () => {
       <LandingNav />
       <LandingHero />
       <LogoMarquee />
-      <LandingFeatures />
-      <LandingHowItWorks />
       <LandingPricing />
       <LandingTestimonials />
-      <LandingCTA />
-      <LandingFAQ />
       <LandingFooter />
     </div>
   );

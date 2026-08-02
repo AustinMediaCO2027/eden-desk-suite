@@ -15,10 +15,8 @@ export const LandingFooter = () => {
           <div>
             <h4 className="text-sm font-semibold mb-4">Product</h4>
             <div className="space-y-3">
-              <a href="#features" className="block text-sm text-muted-foreground hover:text-foreground transition-colors">Features</a>
               <a href="#pricing" className="block text-sm text-muted-foreground hover:text-foreground transition-colors">Pricing</a>
-              <a href="#how-it-works" className="block text-sm text-muted-foreground hover:text-foreground transition-colors">How It Works</a>
-              <a href="#faq" className="block text-sm text-muted-foreground hover:text-foreground transition-colors">FAQ</a>
+              <a href="#testimonials" className="block text-sm text-muted-foreground hover:text-foreground transition-colors">Testimonials</a>
             </div>
           </div>
           <div>
