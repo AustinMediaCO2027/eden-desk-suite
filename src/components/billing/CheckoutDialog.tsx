@@ -117,6 +117,8 @@ export const CheckoutDialog = ({ open, onOpenChange, plan }: CheckoutDialogProps
       }
 
       submitPayFastForm(data.paymentUrl, data.params as Record<string, string>);
+      // When PayFast opens in a new tab (embedded/preview contexts) this view stays mounted.
+      if (isInIframe()) setPayfastLoading(false);
     } catch (err: any) {
       console.error("PayFast checkout error:", err);
       showCheckoutError(
