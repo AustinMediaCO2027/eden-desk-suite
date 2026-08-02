@@ -184,9 +184,19 @@ serve(async (req) => {
         console.log(`Trial activated for user ${userId}`);
       }
     } else if (isSubscriptionPlan) {
-      // Subscription set-up (R0.00 today) or a post-trial recurring payment.
+      // Subscription set-up or a post-trial recurring payment. The checkout
+      // marks the initial 3-month setup in custom_str3; do not infer it from
+      // amount_gross because production uses a small card-verification payment
+      // to avoid issuer response code 06 on zero-value authorisations.
       const grossAmount = Number(params.get("amount_gross") || "0");
-      const isSetup = !Number.isFinite(grossAmount) || grossAmount <= 0;
+      const isSetup = params.get("custom_str3") === String(TRIAL_MONTHS)
+        && !(await supabase
+          .from("subscriptions")
+          .select("id")
+          .eq("provider", "payfast")
+          .eq("user_id", userId)
+          .eq("selected_plan", planId)
+          .maybeSingle()).data;
 
       const { data: existing } = await supabase
         .from("subscriptions")

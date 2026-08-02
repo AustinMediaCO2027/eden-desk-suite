@@ -321,8 +321,8 @@ export const CheckoutDialog = ({ open, onOpenChange, plan }: CheckoutDialogProps
                   {payfastLoading ? "Redirecting to PayFast..." : "Continue with PayFast"}
                 </Button>
                 <p className="text-[11px] leading-snug text-muted-foreground">
-                  Use a credit or cheque card that is enabled for online (3D Secure) purchases. R0.00 is
-                  charged today — the card is only verified so billing can start after the free trial.
+                  PayFast processes a R1.00 card verification payment through 3D Secure today. Your plan
+                  billing only starts after the 3-month trial.
                 </p>
               </div>
             ) : (
