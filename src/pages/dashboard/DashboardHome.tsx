@@ -274,7 +274,8 @@ const DashboardHome = () => {
         <div className="flex items-start justify-between">
           <div>
             <h1 className="text-xl font-bold tracking-tight">
-              Good {new Date().getHours() < 12 ? "morning" : new Date().getHours() < 17 ? "afternoon" : "evening"}, {profile?.company_name || user?.email?.split("@")[0] || "there"} 👋
+              Good {new Date().getHours() < 12 ? "morning" : new Date().getHours() < 17 ? "afternoon" : "evening"}, {profile?.company_name || user?.email?.split("@")[0] || "there"}
+              <Building2 className="inline-block h-5 w-5 ml-2 text-muted-foreground align-text-bottom" />
             </h1>
             <p className="text-xs text-muted-foreground mt-0.5">
               Here's what's happening with your business today.
