@@ -1,3 +1,4 @@
+import { submitPayFastForm, isInIframe } from "@/lib/payfast";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -115,19 +116,9 @@ export const CheckoutDialog = ({ open, onOpenChange, plan }: CheckoutDialogProps
         throw new Error("PayFast checkout could not be started. Please try again.");
       }
 
-      const form = document.createElement("form");
-      form.method = "POST";
-      form.action = data.paymentUrl;
-      form.target = "_self";
-      Object.entries(data.params as Record<string, string>).forEach(([key, value]) => {
-        const input = document.createElement("input");
-        input.type = "hidden";
-        input.name = key;
-        input.value = value;
-        form.appendChild(input);
-      });
-      document.body.appendChild(form);
-      form.submit();
+      submitPayFastForm(data.paymentUrl, data.params as Record<string, string>);
+      // When PayFast opens in a new tab (embedded/preview contexts) this view stays mounted.
+      if (isInIframe()) setPayfastLoading(false);
     } catch (err: any) {
       console.error("PayFast checkout error:", err);
       showCheckoutError(

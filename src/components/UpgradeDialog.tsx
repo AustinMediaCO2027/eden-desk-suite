@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useProfile } from "@/hooks/useProfile";
 import { useCurrency } from "@/hooks/useCurrency";
 import { useState } from "react";
+import { submitPayFastForm } from "@/lib/payfast";
 
 interface UpgradeDialogProps {
   open: boolean;
@@ -47,21 +48,7 @@ const UpgradeDialog = ({ open, onOpenChange, feature, requiredPlan }: UpgradeDia
 
       if (error) throw error;
 
-      const form = document.createElement("form");
-      form.method = "POST";
-      form.action = data.paymentUrl;
-      form.target = "_self";
-
-      Object.entries(data.params as Record<string, string>).forEach(([key, value]) => {
-        const input = document.createElement("input");
-        input.type = "hidden";
-        input.name = key;
-        input.value = value;
-        form.appendChild(input);
-      });
-
-      document.body.appendChild(form);
-      form.submit();
+      submitPayFastForm(data.paymentUrl, data.params as Record<string, string>);
     } catch (err: any) {
       console.error("PayFast error:", err);
     } finally {
