@@ -1,4 +1,4 @@
-import { submitPayFastForm } from "@/lib/payfast";
+import { submitPayFastForm, isInIframe } from "@/lib/payfast";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
