@@ -25,10 +25,21 @@ const SharedFilePage = () => {
         body: { token },
       });
 
-      if (error || !data || data.status !== "ok") {
-        setStatus(data?.status === "expired" ? "expired" : "revoked");
+      let payload: any = data;
+      if (error) {
+        const res = (error as any)?.context;
+        if (res && typeof res.json === "function") {
+          payload = await res.json().catch(() => null);
+        }
+      }
+
+      if (!payload || payload.status !== "ok") {
+        setStatus(payload?.status === "expired" ? "expired" : "revoked");
         return;
       }
+
+      const fileData = payload;
+
 
       setFile(data.file);
       setPreviewUrl(data.url ?? null);
