@@ -296,7 +296,7 @@ const DashboardHome = () => {
         <Link to="/dashboard/referrals" className="block">
           <div className="rounded-xl border border-border bg-card p-4 hover:shadow-md transition-all duration-200 flex items-center gap-4">
             <div className="h-10 w-10 rounded-lg bg-foreground/10 flex items-center justify-center shrink-0">
-              <span className="text-lg">🎁</span>
+              <Handshake className="h-5 w-5 text-foreground" />
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-semibold">Invite businesses & earn monthly income</p>
