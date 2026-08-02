@@ -25,6 +25,7 @@ import edenLogo from "@/assets/eden_desk_logo.png";
 import edenIcon from "@/assets/eden_desk_icon.png";
 import { useAffiliate } from "@/hooks/useAffiliate";
 import { NotificationBell } from "@/components/dashboard/NotificationBell";
+import aiAgentIcon from "@/assets/ai-agent-icon.png.asset.json";
 
 const navItems = [
   { to: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
@@ -35,7 +36,7 @@ const navItems = [
   { to: "/dashboard/files", icon: FolderOpen, label: "Files" },
   { to: "/dashboard/tasks", icon: CalendarDays, label: "Tasks" },
   { to: "/dashboard/referrals", icon: Gift, label: "Referrals" },
-  { to: "/dashboard/ai", icon: Bot, label: "AI Agent" },
+  { to: "/dashboard/ai", icon: Bot, iconSrc: aiAgentIcon.url, label: "AI Agent" },
   { to: "/dashboard/billing", icon: CreditCard, label: "Billing" },
   { to: "/dashboard/settings", icon: Settings, label: "Settings" },
 ];
@@ -81,7 +82,7 @@ export const DashboardLayout = () => {
 
         {/* Navigation */}
         <nav className="flex-1 px-3 pt-2 overflow-y-auto space-y-1">
-          {allNavItems.map(({ to, icon: Icon, label }) => {
+          {allNavItems.map(({ to, icon: Icon, label, iconSrc }: any) => {
             const isActive = location.pathname === to;
             return (
               <Link
@@ -94,7 +95,11 @@ export const DashboardLayout = () => {
                     : "text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent/50"
                 }`}
               >
-                <Icon className={`h-[18px] w-[18px] shrink-0 ${isActive ? "text-sidebar-primary" : ""}`} />
+                {iconSrc ? (
+                  <img src={iconSrc} alt="" aria-hidden className="h-[18px] w-[18px] shrink-0 object-contain" />
+                ) : (
+                  <Icon className={`h-[18px] w-[18px] shrink-0 ${isActive ? "text-sidebar-primary" : ""}`} />
+                )}
                 <span>{label}</span>
               </Link>
             );
