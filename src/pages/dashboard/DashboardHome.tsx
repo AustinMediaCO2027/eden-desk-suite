@@ -14,6 +14,7 @@ import {
   ArrowUpRight,
   Mail,
   Bot,
+  Building2,
 } from "lucide-react";
 import { Link, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
