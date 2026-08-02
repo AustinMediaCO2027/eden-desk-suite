@@ -25,3 +25,6 @@ project_id = "ezbgywgmcowmhwmyrldm"
     verify_jwt = false
   [functions.paypal-config]
     verify_jwt = false
+  [functions.shared-file]
+    verify_jwt = false
+
