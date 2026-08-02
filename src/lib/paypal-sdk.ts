@@ -65,12 +65,11 @@ export const loadPayPalSdk = (): Promise<any> => {
 
     const script = document.createElement("script");
     script.id = SDK_SCRIPT_ID;
-    script.src = `https://www.paypal.com/sdk/js?client-id=${PAYPAL_CLIENT_ID}&vault=true&intent=subscription`;
+    script.src = `https://www.paypal.com/sdk/js?client-id=${clientId}&vault=true&intent=subscription`;
     script.setAttribute("data-sdk-integration-source", "button-factory");
     script.async = true;
     script.addEventListener("load", handleLoad);
     script.addEventListener("error", handleError);
-    script.src = `https://www.paypal.com/sdk/js?client-id=${clientId}&vault=true&intent=subscription`;
     document.head.appendChild(script);
   }));
 
