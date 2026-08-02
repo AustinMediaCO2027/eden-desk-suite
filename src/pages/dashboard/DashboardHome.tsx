@@ -15,6 +15,7 @@ import {
   Mail,
   Bot,
   Building2,
+  Handshake,
 } from "lucide-react";
 import { Link, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
