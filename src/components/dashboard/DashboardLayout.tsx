@@ -5,7 +5,7 @@ import { useProfile } from "@/hooks/useProfile";
 import { useTheme } from "@/hooks/useTheme";
 import {
   LayoutDashboard,
-  Receipt,
+  FileSpreadsheet,
   FileText,
   Mail,
   CalendarDays,
