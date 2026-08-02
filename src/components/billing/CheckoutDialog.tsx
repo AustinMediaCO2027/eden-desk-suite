@@ -16,6 +16,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
 import { loadPayPalSdk } from "@/lib/paypal-sdk";
 import {
+import { submitPayFastForm } from "@/lib/payfast";
   BILLING_COUNTRIES,
   PAYFAST_CHECKOUT_COPY,
   PAYFAST_PLAN_PRICES,
@@ -115,19 +116,7 @@ export const CheckoutDialog = ({ open, onOpenChange, plan }: CheckoutDialogProps
         throw new Error("PayFast checkout could not be started. Please try again.");
       }
 
-      const form = document.createElement("form");
-      form.method = "POST";
-      form.action = data.paymentUrl;
-      form.target = "_self";
-      Object.entries(data.params as Record<string, string>).forEach(([key, value]) => {
-        const input = document.createElement("input");
-        input.type = "hidden";
-        input.name = key;
-        input.value = value;
-        form.appendChild(input);
-      });
-      document.body.appendChild(form);
-      form.submit();
+      submitPayFastForm(data.paymentUrl, data.params as Record<string, string>);
     } catch (err: any) {
       console.error("PayFast checkout error:", err);
       showCheckoutError(

@@ -31,6 +31,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
+import { submitPayFastForm } from "@/lib/payfast";
   Upload,
   FolderPlus,
   Search,
@@ -224,19 +225,7 @@ const FilesPage = () => {
         },
       });
       if (error) throw error;
-      const form = document.createElement("form");
-      form.method = "POST";
-      form.action = data.paymentUrl;
-      form.target = "_top";
-      Object.entries(data.params as Record<string, string>).forEach(([key, value]) => {
-        const input = document.createElement("input");
-        input.type = "hidden";
-        input.name = key;
-        input.value = value;
-        form.appendChild(input);
-      });
-      document.body.appendChild(form);
-      form.submit();
+      submitPayFastForm(data.paymentUrl, data.params as Record<string, string>);
     } catch (err: any) {
       toast({ title: "Payment error", description: err.message, variant: "destructive" });
     } finally {

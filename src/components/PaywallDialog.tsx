@@ -7,6 +7,7 @@ import { useProfile } from "@/hooks/useProfile";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
+import { submitPayFastForm } from "@/lib/payfast";
 
 interface PaywallDialogProps {
   open: boolean;
@@ -50,21 +51,7 @@ const PaywallDialog = ({ open, onOpenChange }: PaywallDialogProps) => {
       if (error) throw error;
 
       // Redirect to PayFast
-      const form = document.createElement("form");
-      form.method = "POST";
-      form.action = data.paymentUrl;
-      form.target = "_top";
-
-      Object.entries(data.params as Record<string, string>).forEach(([key, value]) => {
-        const input = document.createElement("input");
-        input.type = "hidden";
-        input.name = key;
-        input.value = value;
-        form.appendChild(input);
-      });
-
-      document.body.appendChild(form);
-      form.submit();
+      submitPayFastForm(data.paymentUrl, data.params as Record<string, string>);
     } catch (err: any) {
       toast({ title: "Error", description: err.message, variant: "destructive" });
     } finally {
