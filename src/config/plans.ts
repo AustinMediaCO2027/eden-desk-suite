@@ -56,8 +56,8 @@ export const PAYPAL_PLAN_PRICES: Record<
 
 /** PayFast (South Africa) monthly price in ZAR after the 3-month free trial. */
 export const PAYFAST_PLAN_PRICES: Record<PlanKey, number> = {
-  standard: 0,
-  silver: 75.99,
+  standard: 29.99,
+  silver: 49.99,
   premium: 99.99,
 };
 
@@ -73,7 +73,6 @@ export interface PlanCard {
   description: string;
   zarPrice: number;
   features: string[];
-  isFree?: boolean;
   highlighted?: boolean;
   badge?: string;
 }
@@ -81,16 +80,10 @@ export interface PlanCard {
 export const PLAN_CARDS: PlanCard[] = [
   {
     key: "standard",
-    name: "Starter",
-    description: "Free forever",
-    zarPrice: 0,
-    isFree: true,
-    features: [
-      "Basic invoicing",
-      "Quotes & letterheads",
-      "Task management",
-      "Basic file storage",
-    ],
+    name: "Standard",
+    description: "Perfect for freelancers",
+    zarPrice: PAYFAST_PLAN_PRICES.standard,
+    features: ["Create invoices", "Create quotes", "Download PDF", "Email sending"],
   },
   {
     key: "silver",
@@ -98,10 +91,10 @@ export const PLAN_CARDS: PlanCard[] = [
     description: "For growing businesses",
     zarPrice: PAYFAST_PLAN_PRICES.silver,
     features: [
-      "Everything in Starter",
-      "AI tools (5 AI prompts/day)",
-      "100MB storage included",
-      "Advanced features",
+      "Send Invoice / Quotes",
+      "Create & send letterheads",
+      "Gemini AI drafting",
+      "5 AI prompts per day",
     ],
     highlighted: true,
     badge: "Most Popular",
@@ -111,12 +104,7 @@ export const PLAN_CARDS: PlanCard[] = [
     name: "Premium",
     description: "For power users",
     zarPrice: PAYFAST_PLAN_PRICES.premium,
-    features: [
-      "Full Eden Desk access",
-      "Maximum limits",
-      "1GB storage included",
-      "Premium features",
-    ],
+    features: ["Everything in Silver", "Task manager", "Unlimited AI prompts", "Priority support"],
   },
 ];
 
