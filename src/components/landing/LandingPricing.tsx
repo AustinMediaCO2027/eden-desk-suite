@@ -1,49 +1,26 @@
+import { useState } from "react";
 import { Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import abstractBg from "@/assets/abstract-bg.jpg";
-import { useCurrency } from "@/hooks/useCurrency";
-
-const planData = [
-  {
-    name: "Standard",
-    zarPrice: 49.99,
-    period: "/month",
-    description: "Perfect for freelancers",
-    features: ["Create invoices", "Create quotes", "Download PDF", "Email sending"],
-    highlighted: false,
-  },
-  {
-    name: "Silver",
-    zarPrice: 85.99,
-    period: "/month",
-    description: "For growing businesses",
-    features: [
-      "Send Invoice / Quotes",
-      "Create & send letterheads",
-      "Gemini AI drafting",
-      "5 AI prompts per day",
-    ],
-    highlighted: true,
-    badge: "Most Popular",
-  },
-  {
-    name: "Premium",
-    zarPrice: 99.99,
-    period: "/month",
-    description: "For power users",
-    features: [
-      "Everything in Silver",
-      "Task manager",
-      "Unlimited AI prompts",
-      "Priority support",
-    ],
-    highlighted: false,
-  },
-];
+import { useAuth } from "@/hooks/useAuth";
+import { CheckoutDialog } from "@/components/billing/CheckoutDialog";
+import { PLAN_CARDS, PRICING_DISCLAIMER, PlanKey } from "@/config/plans";
 
 export const LandingPricing = () => {
-  const { convert, currency } = useCurrency();
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const [checkoutPlan, setCheckoutPlan] = useState<PlanKey | null>(null);
+  const [checkoutOpen, setCheckoutOpen] = useState(false);
+
+  const handleGetStarted = (plan: PlanKey) => {
+    if (!user) {
+      navigate(`/auth?mode=signup&plan=${plan}`);
+      return;
+    }
+    setCheckoutPlan(plan);
+    setCheckoutOpen(true);
+  };
 
   return (
     <section id="pricing" className="relative py-28 md:py-36 border-t border-border/30 overflow-hidden">
@@ -60,14 +37,14 @@ export const LandingPricing = () => {
             Plans that grow with you
           </h2>
           <p className="text-muted-foreground text-lg">
-            Get started for free. No credit card required.
+            3 months free trial on every plan.
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-          {planData.map((plan) => (
+          {PLAN_CARDS.map((plan) => (
             <div
-              key={plan.name}
+              key={plan.key}
               className={`relative rounded-2xl border p-8 flex flex-col transition-all duration-300 hover:-translate-y-1 ${
                 plan.highlighted
                   ? "border-foreground/30 bg-card/40 shadow-[0_0_40px_rgba(255,255,255,0.03)]"
@@ -84,11 +61,11 @@ export const LandingPricing = () => {
                 <p className="text-xs text-muted-foreground">{plan.description}</p>
               </div>
               <div className="mb-8">
-                <span className="text-4xl font-extrabold">{convert(plan.zarPrice)}</span>
-                <span className="text-muted-foreground text-sm ml-1">{plan.period}</span>
-                {currency.code !== "ZAR" && (
-                  <p className="text-[10px] text-muted-foreground mt-1">Billed in R{plan.zarPrice.toFixed(2)} ZAR</p>
-                )}
+                <span className="text-4xl font-extrabold">Free</span>
+                <span className="text-muted-foreground text-sm ml-1">/3 months</span>
+                <p className="text-sm text-muted-foreground mt-1">
+                  then R{plan.zarPrice.toFixed(2)}/pm
+                </p>
               </div>
               <ul className="space-y-3.5 mb-10 flex-1">
                 {plan.features.map((f) => (
@@ -98,24 +75,23 @@ export const LandingPricing = () => {
                   </li>
                 ))}
               </ul>
-              <Link to="/auth?mode=signup">
-                <Button
-                  className={`w-full rounded-xl h-11 ${
-                    plan.highlighted
-                      ? "bg-foreground text-background hover:bg-foreground/90 shadow-[0_0_20px_rgba(255,255,255,0.08)]"
-                      : "border-border/60"
-                  }`}
-                  variant={plan.highlighted ? "default" : "outline"}
-                >
-                  Get Started
-                </Button>
-              </Link>
+              <Button
+                className={`w-full rounded-xl h-11 ${
+                  plan.highlighted
+                    ? "bg-foreground text-background hover:bg-foreground/90 shadow-[0_0_20px_rgba(255,255,255,0.08)]"
+                    : "border-border/60"
+                }`}
+                variant={plan.highlighted ? "default" : "outline"}
+                onClick={() => handleGetStarted(plan.key)}
+              >
+                Get started for free
+              </Button>
             </div>
           ))}
         </div>
 
-        <p className="text-center text-xs text-muted-foreground mt-8">
-          Billed securely in South African Rand (ZAR).
+        <p className="text-center text-xs text-muted-foreground mt-8 max-w-2xl mx-auto">
+          {PRICING_DISCLAIMER}
         </p>
 
         <div className="text-center mt-6">
@@ -124,6 +100,8 @@ export const LandingPricing = () => {
           </Link>
         </div>
       </div>
+
+      <CheckoutDialog open={checkoutOpen} onOpenChange={setCheckoutOpen} plan={checkoutPlan} />
     </section>
   );
 };
