@@ -261,7 +261,23 @@ serve(async (req) => {
       });
     }
 
-    const origin = (req.headers.get("origin") || "").trim();
+    // PayFast rejects localhost / relative URLs, so fall back to the live site.
+    const PUBLIC_SITE_URL = (Deno.env.get("PUBLIC_SITE_URL") || "https://eden-desk.com").replace(/\/$/, "");
+    const isUsableUrl = (value: string) => {
+      try {
+        const url = new URL(value);
+        if (url.protocol !== "https:") return false;
+        return !/^(localhost|127\.0\.0\.1|0\.0\.0\.0|\[::1\])$/i.test(url.hostname);
+      } catch {
+        return false;
+      }
+    };
+    const rawOrigin = (req.headers.get("origin") || "").trim().replace(/\/$/, "");
+    const origin = isUsableUrl(rawOrigin) ? rawOrigin : PUBLIC_SITE_URL;
+    const safeUrl = (candidate: string | undefined, fallback: string) => {
+      const value = (candidate || "").trim();
+      return isUsableUrl(value) ? value : fallback;
+    };
     const normalizedEmail = (userEmail || user.email || "").trim();
 
     if (!normalizedEmail) {
