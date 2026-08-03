@@ -23,7 +23,7 @@ export const LandingPricing = () => {
   };
 
   return (
-    <section id="pricing" className="relative py-28 md:py-36 border-t border-border/30 overflow-hidden">
+    <section id="pricing" className="relative pt-16 pb-28 md:pt-20 md:pb-36 border-t border-border/30 overflow-hidden">
       {/* Abstract background */}
       <div className="absolute inset-0 pointer-events-none">
         <img src={abstractBg} alt="" className="absolute inset-0 w-full h-full object-cover opacity-70" />
