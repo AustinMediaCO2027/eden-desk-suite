@@ -24,12 +24,13 @@ const addMonths = (date: Date, months: number) => {
 };
 
 const encodePayFastValue = (value: string) =>
-  encodeURIComponent(value.trim()).replace(/%20/g, "+");
+  encodeURIComponent(value.trim())
+    .replace(/%20/g, "+")
+    .replace(/[!'()*~]/g, (char) => `%${char.charCodeAt(0).toString(16).toUpperCase()}`);
 
 const buildSignaturePayload = (params: URLSearchParams, passphrase?: string) => {
   const entries = Array.from(params.entries())
-    .filter(([key, value]) => key !== "signature" && value !== "")
-    .sort(([keyA], [keyB]) => keyA.localeCompare(keyB));
+    .filter(([key, value]) => key !== "signature" && value !== "");
 
   const paramString = entries
     .map(([key, value]) => `${key}=${encodePayFastValue(value)}`)

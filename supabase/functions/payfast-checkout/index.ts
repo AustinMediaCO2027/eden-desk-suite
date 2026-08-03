@@ -178,17 +178,6 @@ serve(async (req) => {
       ? "https://sandbox.payfast.co.za/eng/process"
       : "https://www.payfast.co.za/eng/process");
 
-    console.log("PayFast checkout config", {
-      paymentUrl,
-      merchantIdLength: PAYFAST_MERCHANT_ID.length,
-      merchantIdPrefix: PAYFAST_MERCHANT_ID.slice(0, 4),
-      merchantIdSuffix: PAYFAST_MERCHANT_ID.slice(-2),
-      merchantKeyLength: PAYFAST_MERCHANT_KEY.length,
-      merchantKeyPrefix: PAYFAST_MERCHANT_KEY.slice(0, 4),
-      merchantKeySuffix: PAYFAST_MERCHANT_KEY.slice(-2),
-      usingPassphrase: Boolean(PAYFAST_PASSPHRASE.trim()),
-    });
-
     const body = await req.json();
     const {
       planName,
