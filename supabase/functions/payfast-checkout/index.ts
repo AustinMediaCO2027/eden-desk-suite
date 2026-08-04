@@ -208,12 +208,18 @@ serve(async (req) => {
 
     // Server-side source of truth for South African subscription pricing (ZAR).
     const PAYFAST_PLAN_PRICES: Record<string, number> = {
-      standard: 29.99,
       silver: 49.99,
       premium: 99.99,
     };
 
     // Subscription plans always start with a 3-month free trial (R0.00 today).
+    if (planId === "standard") {
+      return new Response(JSON.stringify({ error: "The Standard plan is free and does not require checkout" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     const isSubscriptionPlan = typeof planId === "string" && planId in PAYFAST_PLAN_PRICES;
     const TRIAL_MONTHS = 3;
 
@@ -237,11 +243,11 @@ serve(async (req) => {
     // small real verification payment by default so 3DS runs as a conventional
     // card transaction. The subscription's first recurring bill remains three
     // months away.
-    const rawTrialInitial = (Deno.env.get("PAYFAST_TRIAL_INITIAL_AMOUNT") || "1.00").trim();
+    const rawTrialInitial = (Deno.env.get("PAYFAST_TRIAL_INITIAL_AMOUNT") || "5.00").trim();
     const parsedTrialInitial = Number(rawTrialInitial);
-    const trialInitialAmount = Number.isFinite(parsedTrialInitial) && parsedTrialInitial >= 1
+    const trialInitialAmount = Number.isFinite(parsedTrialInitial) && parsedTrialInitial >= 5
       ? parsedTrialInitial.toFixed(2)
-      : "1.00";
+      : "5.00";
 
     const paymentAmount = isSubscriptionPlan || isTrial
       ? trialInitialAmount
