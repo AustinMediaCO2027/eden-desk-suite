@@ -417,6 +417,8 @@ const InvoicesPage = () => {
         </div>
       )}
     </div>
+    <DocumentPageAds />
+    </div>
   );
 };
 
