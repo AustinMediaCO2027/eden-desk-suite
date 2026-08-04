@@ -117,9 +117,11 @@ const BillingPage = () => {
             <h3 className="font-semibold mb-1">{plan.name}</h3>
             <div className="mb-4">
               <span className="text-3xl font-bold">Free</span>
-              <span className="text-muted-foreground text-sm"> /3 months</span>
+              <span className="text-muted-foreground text-sm"> {plan.free ? "forever" : "/3 months"}</span>
               <p className="text-sm text-muted-foreground mt-1">
-                {usesPayFast || !billingCountry
+                {plan.free
+                  ? "R0.00 — ad-supported"
+                  : usesPayFast || !billingCountry
                   ? `then R${plan.zarPrice.toFixed(2)}/pm`
                   : `then $${PAYPAL_PLAN_PRICES[plan.key].recurringPrice.toFixed(2)} USD/month`}
               </p>
@@ -136,9 +138,9 @@ const BillingPage = () => {
               variant={plan.highlighted ? "default" : "outline"}
               className="w-full"
               onClick={() => openCheckout(plan.key)}
-              disabled={currentPlan === plan.key}
+              disabled={currentPlan === plan.key || plan.free}
             >
-              {currentPlan === plan.key ? "Current Plan" : "Get started for free"}
+              {currentPlan === plan.key ? "Current Plan" : plan.free ? "Free plan" : "Get started for free"}
             </Button>
           </div>
         ))}

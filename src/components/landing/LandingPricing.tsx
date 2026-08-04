@@ -14,6 +14,11 @@ export const LandingPricing = () => {
   const [checkoutOpen, setCheckoutOpen] = useState(false);
 
   const handleGetStarted = (plan: PlanKey) => {
+    const card = PLAN_CARDS.find((p) => p.key === plan);
+    if (card?.free) {
+      navigate(user ? "/dashboard" : "/auth?mode=signup");
+      return;
+    }
     if (!user) {
       navigate(`/auth?mode=signup&plan=${plan}`);
       return;
@@ -86,7 +91,7 @@ export const LandingPricing = () => {
                 variant={plan.highlighted ? "default" : "outline"}
                 onClick={() => handleGetStarted(plan.key)}
               >
-                Get started for free
+                {plan.free ? "Start free" : "Get started for free"}
               </Button>
             </div>
           ))}
