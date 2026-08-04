@@ -112,13 +112,13 @@ export const PLAN_CARDS: PlanCard[] = [
 ];
 
 export const PRICING_DISCLAIMER =
-  "Billing begins automatically after the 3-month free trial unless the subscription is cancelled before renewal. PayFast uses a R1.00 card verification payment today; PayPal does not charge today.";
+  "Billing begins automatically after the 3-month free trial unless the subscription is cancelled before renewal. PayFast uses a R5.00 card verification payment today; PayPal does not charge today.";
 
 export const PAYPAL_CHECKOUT_COPY =
   "You are starting a 3-month free trial. PayPal will collect your payment details now, but you will not be charged today. Billing begins automatically after the 3-month free trial unless you cancel before renewal.";
 
 export const PAYFAST_CHECKOUT_COPY =
-  "You are starting a 3-month free trial. PayFast uses a R1.00 card verification payment today. Plan billing begins automatically after the trial unless you cancel before renewal.";
+  "You are starting a 3-month free trial. PayFast uses a R5.00 card verification payment today. Plan billing begins automatically after the trial unless you cancel before renewal.";
 
 export const isPlanKey = (value: unknown): value is PlanKey =>
   value === "standard" || value === "silver" || value === "premium";
