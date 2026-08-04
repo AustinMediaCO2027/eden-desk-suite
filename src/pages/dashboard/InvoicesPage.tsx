@@ -1,3 +1,4 @@
+import { DocumentPageAds } from "@/components/ads/AdBanner";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -376,7 +377,8 @@ const InvoicesPage = () => {
 
   // List mode
   return (
-    <div className="space-y-6">
+    <div className="flex flex-col lg:flex-row gap-6 items-start">
+    <div className="space-y-6 flex-1 min-w-0">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Invoices</h1>
         <Button onClick={() => setEditing(emptyInvoice())}><Plus className="h-4 w-4 mr-1" /> New Invoice</Button>
@@ -415,6 +417,8 @@ const InvoicesPage = () => {
           ))}
         </div>
       )}
+    </div>
+    <DocumentPageAds />
     </div>
   );
 };

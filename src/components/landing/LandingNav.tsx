@@ -25,7 +25,7 @@ export const LandingNav = () => {
           </Link>
           <Link to="/auth?mode=signup">
             <Button size="sm" className="bg-foreground text-background hover:bg-foreground/90 rounded-lg">
-              Start Free Trial
+              Get Started
             </Button>
           </Link>
         </div>

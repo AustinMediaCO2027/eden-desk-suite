@@ -14,6 +14,11 @@ export const LandingPricing = () => {
   const [checkoutOpen, setCheckoutOpen] = useState(false);
 
   const handleGetStarted = (plan: PlanKey) => {
+    const card = PLAN_CARDS.find((p) => p.key === plan);
+    if (card?.free) {
+      navigate(user ? "/dashboard" : "/auth?mode=signup");
+      return;
+    }
     if (!user) {
       navigate(`/auth?mode=signup&plan=${plan}`);
       return;
@@ -62,9 +67,11 @@ export const LandingPricing = () => {
               </div>
               <div className="mb-8">
                 <span className="text-4xl font-extrabold">Free</span>
-                <span className="text-muted-foreground text-sm ml-1">/3 months</span>
+                <span className="text-muted-foreground text-sm ml-1">
+                  {plan.free ? "forever" : "/3 months"}
+                </span>
                 <p className="text-sm text-muted-foreground mt-1">
-                  then R{plan.zarPrice.toFixed(2)}/pm
+                  {plan.free ? "R0.00 — ad-supported" : `then R${plan.zarPrice.toFixed(2)}/pm`}
                 </p>
               </div>
               <ul className="space-y-3.5 mb-10 flex-1">
@@ -84,7 +91,7 @@ export const LandingPricing = () => {
                 variant={plan.highlighted ? "default" : "outline"}
                 onClick={() => handleGetStarted(plan.key)}
               >
-                Get started for free
+                {plan.free ? "Start free" : "Get started for free"}
               </Button>
             </div>
           ))}

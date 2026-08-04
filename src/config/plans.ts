@@ -28,7 +28,7 @@ export const PAYPAL_PLAN_PRICES: Record<
     trialPrice: 0,
     trialLengthMonths: 3,
     trialCycles: 1,
-    recurringPrice: 1.99,
+    recurringPrice: 0,
     currency: "USD",
     interval: "month",
   },
@@ -56,7 +56,7 @@ export const PAYPAL_PLAN_PRICES: Record<
 
 /** PayFast (South Africa) monthly price in ZAR after the 3-month free trial. */
 export const PAYFAST_PLAN_PRICES: Record<PlanKey, number> = {
-  standard: 29.99,
+  standard: 0,
   silver: 49.99,
   premium: 99.99,
 };
@@ -75,6 +75,8 @@ export interface PlanCard {
   features: string[];
   highlighted?: boolean;
   badge?: string;
+  /** Completely free plan (ad-supported). */
+  free?: boolean;
 }
 
 export const PLAN_CARDS: PlanCard[] = [
@@ -83,7 +85,8 @@ export const PLAN_CARDS: PlanCard[] = [
     name: "Standard",
     description: "Perfect for freelancers",
     zarPrice: PAYFAST_PLAN_PRICES.standard,
-    features: ["Create invoices", "Create quotes", "Download PDF", "Email sending"],
+    free: true,
+    features: ["Create invoices", "Create quotes", "Download PDF", "Email sending", "Ad-supported"],
   },
   {
     key: "silver",

@@ -1,3 +1,4 @@
+import { DocumentPageAds } from "@/components/ads/AdBanner";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -385,6 +386,7 @@ const LetterheadPage = () => {
     return (
       <div className="space-y-6">
         <h1 className="text-2xl font-bold">Letterheads</h1>
+        <DocumentPageAds />
         <div className="rounded-xl border border-border bg-card p-12 text-center">
           <Mail className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
           <h2 className="text-lg font-bold mb-2">Letterheads require Silver plan or higher</h2>
@@ -400,7 +402,8 @@ const LetterheadPage = () => {
 
   // List mode
   return (
-    <div className="space-y-6">
+    <div className="flex flex-col lg:flex-row gap-6 items-start">
+    <div className="space-y-6 flex-1 min-w-0">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Letterheads</h1>
         <Button onClick={() => setEditing(emptyLetterhead())}><Plus className="h-4 w-4 mr-1" /> New Letterhead</Button>
@@ -451,6 +454,8 @@ const LetterheadPage = () => {
           ))}
         </div>
       )}
+    </div>
+    <DocumentPageAds />
     </div>
   );
 };
