@@ -1,3 +1,4 @@
+import { AdBanner } from "@/components/ads/AdBanner";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
@@ -215,46 +216,6 @@ const DashboardHome = () => {
   return (
     <div className="h-full">
 
-      {/* Trial Active Banner */}
-      {isTrialActive && (
-        <div className="mb-4 rounded-xl border border-emerald-200 dark:border-emerald-500/20 bg-emerald-50 dark:bg-emerald-500/10 p-4 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-lg bg-emerald-100 dark:bg-emerald-500/20 flex items-center justify-center shrink-0">
-              <Check className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
-            </div>
-            <div>
-              <p className="text-sm font-semibold text-emerald-900 dark:text-emerald-300">Your 7-Day Trial is Active</p>
-              <p className="text-xs text-emerald-700 dark:text-emerald-400">
-                {trialDaysRemaining} day{trialDaysRemaining !== 1 ? "s" : ""} remaining — Enjoy full Silver access.
-              </p>
-            </div>
-          </div>
-          <Link to="/dashboard/billing">
-            <Button size="sm" variant="outline" className="text-xs h-8 border-emerald-300 dark:border-emerald-500/30 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100 dark:hover:bg-emerald-500/20">
-              Upgrade Now
-            </Button>
-          </Link>
-        </div>
-      )}
-
-      {/* Trial Expired Banner */}
-      {isTrialExpired && (
-        <div className="mb-4 rounded-xl border border-destructive/20 bg-destructive/5 p-4 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-lg bg-destructive/10 flex items-center justify-center shrink-0">
-              <AlertCircle className="h-5 w-5 text-destructive" />
-            </div>
-            <div>
-              <p className="text-sm font-semibold text-destructive">Your Trial Has Ended</p>
-              <p className="text-xs text-muted-foreground">Upgrade to continue using all features.</p>
-            </div>
-          </div>
-          <Link to="/dashboard/billing">
-            <Button size="sm" className="text-xs h-8">Choose a Plan</Button>
-          </Link>
-        </div>
-      )}
-
       {/* Plan Badge */}
       {currentPlan !== "free" && !isTrialActive && !isTrialExpired && (
         <div className="flex items-center gap-3 flex-wrap mb-2">
@@ -289,6 +250,12 @@ const DashboardHome = () => {
             </Button>
           </Link>
         </div>
+      </div>
+
+      {/* Ad units (free plan only) */}
+      <div className="flex flex-col lg:flex-row gap-4 items-start pt-3">
+        <AdBanner slot="728x90" className="lg:mx-0" />
+        <AdBanner slot="160x300" className="lg:mx-0" />
       </div>
 
       <div className="py-4 space-y-4">
@@ -437,6 +404,10 @@ const DashboardHome = () => {
             )}
           </div>
         </div>
+      </div>
+
+      <div className="pb-6 pt-2">
+        <AdBanner slot="320x50" />
       </div>
     </div>
   );
