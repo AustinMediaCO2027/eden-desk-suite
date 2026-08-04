@@ -351,7 +351,8 @@ const QuotesPage = () => {
 
   // List
   return (
-    <div className="space-y-6">
+    <div className="flex flex-col lg:flex-row gap-6 items-start">
+    <div className="space-y-6 flex-1 min-w-0">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Quotes</h1>
         <Button onClick={() => setEditing(emptyQuote())}><Plus className="h-4 w-4 mr-1" /> New Quote</Button>
@@ -385,6 +386,8 @@ const QuotesPage = () => {
           ))}
         </div>
       )}
+    </div>
+    <DocumentPageAds />
     </div>
   );
 };
