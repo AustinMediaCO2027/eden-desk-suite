@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
+import { A4_WIDTH_PX, A4_HEIGHT_PX } from "@/components/templates/a4";
 
-const A4_WIDTH_PX = 794;
-const A4_HEIGHT_PX = 1123;
 
 /**
  * Responsively scales a fixed A4 (210mm x 297mm) document page down so the
