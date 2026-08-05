@@ -102,8 +102,10 @@ export const DashboardLayout = () => {
                 ) : (
                   <Icon className={`h-[18px] w-[18px] shrink-0 ${isActive ? "text-sidebar-primary" : ""}`} />
                 )}
-                <span>{label}</span>
-                {locked && <Crown className="h-3.5 w-3.5 ml-auto shrink-0 text-amber-500" aria-label="Premium feature" />}
+                <span className="flex items-center gap-1.5">
+                  <span>{label}</span>
+                  {locked && <Crown className="h-3.5 w-3.5 shrink-0 text-amber-500" aria-label="Premium feature" />}
+                </span>
               </>
             );
             const className = `flex items-center gap-3 w-full rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-150 text-left ${
