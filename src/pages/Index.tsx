@@ -47,12 +47,12 @@ const Index = () => {
       <LandingHero />
       <LogoMarquee />
       <aside aria-label="Advertisement" className="border-y border-border/30 bg-background py-4">
-        <AdBanner slot="728x90" className="hidden md:block" />
-        <AdBanner slot="320x50" className="md:hidden" />
+        <AdBanner slot="728x90" className="hidden md:block" publicPlacement />
+        <AdBanner slot="320x50" className="md:hidden" publicPlacement />
       </aside>
       <LandingPricing />
       <aside aria-label="Advertisement" className="bg-background py-6">
-        <AdBanner slot="300x250" />
+        <AdBanner slot="300x250" publicPlacement />
       </aside>
       <LandingTestimonials />
       <LandingFooter />

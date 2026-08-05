@@ -19,6 +19,7 @@ export const useShowAds = () => {
 interface AdBannerProps {
   slot: AdSlot;
   className?: string;
+  publicPlacement?: boolean;
 }
 
 /**
@@ -26,7 +27,7 @@ interface AdBannerProps {
  * Each unit needs its own `atOptions` global, so an isolated document is the
  * only reliable way to run several units on one page.
  */
-export const AdBanner = ({ slot, className = "" }: AdBannerProps) => {
+export const AdBanner = ({ slot, className = "", publicPlacement = false }: AdBannerProps) => {
   const showAds = useShowAds();
   const cfg = AD_KEYS[slot];
   const adDocument = `<!DOCTYPE html><html><head><meta charset="utf-8" />
@@ -44,7 +45,7 @@ export const AdBanner = ({ slot, className = "" }: AdBannerProps) => {
 <script type="text/javascript" src="https://www.highperformanceformat.com/${cfg.key}/invoke.js"><\/script>
 </body></html>`;
 
-  if (!showAds) return null;
+  if (!showAds && !publicPlacement) return null;
 
   return (
     <div
