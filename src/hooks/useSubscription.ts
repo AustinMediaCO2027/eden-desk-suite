@@ -35,6 +35,11 @@ const PLAN_PERMISSIONS: Record<PlanName, PlanPermissions> = {
     aiAgent: false,
     unlimitedAi: false,
     fileManager: false,
+    purchaseOrders: false,
+    clientStatements: false,
+    accountingReports: false,
+    advancedReports: false,
+    exportExcel: false,
     maxAiPromptsPerDay: 0,
   },
   trial: {
@@ -48,6 +53,11 @@ const PLAN_PERMISSIONS: Record<PlanName, PlanPermissions> = {
     aiAgent: true,
     unlimitedAi: false,
     fileManager: false,
+    purchaseOrders: false,
+    clientStatements: false,
+    accountingReports: false,
+    advancedReports: false,
+    exportExcel: false,
     maxAiPromptsPerDay: 5,
   },
   standard: {
@@ -61,6 +71,11 @@ const PLAN_PERMISSIONS: Record<PlanName, PlanPermissions> = {
     aiAgent: false,
     unlimitedAi: false,
     fileManager: false,
+    purchaseOrders: false,
+    clientStatements: false,
+    accountingReports: false,
+    advancedReports: false,
+    exportExcel: false,
     maxAiPromptsPerDay: 0,
   },
   silver: {
@@ -74,6 +89,11 @@ const PLAN_PERMISSIONS: Record<PlanName, PlanPermissions> = {
     aiAgent: true,
     unlimitedAi: false,
     fileManager: true,
+    purchaseOrders: true,
+    clientStatements: true,
+    accountingReports: true,
+    advancedReports: false,
+    exportExcel: false,
     maxAiPromptsPerDay: 5,
   },
   premium: {
@@ -87,6 +107,11 @@ const PLAN_PERMISSIONS: Record<PlanName, PlanPermissions> = {
     aiAgent: true,
     unlimitedAi: true,
     fileManager: true,
+    purchaseOrders: true,
+    clientStatements: true,
+    accountingReports: true,
+    advancedReports: true,
+    exportExcel: true,
     maxAiPromptsPerDay: null,
   },
   yearly: {
@@ -100,9 +125,15 @@ const PLAN_PERMISSIONS: Record<PlanName, PlanPermissions> = {
     aiAgent: true,
     unlimitedAi: true,
     fileManager: true,
+    purchaseOrders: true,
+    clientStatements: true,
+    accountingReports: true,
+    advancedReports: true,
+    exportExcel: true,
     maxAiPromptsPerDay: null,
   },
 };
+
 
 export const useSubscription = () => {
   const { profile, loading } = useProfile();
