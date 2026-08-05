@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Send, X, Mail, ExternalLink } from "lucide-react";
 import { generateDocumentPDFBase64 } from "@/lib/pdf";
+import { useAuthGate } from "@/components/SignInPromptDialog";
 import { isValidEmailAddress, sanitizeDocumentFilename } from "@/lib/document-export-utils";
 
 interface SendDocumentDialogProps {
@@ -55,7 +56,10 @@ const SendDocumentDialog = ({
     `Hi ${clientName},\n\nPlease find attached ${type === "invoice" ? "invoice" : "quote"} ${documentNumber} for R${total.toFixed(2)}.\n\nKind regards,\n${profile?.company_name || ""}`
   );
 
+  const { requireAuth, gateDialog, isGuest } = useAuthGate("send this document");
+
   const handleSendViaEmail = async () => {
+    if (isGuest) { requireAuth(() => {}); return; }
     const trimmedEmail = email.trim();
     if (!trimmedEmail) {
       toast({ title: "Error", description: "Please enter a recipient email.", variant: "destructive" });
@@ -161,12 +165,15 @@ const SendDocumentDialog = ({
   };
 
   const openMailto = () => {
+    if (isGuest) { requireAuth(() => {}); return; }
     const body = encodeURIComponent(message);
     const subj = encodeURIComponent(subject);
     window.open(`mailto:${email}?subject=${subj}&body=${body}`, "_blank");
   };
 
   return (
+    <>
+    {gateDialog}
     <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4" onClick={onClose}>
       <div
         className="w-full max-w-lg rounded-xl border border-border bg-card p-6 space-y-4 shadow-xl"
@@ -209,6 +216,7 @@ const SendDocumentDialog = ({
         </div>
       </div>
     </div>
+    </>
   );
 };
 
