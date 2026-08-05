@@ -43,15 +43,8 @@ export const COLOR_OPTIONS = [
   { value: "#0891B2", label: "Teal" },
 ];
 
-const PREVIEW_CANVAS_STYLE: CSSProperties = {
-  width: "210mm",
-  minWidth: "210mm",
-  height: "297mm",
-  overflow: "hidden",
-  backgroundColor: "white",
-  boxSizing: "border-box",
-  margin: "0 auto",
-};
+
+
 
 interface DocumentPreviewProps {
   id: string;
