@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import { DashboardMockup } from "./DashboardMockup";
 import moonBg from "@/assets/moon-bg.jpg";
+import { AdBanner } from "@/components/ads/AdBanner";
 
 export const LandingHero = () => {
   return (
@@ -50,6 +51,12 @@ export const LandingHero = () => {
             </Button>
           </a>
         </div>
+
+        {/* Ad below CTA — visible on mobile, tablet and desktop */}
+        <aside aria-label="Advertisement" className="w-full mt-10 animate-fade-in" style={{ animationDelay: "0.35s" }}>
+          <AdBanner slot="728x90" className="hidden md:block" publicPlacement />
+          <AdBanner slot="320x50" className="md:hidden" publicPlacement />
+        </aside>
 
         {/* Social proof */}
         <div className="flex items-center gap-4 mt-14 animate-fade-in" style={{ animationDelay: "0.4s" }}>
