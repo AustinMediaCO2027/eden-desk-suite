@@ -375,7 +375,7 @@ const LetterheadPage = () => {
         </div>
 
         <div className="flex gap-2">
-          <Button onClick={() => requireAuth(() => checkAndProceed(saveLetterhead))}><Save className="h-4 w-4 mr-1" /> Save</Button>
+          {gateDialog}<Button onClick={() => requireAuth(() => checkAndProceed(saveLetterhead))}><Save className="h-4 w-4 mr-1" /> Save</Button>
           <Button variant="outline" onClick={() => setPreviewing(true)}>Preview & Download</Button>
         </div>
         <PaywallDialog open={showPaywall} onOpenChange={setShowPaywall} />
@@ -408,7 +408,7 @@ const LetterheadPage = () => {
     <div className="space-y-6 flex-1 min-w-0">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Letterheads</h1>
-        <Button onClick={() => requireAuth(() => setEditing(emptyLetterhead()))}><Plus className="h-4 w-4 mr-1" /> New Letterhead</Button>
+        <Button onClick={() => requireAuth(() => setEditing(emptyLetterhead()))}><Plus className="h-4 w-4 mr-1" /> New Letterhead</Button>{gateDialog}
       </div>
       {letterheads.length === 0 ? (
         <div className="rounded-xl border border-border bg-card p-16 flex flex-col items-center justify-center text-center space-y-6">

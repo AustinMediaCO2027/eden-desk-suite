@@ -369,7 +369,7 @@ const InvoicesPage = () => {
         </div>
 
         <div className="flex gap-2">
-          <Button onClick={() => requireAuth(() => checkAndProceed(saveInvoice))}><Save className="h-4 w-4 mr-1" /> Save</Button>
+          {gateDialog}<Button onClick={() => requireAuth(() => checkAndProceed(saveInvoice))}><Save className="h-4 w-4 mr-1" /> Save</Button>
           <Button variant="outline" onClick={() => setPreviewing(true)}>Preview & Download</Button>
         </div>
         <PaywallDialog open={showPaywall} onOpenChange={setShowPaywall} />
@@ -383,7 +383,7 @@ const InvoicesPage = () => {
     <div className="space-y-6 flex-1 min-w-0">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Invoices</h1>
-        <Button onClick={() => requireAuth(() => setEditing(emptyInvoice()))}><Plus className="h-4 w-4 mr-1" /> New Invoice</Button>
+        <Button onClick={() => requireAuth(() => setEditing(emptyInvoice()))}><Plus className="h-4 w-4 mr-1" /> New Invoice</Button>{gateDialog}
       </div>
 
       {invoices.length === 0 ? (
