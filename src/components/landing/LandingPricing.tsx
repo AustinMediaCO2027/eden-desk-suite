@@ -6,10 +6,12 @@ import abstractBg from "@/assets/abstract-bg.jpg";
 import { useAuth } from "@/hooks/useAuth";
 import { CheckoutDialog } from "@/components/billing/CheckoutDialog";
 import { PLAN_CARDS, PRICING_DISCLAIMER, PlanKey } from "@/config/plans";
+import { useCurrency } from "@/hooks/useCurrency";
 
 export const LandingPricing = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const { convert } = useCurrency();
   const [checkoutPlan, setCheckoutPlan] = useState<PlanKey | null>(null);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
 
@@ -64,12 +66,12 @@ export const LandingPricing = () => {
                 <p className="text-xs text-muted-foreground">{plan.description}</p>
               </div>
               <div className="mb-8">
-                <span className="text-4xl font-extrabold">{plan.free ? "R0" : "Free"}</span>
+                <span className="text-4xl font-extrabold">{convert(plan.zarPrice)}</span>
                 <span className="text-muted-foreground text-sm ml-1">
-                  {plan.free ? "forever" : "/3 months"}
+                  {plan.free ? "forever" : "/month"}
                 </span>
                 <p className="text-sm text-muted-foreground mt-1">
-                  {plan.free ? "R0.00 — ad-supported" : `then R${plan.zarPrice.toFixed(2)}/pm`}
+                  {plan.free ? "Free, ad-supported access" : "Billed monthly"}
                 </p>
               </div>
               <ul className="space-y-3.5 mb-10 flex-1">
@@ -89,7 +91,7 @@ export const LandingPricing = () => {
                 variant={plan.highlighted ? "default" : "outline"}
                 onClick={() => handleGetStarted(plan.key)}
               >
-                {plan.free ? "Start free" : "Get started for free"}
+                {plan.free ? "Start free" : "Subscribe"}
               </Button>
             </div>
           ))}

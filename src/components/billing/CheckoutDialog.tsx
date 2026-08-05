@@ -85,7 +85,7 @@ export const CheckoutDialog = ({ open, onOpenChange, plan }: CheckoutDialogProps
 
   const startPayFast = async () => {
     if (!user) {
-      showCheckoutError("Please sign in before starting your free trial.");
+      showCheckoutError("Please sign in before subscribing.");
       return;
     }
     if (!plan || !isPlanKey(plan)) {
@@ -104,7 +104,6 @@ export const CheckoutDialog = ({ open, onOpenChange, plan }: CheckoutDialogProps
           userEmail: user.email,
           userId: user.id,
           companyName: profile?.company_name,
-          trialMonths: 3,
           country: effectiveCountry,
           returnUrl: `${window.location.origin}/dashboard?payment=success&plan=${plan}`,
           cancelUrl: `${window.location.origin}/dashboard/billing?status=cancelled`,
@@ -244,7 +243,7 @@ export const CheckoutDialog = ({ open, onOpenChange, plan }: CheckoutDialogProps
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle>
-            {planCard ? `Start your ${planCard.name} free trial` : "Start your free trial"}
+            {planCard ? `Subscribe to ${planCard.name}` : "Choose a subscription"}
           </DialogTitle>
         </DialogHeader>
 
@@ -256,7 +255,7 @@ export const CheckoutDialog = ({ open, onOpenChange, plan }: CheckoutDialogProps
         ) : !user ? (
           <div className="space-y-4">
             <p className="text-sm text-muted-foreground">
-              Please sign in to start your 3-month free trial.
+               Please sign in to continue with your subscription.
             </p>
             <Button className="w-full" onClick={() => navigate(`/auth?mode=signup&plan=${plan}`)}>
               Sign in to continue
@@ -299,8 +298,8 @@ export const CheckoutDialog = ({ open, onOpenChange, plan }: CheckoutDialogProps
               <p className="text-sm font-medium">{planCard?.name}</p>
               <p className="text-xs text-muted-foreground mt-1">
                 {provider === "payfast"
-                  ? `Free for 3 months, then R${payfastPrice?.toFixed(2)}/pm`
-                  : `Free for 3 months, then $${paypalPrice?.recurringPrice.toFixed(2)} USD/month`}
+                  ? `R${payfastPrice?.toFixed(2)}/month`
+                  : `$${paypalPrice?.recurringPrice.toFixed(2)} USD/month`}
               </p>
             </div>
 
@@ -321,8 +320,7 @@ export const CheckoutDialog = ({ open, onOpenChange, plan }: CheckoutDialogProps
                   {payfastLoading ? "Redirecting to PayFast..." : "Continue with PayFast"}
                 </Button>
                 <p className="text-[11px] leading-snug text-muted-foreground">
-                  PayFast processes a R5.00 card verification payment through 3D Secure today. Your plan
-                  billing only starts after the 3-month trial.
+                   PayFast processes a R5.00 card verification payment through 3D Secure today.
                 </p>
               </div>
             ) : (
@@ -340,9 +338,11 @@ export const CheckoutDialog = ({ open, onOpenChange, plan }: CheckoutDialogProps
 
             <button
               type="button"
-              onClick={() => {
+              onClick={async () => {
                 setCountry("");
-                updateProfile({ billing_country: null } as any);
+                 setError(null);
+                 const updateError = await updateProfile({ billing_country: null } as any);
+                 if (updateError) showCheckoutError("Could not change your billing country. Please try again.");
               }}
               className="text-xs text-muted-foreground hover:text-foreground transition-colors w-full text-center"
             >
