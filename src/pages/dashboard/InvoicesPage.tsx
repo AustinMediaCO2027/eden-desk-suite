@@ -152,7 +152,7 @@ const InvoicesPage = () => {
           <Button
             size="sm"
             onClick={() =>
-              downloadDocumentPDF(
+              requireAuth(() => downloadDocumentPDF(
                 {
                   type: "invoice",
                   profile,
@@ -170,14 +170,15 @@ const InvoicesPage = () => {
                   colorOverride: previewColor || undefined,
                 },
                 `invoice-${editing.invoice_number}`
-              )
+              ))
             }
           >
             <Download className="h-4 w-4 mr-1" /> Download PDF
           </Button>
-          <Button size="sm" variant="outline" onClick={() => setShowSendDialog(true)}>
+          <Button size="sm" variant="outline" onClick={() => requireAuth(() => setShowSendDialog(true))}>
             <Send className="h-4 w-4 mr-1" /> Send
           </Button>
+          {gateDialog}
         </div>
 
         {showSendDialog && (
