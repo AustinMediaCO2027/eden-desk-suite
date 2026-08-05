@@ -38,7 +38,7 @@ const navItems = [
   { to: "/dashboard/letterhead", icon: Mail, label: "Letterheads" },
   { to: "/dashboard/clients", icon: Users, label: "Clients" },
   { to: "/dashboard/files", icon: FolderOpen, label: "Files", feature: "fileManager" as keyof PlanPermissions },
-  { to: "/dashboard/tasks", icon: CalendarDays, label: "Tasks" },
+  { to: "/dashboard/tasks", icon: CalendarDays, label: "Tasks", feature: "tasks" as keyof PlanPermissions },
   { to: "/dashboard/referrals", icon: Gift, label: "Referrals" },
   { to: "/dashboard/ai", icon: Bot, iconSrc: aiAgentIcon.url, label: "AI Agent", feature: "aiAgent" as keyof PlanPermissions },
   { to: "/dashboard/billing", icon: CreditCard, label: "Billing" },
