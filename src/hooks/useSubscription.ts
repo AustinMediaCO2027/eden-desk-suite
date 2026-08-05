@@ -14,8 +14,14 @@ export interface PlanPermissions {
   aiAgent: boolean;
   unlimitedAi: boolean;
   fileManager: boolean;
+  purchaseOrders: boolean;
+  clientStatements: boolean;
+  accountingReports: boolean;
+  advancedReports: boolean;
+  exportExcel: boolean;
   maxAiPromptsPerDay: number | null; // null = unlimited
 }
+
 
 const PLAN_PERMISSIONS: Record<PlanName, PlanPermissions> = {
   free: {
