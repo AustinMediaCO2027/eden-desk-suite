@@ -92,28 +92,49 @@ export const DashboardLayout = () => {
 
         {/* Navigation */}
         <nav className="flex-1 px-3 pt-2 overflow-y-auto space-y-1">
-          {allNavItems.map(({ to, icon: Icon, label, iconSrc }: any) => {
+          {allNavItems.map(({ to, icon: Icon, label, iconSrc, feature }: any) => {
             const isActive = location.pathname === to;
-            return (
-              <Link
-                key={to}
-                to={to}
-                onClick={() => setSidebarOpen(false)}
-                className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-150 ${
-                  isActive
-                    ? "bg-sidebar-primary/10 text-sidebar-primary border-l-[3px] border-sidebar-primary -ml-[3px] pl-[calc(0.75rem+3px)]"
-                    : "text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent/50"
-                }`}
-              >
+            const locked = feature ? !canUseFeature(feature) : false;
+            const inner = (
+              <>
                 {iconSrc ? (
                   <img src={iconSrc} alt="" aria-hidden className="h-[18px] w-[18px] shrink-0 object-contain" />
                 ) : (
                   <Icon className={`h-[18px] w-[18px] shrink-0 ${isActive ? "text-sidebar-primary" : ""}`} />
                 )}
                 <span>{label}</span>
+                {locked && <Crown className="h-3.5 w-3.5 ml-auto shrink-0 text-amber-500" aria-label="Premium feature" />}
+              </>
+            );
+            const className = `flex items-center gap-3 w-full rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-150 text-left ${
+              isActive
+                ? "bg-sidebar-primary/10 text-sidebar-primary border-l-[3px] border-sidebar-primary -ml-[3px] pl-[calc(0.75rem+3px)]"
+                : "text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent/50"
+            }`;
+
+            if (locked) {
+              return (
+                <button
+                  key={to}
+                  type="button"
+                  className={className}
+                  onClick={() => {
+                    setSidebarOpen(false);
+                    setUpgradeFeature(label);
+                  }}
+                >
+                  {inner}
+                </button>
+              );
+            }
+
+            return (
+              <Link key={to} to={to} onClick={() => setSidebarOpen(false)} className={className}>
+                {inner}
               </Link>
             );
           })}
+
         </nav>
 
         {/* Bottom section */}
