@@ -92,7 +92,7 @@ const PaywallDialog = ({ open, onOpenChange }: PaywallDialogProps) => {
               disabled={activating}
             >
               <Sparkles className="h-4 w-4" />
-              {activating ? "Redirecting to PayFast..." : "Start 7-Day Free Trial"}
+              {activating ? "Redirecting to PayFast..." : "Upgrade Now"}
             </Button>
           )}
 
