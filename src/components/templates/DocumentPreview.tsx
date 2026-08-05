@@ -70,43 +70,46 @@ interface DocumentPreviewProps {
 const DocumentPreview = forwardRef<HTMLDivElement, DocumentPreviewProps>(
   ({ id, templateStyle = "classic", ...props }, ref) => {
     return (
-      <div id={id} ref={ref} style={PREVIEW_CANVAS_STYLE}>
-        {props.type === "invoice" ? (
-          <InvoicePrint
-            templateStyle={templateStyle}
-            profile={props.profile}
-            documentNumber={props.documentNumber}
-            date={props.date}
-            dueDate={props.dueDate}
-            clientName={props.clientName}
-            clientEmail={props.clientEmail}
-            clientAddress={props.clientAddress}
-            items={props.items}
-            taxRate={props.taxRate}
-            notes={props.notes}
-            status={props.status}
-            colorOverride={props.colorOverride}
-          />
-        ) : (
-          <QuotePrint
-            templateStyle={templateStyle}
-            profile={props.profile}
-            documentNumber={props.documentNumber}
-            date={props.date}
-            clientName={props.clientName}
-            clientEmail={props.clientEmail}
-            clientAddress={props.clientAddress}
-            items={props.items}
-            taxRate={props.taxRate}
-            notes={props.notes}
-            status={props.status}
-            colorOverride={props.colorOverride}
-          />
-        )}
-      </div>
+      <ScaledPage>
+        <div id={id} ref={ref} style={PREVIEW_CANVAS_STYLE}>
+          {props.type === "invoice" ? (
+            <InvoicePrint
+              templateStyle={templateStyle}
+              profile={props.profile}
+              documentNumber={props.documentNumber}
+              date={props.date}
+              dueDate={props.dueDate}
+              clientName={props.clientName}
+              clientEmail={props.clientEmail}
+              clientAddress={props.clientAddress}
+              items={props.items}
+              taxRate={props.taxRate}
+              notes={props.notes}
+              status={props.status}
+              colorOverride={props.colorOverride}
+            />
+          ) : (
+            <QuotePrint
+              templateStyle={templateStyle}
+              profile={props.profile}
+              documentNumber={props.documentNumber}
+              date={props.date}
+              clientName={props.clientName}
+              clientEmail={props.clientEmail}
+              clientAddress={props.clientAddress}
+              items={props.items}
+              taxRate={props.taxRate}
+              notes={props.notes}
+              status={props.status}
+              colorOverride={props.colorOverride}
+            />
+          )}
+        </div>
+      </ScaledPage>
     );
   }
 );
+
 
 DocumentPreview.displayName = "DocumentPreview";
 
