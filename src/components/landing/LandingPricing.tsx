@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useCurrency } from "@/hooks/useCurrency";
 import { Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
@@ -11,9 +10,8 @@ import { useCurrency } from "@/hooks/useCurrency";
 
 export const LandingPricing = () => {
   const { user } = useAuth();
-  const { convert, currency } = useCurrency();
-  const navigate = useNavigate();
   const { convert } = useCurrency();
+  const navigate = useNavigate();
   const [checkoutPlan, setCheckoutPlan] = useState<PlanKey | null>(null);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
 
