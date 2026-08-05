@@ -11,8 +11,8 @@ const faqs = [
     a: "Eden Desk is built for businesses across all industries — law firms, construction companies, freelancers, agencies, and more. Anyone who needs professional documents and task management.",
   },
   {
-    q: "How does the 7-day free trial work?",
-    a: "Every plan starts with a 3-month free trial. Your payment details are collected at checkout, but you are not charged today. Billing begins automatically after the 3-month free trial unless you cancel before renewal.",
+    q: "Is there a free plan?",
+    a: "Yes. Standard is free to use and supported by ads. Silver and Premium are paid monthly plans with additional features.",
   },
   {
     q: "Can I send documents via email?",

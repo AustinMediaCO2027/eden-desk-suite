@@ -105,7 +105,7 @@ export const useSubscription = () => {
     const plan = profile?.subscription_plan;
     if (!plan || plan === "free") return "free";
     // Legacy trial accounts now receive the ad-supported Standard experience.
-    if (plan === "trial") return "free";
+    if (plan === "trial") return "trial";
     if (["standard", "silver", "premium", "yearly"].includes(plan)) {
       return plan as PlanName;
     }

@@ -54,7 +54,7 @@ export const PAYPAL_PLAN_PRICES: Record<
   },
 };
 
-/** PayFast (South Africa) monthly price in ZAR after the 3-month free trial. */
+/** PayFast monthly price in ZAR. */
 export const PAYFAST_PLAN_PRICES: Record<PlanKey, number> = {
   standard: 0,
   silver: 49.99,
@@ -112,13 +112,13 @@ export const PLAN_CARDS: PlanCard[] = [
 ];
 
 export const PRICING_DISCLAIMER =
-  "Billing begins automatically after the 3-month free trial unless the subscription is cancelled before renewal. PayFast uses a R5.00 card verification payment today; PayPal does not charge today.";
+  "Standard is free forever and supported by ads. Silver and Premium are billed monthly and can be cancelled before the next renewal.";
 
 export const PAYPAL_CHECKOUT_COPY =
-  "You are starting a 3-month free trial. PayPal will collect your payment details now, but you will not be charged today. Billing begins automatically after the 3-month free trial unless you cancel before renewal.";
+  "PayPal will securely collect your payment details. Monthly billing starts when you confirm the subscription and continues until cancelled.";
 
 export const PAYFAST_CHECKOUT_COPY =
-  "You are starting a 3-month free trial. PayFast uses a R5.00 card verification payment today. Plan billing begins automatically after the trial unless you cancel before renewal.";
+  "PayFast uses a R5.00 card verification payment today. Monthly plan billing starts when you confirm the subscription and continues until cancelled.";
 
 export const isPlanKey = (value: unknown): value is PlanKey =>
   value === "standard" || value === "silver" || value === "premium";

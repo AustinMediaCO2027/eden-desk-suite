@@ -2,13 +2,6 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Check, Lock, ArrowRight } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import edenIcon from "@/assets/eden_dark_icon.png";
-import { useAuth } from "@/hooks/useAuth";
-import { supabase } from "@/integrations/supabase/client";
-import { useProfile } from "@/hooks/useProfile";
-import { useCurrency } from "@/hooks/useCurrency";
-import { useState } from "react";
-import { submitPayFastForm } from "@/lib/payfast";
 
 interface UpgradeDialogProps {
   open: boolean;
@@ -18,42 +11,11 @@ interface UpgradeDialogProps {
 }
 
 const UpgradeDialog = ({ open, onOpenChange, feature, requiredPlan }: UpgradeDialogProps) => {
-  const { user } = useAuth();
-  const { profile } = useProfile();
-  const { convert, currency } = useCurrency();
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
 
-  const handleStartTrial = async () => {
-    if (!user) {
-      navigate("/auth?mode=signup&redirect=trial");
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const { data, error } = await supabase.functions.invoke("payfast-checkout", {
-        body: {
-          planName: "Silver",
-          planId: "silver",
-          amount: "85.99",
-          period: "/month",
-          userEmail: user.email,
-          userId: user.id,
-          companyName: profile?.company_name,
-          returnUrl: `${window.location.origin}/dashboard?payment=success&plan=silver`,
-          cancelUrl: `${window.location.origin}/dashboard/billing?status=cancelled`,
-        },
-      });
-
-      if (error) throw error;
-
-      submitPayFastForm(data.paymentUrl, data.params as Record<string, string>);
-    } catch (err: any) {
-      console.error("PayFast error:", err);
-    } finally {
-      setLoading(false);
-    }
+  const handleUpgrade = () => {
+    onOpenChange(false);
+    navigate("/dashboard/billing");
   };
 
   return (
@@ -89,11 +51,10 @@ const UpgradeDialog = ({ open, onOpenChange, feature, requiredPlan }: UpgradeDia
           </div>
           <Button
             className="w-full mt-8 h-11 text-sm font-medium gap-2"
-            onClick={handleStartTrial}
-            disabled={loading}
+            onClick={handleUpgrade}
           >
-            {loading ? "Processing..." : `Get Started — ${convert(85.99)}/mo`}
-            {!loading && <ArrowRight className="h-4 w-4" />}
+            View Plans & Subscribe
+            <ArrowRight className="h-4 w-4" />
           </Button>
           <Link to="/dashboard/billing" className="w-full">
             <Button variant="ghost" className="w-full mt-2 text-xs text-muted-foreground">

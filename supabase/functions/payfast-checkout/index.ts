@@ -212,7 +212,6 @@ serve(async (req) => {
       premium: 99.99,
     };
 
-    // Subscription plans always start with a 3-month free trial (R0.00 today).
     if (planId === "standard") {
       return new Response(JSON.stringify({ error: "The Standard plan is free and does not require checkout" }), {
         status: 400,
@@ -221,9 +220,7 @@ serve(async (req) => {
     }
 
     const isSubscriptionPlan = typeof planId === "string" && planId in PAYFAST_PLAN_PRICES;
-    const TRIAL_MONTHS = 3;
-
-    if (isTrial || isSubscriptionPlan) {
+    if (isTrial) {
       const { data: profile } = await adminSupabase
         .from("profiles")
         .select("trial_used")
@@ -238,11 +235,7 @@ serve(async (req) => {
       }
     }
 
-    // A number of South African issuers return acquirer response 06 for R0.00
-    // recurring-card authorisations even though PayFast supports them. Use a
-    // small real verification payment by default so 3DS runs as a conventional
-    // card transaction. The subscription's first recurring bill remains three
-    // months away.
+    // Use a real R5 verification payment so 3DS runs as a conventional card transaction.
     const rawTrialInitial = (Deno.env.get("PAYFAST_TRIAL_INITIAL_AMOUNT") || "5.00").trim();
     const parsedTrialInitial = Number(rawTrialInitial);
     const trialInitialAmount = Number.isFinite(parsedTrialInitial) && parsedTrialInitial >= 5
@@ -311,11 +304,7 @@ serve(async (req) => {
 
     // Keep the merchant reference short and strictly alphanumeric.
     const rawReference = `${userId.replace(/-/g, "").slice(0, 12)}-${isTrial ? "trial" : (planId || "plan")}-${Date.now().toString(36)}`;
-    const trialStart = new Date();
-    const trialEnd = addMonthsUtc(trialStart, TRIAL_MONTHS);
-    const billingDate = isSubscriptionPlan
-      ? formatDateOnly(trialEnd)
-      : formatBillingDate(isTrial ? 7 : 0);
+    const billingDate = formatBillingDate(0);
 
     // Empty string means "let PayFast decide" (it already restricts recurring
     // billing to cards). Forcing "cc" makes some valid cards fail at the
@@ -333,10 +322,10 @@ serve(async (req) => {
       email_address: normalizedEmail,
       m_payment_id: sanitizePaymentReference(rawReference),
       amount: paymentAmount,
-      item_name: sanitizeText(isTrial ? "Starter Plan Trial" : `Eden Desk ${planName} Plan`, 100),
+      item_name: sanitizeText(`Eden Desk ${planName} Plan`, 100),
       item_description: sanitizeText(
         isSubscriptionPlan
-          ? `R${paymentAmount} card verification then R${recurringAmount} per month after 3 months`
+          ? `R${paymentAmount} card verification then R${recurringAmount} per month`
           : isTrial
             ? `7 day trial then R${recurringAmount} per month`
             : `${planName} subscription ${period}`,
@@ -344,7 +333,7 @@ serve(async (req) => {
       ),
       custom_str1: userId,
       custom_str2: isTrial ? "trial" : (planId || ""),
-      custom_str3: isSubscriptionPlan ? String(TRIAL_MONTHS) : undefined,
+      custom_str3: isSubscriptionPlan ? "subscription" : undefined,
       custom_str4: country ? String(country).toUpperCase().substring(0, 10) : undefined,
       payment_method: paymentMethodOverride || undefined,
       subscription_type: "1",

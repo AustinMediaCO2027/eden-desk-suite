@@ -48,12 +48,12 @@ const TermsPage = () => {
           <li>Pricing may change with reasonable notice.</li>
         </ul>
 
-        <h2>4. FREE TRIAL POLICY</h2>
-        <p>Where offered:</p>
+        <h2>4. FREE PLAN POLICY</h2>
+        <p>The Standard plan is available at no subscription cost and is supported by advertising.</p>
         <ul>
-          <li>Free trials are available <strong>once per user/account</strong>.</li>
-          <li>Abuse of trial access may result in account restriction.</li>
-          <li>Trial users may be required to subscribe after expiration to continue using features.</li>
+          <li>Free-plan access is subject to the published usage limits.</li>
+          <li>Abuse of free-plan access may result in account restriction.</li>
+          <li>Paid features require an active Silver or Premium subscription.</li>
         </ul>
 
         <h2>5. PLATFORM USAGE</h2>

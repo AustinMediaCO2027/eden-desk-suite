@@ -24,6 +24,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Checkbox } from "@/components/ui/checkbox";
 import { format } from "date-fns";
 import { useSubscription } from "@/hooks/useSubscription";
+import { useCurrency } from "@/hooks/useCurrency";
 
 interface Invoice {
   id: string;
@@ -45,6 +46,7 @@ const DashboardHome = () => {
   const { user } = useAuth();
   const { profile, refetch } = useProfile();
   const { currentPlan, planDisplayName } = useSubscription();
+  const { convert } = useCurrency();
   const { toast } = useToast();
   const [searchParams, setSearchParams] = useSearchParams();
   const [stats, setStats] = useState({
@@ -138,12 +140,7 @@ const DashboardHome = () => {
   // No auto-trial activation — trial is manually activated via PaywallDialog
 
 
-  const formatCurrency = (val: number) =>
-    new Intl.NumberFormat("en-ZA", {
-      style: "currency",
-      currency: "ZAR",
-      minimumFractionDigits: 2,
-    }).format(val);
+  const formatCurrency = (val: number) => convert(val);
 
   const getStatusBadge = (status: string | null) => {
     switch (status) {
