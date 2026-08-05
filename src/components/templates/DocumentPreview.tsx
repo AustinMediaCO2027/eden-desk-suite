@@ -68,7 +68,7 @@ const DocumentPreview = forwardRef<HTMLDivElement, DocumentPreviewProps>(
   ({ id, templateStyle = "classic", ...props }, ref) => {
     return (
       <ScaledPage>
-        <div id={id} ref={ref} style={PREVIEW_CANVAS_STYLE}>
+        <div id={id} ref={ref} className="a4-canvas" style={A4_CANVAS_STYLE}>
           {props.type === "invoice" ? (
             <InvoicePrint
               templateStyle={templateStyle}
