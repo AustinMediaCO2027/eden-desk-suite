@@ -57,6 +57,9 @@ export const DashboardLayout = () => {
 
   return (
     <div className="flex h-screen bg-background overflow-hidden">
+      {/* Adsterra Social Bar — free (Standard) users only */}
+      <SocialBar />
+
       {/* Mobile overlay */}
       {sidebarOpen && (
         <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-40 lg:hidden" onClick={() => setSidebarOpen(false)} />
