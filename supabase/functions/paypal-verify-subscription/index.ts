@@ -127,12 +127,11 @@ serve(async (req) => {
     }
 
     const startTime = subscription?.start_time ? new Date(subscription.start_time) : new Date();
-    const trialStart = Number.isNaN(startTime.getTime()) ? new Date() : startTime;
-    const trialEnd = addMonths(trialStart, 3);
+    const billingStart = Number.isNaN(startTime.getTime()) ? new Date() : startTime;
     const nextBilling = subscription?.billing_info?.next_billing_time
       ? new Date(subscription.billing_info.next_billing_time)
-      : trialEnd;
-    const renewal = Number.isNaN(nextBilling.getTime()) ? trialEnd : nextBilling;
+      : addMonths(billingStart, 1);
+    const renewal = Number.isNaN(nextBilling.getTime()) ? addMonths(billingStart, 1) : nextBilling;
 
     const record = {
       user_id: user.id,
@@ -141,11 +140,11 @@ serve(async (req) => {
       country,
       currency: "USD",
       recurring_price: recurringPrice,
-      trial_start_date: trialStart.toISOString(),
-      trial_end_date: trialEnd.toISOString(),
-      billing_start_date: trialEnd.toISOString(),
+      trial_start_date: null,
+      trial_end_date: null,
+      billing_start_date: billingStart.toISOString(),
       renewal_date: renewal.toISOString(),
-      subscription_status: status === "ACTIVE" ? "trialing" : "pending",
+      subscription_status: status === "ACTIVE" ? "active" : "pending",
       cancellation_status: "none",
       provider_plan_id: expectedPlanId,
       provider_subscription_id: subscriptionId,
@@ -168,12 +167,11 @@ serve(async (req) => {
       .from("profiles")
       .update({
         subscription_plan: selectedPlan,
-        trial_active: true,
-        trial_used: true,
-        trial_start_date: trialStart.toISOString(),
-        trial_end_date: trialEnd.toISOString(),
-        trial_ends_at: trialEnd.toISOString(),
-        payment_status: "trialing",
+        trial_active: false,
+        trial_start_date: null,
+        trial_end_date: null,
+        trial_ends_at: null,
+        payment_status: status === "ACTIVE" ? "complete" : "pending",
         billing_country: country,
       })
       .eq("user_id", user.id);
@@ -186,7 +184,6 @@ serve(async (req) => {
     return json({
       success: true,
       plan: selectedPlan,
-      trial_end_date: trialEnd.toISOString(),
       subscription_status: record.subscription_status,
     });
   } catch (error) {

@@ -8,12 +8,9 @@ const corsHeaders = {
 };
 
 const PAYFAST_PLAN_PRICES: Record<string, number> = {
-  standard: 29.99,
   silver: 49.99,
   premium: 99.99,
 };
-
-const TRIAL_MONTHS = 3;
 
 const addMonths = (date: Date, months: number) => {
   const d = new Date(date.getTime());
@@ -185,10 +182,6 @@ serve(async (req) => {
         console.log(`Trial activated for user ${userId}`);
       }
     } else if (isSubscriptionPlan) {
-      // Subscription set-up or a post-trial recurring payment. The checkout
-      // marks the initial 3-month setup in custom_str3; do not infer it from
-      // amount_gross because production uses a small card-verification payment
-      // to avoid issuer response code 06 on zero-value authorisations.
       const { data: existing } = await supabase
         .from("subscriptions")
         .select("id, trial_start_date, trial_end_date")
@@ -197,18 +190,8 @@ serve(async (req) => {
         .eq("selected_plan", planId)
         .maybeSingle();
 
-      const isSetup = params.get("custom_str3") === String(TRIAL_MONTHS) && !existing;
-
       const now = new Date();
-      const trialStart = isSetup
-        ? now
-        : existing?.trial_start_date
-          ? new Date(existing.trial_start_date)
-          : now;
-      const trialEnd = existing?.trial_end_date && !isSetup
-        ? new Date(existing.trial_end_date)
-        : addMonths(trialStart, TRIAL_MONTHS);
-      const renewal = isSetup ? trialEnd : addMonths(now, 1);
+      const renewal = addMonths(now, 1);
 
       const record = {
         user_id: userId,
@@ -217,11 +200,11 @@ serve(async (req) => {
         country: country.toUpperCase(),
         currency: "ZAR",
         recurring_price: PAYFAST_PLAN_PRICES[planId],
-        trial_start_date: trialStart.toISOString(),
-        trial_end_date: trialEnd.toISOString(),
-        billing_start_date: trialEnd.toISOString(),
+        trial_start_date: null,
+        trial_end_date: null,
+        billing_start_date: now.toISOString(),
         renewal_date: renewal.toISOString(),
-        subscription_status: isSetup ? "trialing" : "active",
+        subscription_status: "active",
         cancellation_status: "none",
         provider_plan_id: planId,
         provider_subscription_id: pfSubscriptionId || null,
@@ -241,15 +224,14 @@ serve(async (req) => {
         .from("profiles")
         .update({
           subscription_plan: planId,
-          trial_active: isSetup,
-          trial_used: true,
-          trial_start_date: trialStart.toISOString(),
-          trial_end_date: trialEnd.toISOString(),
-          trial_ends_at: trialEnd.toISOString(),
+          trial_active: false,
+          trial_start_date: null,
+          trial_end_date: null,
+          trial_ends_at: null,
           billing_country: country.toUpperCase(),
           payfast_subscription_id: pfSubscriptionId,
           payfast_token: pfToken,
-          payment_status: isSetup ? "trialing" : "complete",
+          payment_status: "complete",
         })
         .eq("user_id", userId);
 
@@ -275,7 +257,7 @@ serve(async (req) => {
     // Process commission for referred users on successful billing
     try {
       const gross = Number(params.get("amount_gross") || "0");
-      const isVerificationPayment = params.get("custom_str3") === String(TRIAL_MONTHS) && gross <= 1;
+      const isVerificationPayment = params.get("custom_str3") === "subscription" && gross <= 5;
       if (planId !== "trial" && planId !== "free" && !isVerificationPayment && Number.isFinite(gross) && gross > 0) {
         const { data: profile } = await supabase
           .from("profiles")
