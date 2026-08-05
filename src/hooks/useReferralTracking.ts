@@ -39,9 +39,10 @@ export const useReferralTracking = () => {
 
     const linkReferral = async () => {
       try {
-        const { data, error } = await supabase.rpc("link_referral", {
-          _affiliate_code: ref,
+        const { data, error } = await supabase.functions.invoke("link-referral", {
+          body: { affiliate_code: ref },
         });
+
 
         if (error) {
           console.error("Referral link error:", error);
