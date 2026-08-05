@@ -18,7 +18,7 @@ export const LandingPricing = () => {
   const handleGetStarted = (plan: PlanKey) => {
     const card = PLAN_CARDS.find((p) => p.key === plan);
     if (card?.free) {
-      navigate(user ? "/dashboard" : "/auth?mode=signup");
+      navigate("/dashboard");
       return;
     }
     if (!user) {

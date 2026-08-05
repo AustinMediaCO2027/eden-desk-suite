@@ -20,6 +20,7 @@ import SendDocumentDialog from "@/components/dashboard/SendDocumentDialog";
 import type { Json } from "@/integrations/supabase/types";
 import { useGenerationLimit } from "@/hooks/useGenerationLimit";
 import PaywallDialog from "@/components/PaywallDialog";
+import { useAuthGate } from "@/components/SignInPromptDialog";
 
 interface QuoteForm {
   id?: string;
@@ -52,6 +53,7 @@ const QuotesPage = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { showPaywall, setShowPaywall, checkAndProceed } = useGenerationLimit("quote");
+  const { requireAuth, gateDialog } = useAuthGate("create your quote");
   const [quotes, setQuotes] = useState<any[]>([]);
   const [editing, setEditing] = useState<QuoteForm | null>(null);
   const [previewing, setPreviewing] = useState(false);
@@ -341,7 +343,7 @@ const QuotesPage = () => {
         </div>
         <div className="space-y-2"><Label>Notes / Terms</Label><Textarea value={editing.notes} onChange={e => setEditing({ ...editing, notes: e.target.value })} className="bg-secondary" rows={3} placeholder="Payment terms, thank you message, etc." /></div>
         <div className="flex gap-2">
-          <Button onClick={() => checkAndProceed(saveQuote)}><Save className="h-4 w-4 mr-1" /> Save</Button>
+          {gateDialog}<Button onClick={() => requireAuth(() => checkAndProceed(saveQuote))}><Save className="h-4 w-4 mr-1" /> Save</Button>
           <Button variant="outline" onClick={() => setPreviewing(true)}>Preview & Download</Button>
         </div>
         <PaywallDialog open={showPaywall} onOpenChange={setShowPaywall} />
@@ -355,7 +357,7 @@ const QuotesPage = () => {
     <div className="space-y-6 flex-1 min-w-0">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Quotes</h1>
-        <Button onClick={() => setEditing(emptyQuote())}><Plus className="h-4 w-4 mr-1" /> New Quote</Button>
+        <Button onClick={() => requireAuth(() => setEditing(emptyQuote()))}><Plus className="h-4 w-4 mr-1" /> New Quote</Button>{gateDialog}
       </div>
       {quotes.length === 0 ? (
         <div className="rounded-xl border border-border bg-card p-12 text-center"><p className="text-muted-foreground">No quotes yet. Create your first one.</p></div>
