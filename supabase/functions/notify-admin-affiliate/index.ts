@@ -13,10 +13,11 @@ serve(async (req) => {
   }
 
   try {
-    const { applicant_name, applicant_email, applicant_country, promotion_method } = await req.json();
+    const body = await req.json().catch(() => ({}));
+    const rawEmail = typeof body?.applicant_email === "string" ? body.applicant_email.trim().toLowerCase() : "";
 
-    if (!applicant_name || !applicant_email) {
-      return new Response(JSON.stringify({ error: "Missing applicant data" }), {
+    if (!rawEmail || rawEmail.length > 320 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(rawEmail)) {
+      return new Response(JSON.stringify({ error: "Invalid applicant data" }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -26,6 +27,41 @@ serve(async (req) => {
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
+
+    // Only notify for a real, recently-submitted pending application.
+    // All content below comes from the stored row, never from the request body.
+    const since = new Date(Date.now() - 15 * 60 * 1000).toISOString();
+    const { data: application } = await supabaseAdmin
+      .from("affiliates")
+      .select("full_name, email, country, promotion_method, created_at")
+      .ilike("email", rawEmail)
+      .eq("status", "pending")
+      .gte("created_at", since)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (!application) {
+      return new Response(JSON.stringify({ error: "No matching application" }), {
+        status: 404,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const escapeHtml = (v: unknown) =>
+      String(v ?? "")
+        .slice(0, 200)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+
+    const applicant_name = escapeHtml(application.full_name);
+    const applicant_email = escapeHtml(application.email);
+    const applicant_country = escapeHtml(application.country);
+    const promotion_method = escapeHtml(application.promotion_method);
+
 
     // Get all admin user IDs
     const { data: adminRoles, error: rolesError } = await supabaseAdmin
