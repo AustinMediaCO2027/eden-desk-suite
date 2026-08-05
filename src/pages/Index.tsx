@@ -7,6 +7,7 @@ import { LandingPricing } from "@/components/landing/LandingPricing";
 import { LandingTestimonials } from "@/components/landing/LandingTestimonials";
 import { LandingFooter } from "@/components/landing/LandingFooter";
 import { LandingNav } from "@/components/landing/LandingNav";
+import { AdBanner } from "@/components/ads/AdBanner";
 import { useTheme } from "@/hooks/useTheme";
 
 const Index = () => {
@@ -45,7 +46,14 @@ const Index = () => {
       <LandingNav />
       <LandingHero />
       <LogoMarquee />
+      <aside aria-label="Advertisement" className="border-y border-border/30 bg-background py-4">
+        <AdBanner slot="728x90" className="hidden md:block" publicPlacement />
+        <AdBanner slot="320x50" className="md:hidden" publicPlacement />
+      </aside>
       <LandingPricing />
+      <aside aria-label="Advertisement" className="bg-background py-6">
+        <AdBanner slot="300x250" publicPlacement />
+      </aside>
       <LandingTestimonials />
       <LandingFooter />
     </div>
