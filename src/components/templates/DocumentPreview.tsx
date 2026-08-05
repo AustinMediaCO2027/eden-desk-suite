@@ -3,6 +3,8 @@ import { Profile } from "@/hooks/useProfile";
 import { LineItem } from "@/lib/document-utils";
 import InvoicePrint from "@/components/print/InvoicePrint";
 import QuotePrint from "@/components/print/QuotePrint";
+import ScaledPage from "@/components/templates/ScaledPage";
+
 
 export const INVOICE_TEMPLATE_OPTIONS = [
   { value: "template1", label: "Executive", desc: "Warm accent, logo header, billing card" },
