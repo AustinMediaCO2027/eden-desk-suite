@@ -20,6 +20,10 @@ import BillingPage from "./pages/dashboard/BillingPage";
 import SettingsPage from "./pages/dashboard/SettingsPage";
 import ClientsPage from "./pages/dashboard/ClientsPage";
 import FilesPage from "./pages/dashboard/FilesPage";
+import PurchaseOrdersPage from "./pages/dashboard/PurchaseOrdersPage";
+import StatementsPage from "./pages/dashboard/StatementsPage";
+import ReportsPage from "./pages/dashboard/ReportsPage";
+
 import ReferralsPage from "./pages/dashboard/ReferralsPage";
 import AdminAffiliatesPage from "./pages/dashboard/AdminAffiliatesPage";
 import AffiliatePage from "./pages/AffiliatePage";
