@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useAffiliate } from "@/hooks/useAffiliate";
+import { useCurrency } from "@/hooks/useCurrency";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,6 +21,7 @@ import {
 const ReferralsPage = () => {
   const { user } = useAuth();
   const { affiliate, loading, updatePayoutSettings, requestPayout, fetchAffiliate } = useAffiliate();
+  const { convert } = useCurrency();
   const { toast } = useToast();
   const [clickCount, setClickCount] = useState(0);
   const [referralCount, setReferralCount] = useState(0);
@@ -111,14 +113,14 @@ const ReferralsPage = () => {
     { label: "Total Clicks", value: clickCount, icon: MousePointer },
     { label: "Signups", value: referralCount, icon: Users },
     { label: "Active Subscribers", value: activeCount, icon: TrendingUp },
-    { label: "Total Earnings", value: `R${(affiliate?.total_earnings || 0).toFixed(2)}`, icon: DollarSign },
-    { label: "Pending Payout", value: `R${(affiliate?.pending_balance || 0).toFixed(2)}`, icon: Wallet },
-    { label: "Paid Earnings", value: `R${(affiliate?.paid_earnings || 0).toFixed(2)}`, icon: CreditCard },
+    { label: "Total Earnings", value: convert(affiliate?.total_earnings || 0), icon: DollarSign },
+    { label: "Pending Payout", value: convert(affiliate?.pending_balance || 0), icon: Wallet },
+    { label: "Paid Earnings", value: convert(affiliate?.paid_earnings || 0), icon: CreditCard },
   ] : [
     { label: "Total Referrals", value: 0, icon: Users },
     { label: "Active Subscribers", value: 0, icon: TrendingUp },
-    { label: "Monthly Commission", value: "R0.00", icon: DollarSign },
-    { label: "Lifetime Earnings", value: "R0.00", icon: Wallet },
+    { label: "Monthly Commission", value: convert(0), icon: DollarSign },
+    { label: "Lifetime Earnings", value: convert(0), icon: Wallet },
   ];
 
   return (
@@ -232,7 +234,7 @@ const ReferralsPage = () => {
                     <Badge variant={c.status === "paid" ? "default" : "outline"} className="text-[10px]">
                       {c.status}
                     </Badge>
-                    <span className="text-sm font-semibold">R{c.amount?.toFixed(2)}</span>
+                    <span className="text-sm font-semibold">{convert(c.amount || 0)}</span>
                   </div>
                 </div>
               ))}
@@ -315,7 +317,7 @@ const ReferralsPage = () => {
               onClick={handleRequestPayout}
               disabled={(affiliate?.pending_balance || 0) < 500}
             >
-              Request Payout (min R500)
+              {`Request Payout (min ${convert(500)})`}
             </Button>
           </div>
         </Card>
