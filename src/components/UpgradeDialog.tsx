@@ -70,7 +70,7 @@ const UpgradeDialog = ({ open, onOpenChange, feature, requiredPlan }: UpgradeDia
           <p className="text-sm text-muted-foreground leading-relaxed max-w-xs">
             {requiredPlan
               ? `This feature requires the ${requiredPlan} plan or higher.`
-              : "Start a 7-day free trial to unlock more features."}
+              : "Upgrade your plan to unlock more features."}
           </p>
           <div className="w-full mt-6 space-y-2.5">
             {[
