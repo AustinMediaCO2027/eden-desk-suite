@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { LandingHero } from "@/components/landing/LandingHero";
-import { LogoMarquee } from "@/components/landing/LogoMarquee";
+
 import { LandingPricing } from "@/components/landing/LandingPricing";
 import { LandingTestimonials } from "@/components/landing/LandingTestimonials";
 import { LandingFooter } from "@/components/landing/LandingFooter";
@@ -45,11 +45,6 @@ const Index = () => {
     <div className="min-h-screen bg-background">
       <LandingNav />
       <LandingHero />
-      <LogoMarquee />
-      <aside aria-label="Advertisement" className="bg-background py-6 px-6">
-        <AdBanner slot="728x90" className="hidden md:block" publicPlacement />
-        <AdBanner slot="320x50" className="md:hidden" publicPlacement />
-      </aside>
       <LandingPricing />
       <aside aria-label="Advertisement" className="bg-background py-6">
         <AdBanner slot="300x250" publicPlacement />
