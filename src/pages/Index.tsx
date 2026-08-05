@@ -45,6 +45,8 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <LandingNav />
+      <SocialBar publicPlacement />
+
       <LandingHero />
       <LandingPricing />
       <aside aria-label="Advertisement" className="bg-background py-6">
