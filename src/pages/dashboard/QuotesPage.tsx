@@ -177,7 +177,7 @@ const QuotesPage = () => {
           <Button
             size="sm"
             onClick={() =>
-              downloadDocumentPDF(
+              requireAuth(() => downloadDocumentPDF(
                 {
                   type: "quote",
                   profile,
@@ -194,14 +194,15 @@ const QuotesPage = () => {
                   colorOverride: previewColor || undefined,
                 },
                 `quote-${editing.quote_number}`
-              )
+              ))
             }
           >
             <Download className="h-4 w-4 mr-1" /> Download PDF
           </Button>
-          <Button size="sm" variant="outline" onClick={() => setShowSendDialog(true)}>
+          <Button size="sm" variant="outline" onClick={() => requireAuth(() => setShowSendDialog(true))}>
             <Send className="h-4 w-4 mr-1" /> Send
           </Button>
+          {gateDialog}
         </div>
 
         {showSendDialog && (
