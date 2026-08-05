@@ -1,9 +1,11 @@
-import { forwardRef, type CSSProperties } from "react";
+import { forwardRef } from "react";
 import { Profile } from "@/hooks/useProfile";
 import { LineItem } from "@/lib/document-utils";
 import InvoicePrint from "@/components/print/InvoicePrint";
 import QuotePrint from "@/components/print/QuotePrint";
 import ScaledPage from "@/components/templates/ScaledPage";
+import { A4_CANVAS_STYLE } from "@/components/templates/a4";
+
 
 
 export const INVOICE_TEMPLATE_OPTIONS = [
@@ -41,15 +43,8 @@ export const COLOR_OPTIONS = [
   { value: "#0891B2", label: "Teal" },
 ];
 
-const PREVIEW_CANVAS_STYLE: CSSProperties = {
-  width: "210mm",
-  minWidth: "210mm",
-  height: "297mm",
-  overflow: "hidden",
-  backgroundColor: "white",
-  boxSizing: "border-box",
-  margin: "0 auto",
-};
+
+
 
 interface DocumentPreviewProps {
   id: string;
@@ -73,7 +68,7 @@ const DocumentPreview = forwardRef<HTMLDivElement, DocumentPreviewProps>(
   ({ id, templateStyle = "classic", ...props }, ref) => {
     return (
       <ScaledPage>
-        <div id={id} ref={ref} style={PREVIEW_CANVAS_STYLE}>
+        <div id={id} ref={ref} className="a4-canvas" style={A4_CANVAS_STYLE}>
           {props.type === "invoice" ? (
             <InvoicePrint
               templateStyle={templateStyle}

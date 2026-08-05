@@ -11,10 +11,8 @@ import InvoicePrint from "@/components/print/InvoicePrint";
 import QuotePrint from "@/components/print/QuotePrint";
 import LetterheadPrint from "@/components/print/LetterheadPrint";
 
-const A4_WIDTH_MM = 210;
-const A4_HEIGHT_MM = 297;
-const A4_WIDTH_PX = 794;
-const A4_HEIGHT_PX = 1123;
+import { A4_WIDTH_MM, A4_HEIGHT_MM, A4_WIDTH_PX, A4_HEIGHT_PX } from "@/components/templates/a4";
+
 
 interface BaseDocumentPayload {
   profile: Profile | null;
