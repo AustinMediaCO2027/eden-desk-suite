@@ -25,6 +25,7 @@ import edenLogo from "@/assets/eden_desk_logo.png";
 import edenIcon from "@/assets/eden_desk_icon.png";
 import { useAffiliate } from "@/hooks/useAffiliate";
 import { NotificationBell } from "@/components/dashboard/NotificationBell";
+import { SocialBar } from "@/components/ads/SocialBar";
 import aiAgentIcon from "@/assets/ai-agent-icon.png.asset.json";
 
 const navItems = [
