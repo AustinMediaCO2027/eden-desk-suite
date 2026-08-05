@@ -7,7 +7,7 @@ import { useShowAds } from "@/components/ads/AdBanner";
  * placement is ever regenerated.
  */
 export const SOCIAL_BAR_SRC =
-  "//pl28361490.revenuecpmgate.com/1b/9a/2f/1b9a2f5d0a8f0f6a5b2c3d4e5f607182/invoke.js";
+  "https://pl30698953.effectivecpmnetwork.com/95/6a/6e/956a6e997a6b68621bbe84f01a3d220f.js";
 
 const SCRIPT_ID = "adsterra-social-bar";
 
