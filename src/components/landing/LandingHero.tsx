@@ -21,8 +21,7 @@ export const LandingHero = () => {
 
       {/* Centered content */}
       <div className="container mx-auto px-6 relative z-10 flex-1 flex flex-col items-center justify-center text-center">
-        <div className="inline-flex items-center rounded-full border border-border/50 bg-card/20 backdrop-blur-sm px-5 py-2 mb-10 animate-fade-in">
-          <div className="w-2 h-2 rounded-full bg-foreground/50 mr-3 animate-pulse" />
+        <div className="mb-10 animate-fade-in">
           <span className="text-xs font-medium text-muted-foreground tracking-wide">Business Productivity Platform</span>
         </div>
 
