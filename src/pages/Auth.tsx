@@ -8,7 +8,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
-import logoFull from "@/assets/eden_desk_logo_full.png";
 import authBg from "@/assets/auth-bg.jpg";
 import { Link } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
@@ -47,17 +46,11 @@ const Auth = () => {
           options: { emailRedirectTo: `${window.location.origin}/dashboard` },
         });
         if (error) throw error;
-        // If auto-confirmed (session exists), activate trial and redirect
+        // New accounts start on the free, ad-supported Standard plan.
         if (data.session) {
-          // Activate 7-day Silver trial for new user
           const userId = data.session.user.id;
-          const trialEnd = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
           await supabase.from("profiles").update({
-            subscription_plan: "trial",
-            trial_ends_at: trialEnd,
-            trial_start_date: new Date().toISOString(),
-            trial_end_date: trialEnd,
-            trial_used: true,
+            subscription_plan: "standard",
           }).eq("user_id", userId);
           // Session is set, Navigate component will redirect to /dashboard
           return;

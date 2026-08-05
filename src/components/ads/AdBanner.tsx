@@ -1,4 +1,3 @@
-import { useEffect, useRef } from "react";
 import { useSubscription } from "@/hooks/useSubscription";
 
 export type AdSlot = "728x90" | "300x250" | "320x50" | "160x600" | "160x300";
@@ -30,17 +29,7 @@ interface AdBannerProps {
 export const AdBanner = ({ slot, className = "" }: AdBannerProps) => {
   const showAds = useShowAds();
   const cfg = AD_KEYS[slot];
-  const frameRef = useRef<HTMLIFrameElement | null>(null);
-
-  useEffect(() => {
-    if (!showAds) return;
-    const frame = frameRef.current;
-    if (!frame) return;
-    const doc = frame.contentDocument;
-    if (!doc) return;
-
-    doc.open();
-    doc.write(`<!DOCTYPE html><html><head><meta charset="utf-8" />
+  const adDocument = `<!DOCTYPE html><html><head><meta charset="utf-8" />
 <style>html,body{margin:0;padding:0;overflow:hidden;background:transparent;}</style>
 </head><body>
 <script type="text/javascript">
@@ -53,9 +42,7 @@ export const AdBanner = ({ slot, className = "" }: AdBannerProps) => {
   };
 <\/script>
 <script type="text/javascript" src="https://www.highperformanceformat.com/${cfg.key}/invoke.js"><\/script>
-</body></html>`);
-    doc.close();
-  }, [showAds, cfg]);
+</body></html>`;
 
   if (!showAds) return null;
 
@@ -65,8 +52,8 @@ export const AdBanner = ({ slot, className = "" }: AdBannerProps) => {
       style={{ width: cfg.width, height: cfg.height, maxWidth: "100%" }}
     >
       <iframe
-        ref={frameRef}
         title={`ad-${slot}`}
+        srcDoc={adDocument}
         width={cfg.width}
         height={cfg.height}
         scrolling="no"

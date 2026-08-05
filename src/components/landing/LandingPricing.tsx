@@ -41,9 +41,7 @@ export const LandingPricing = () => {
           <h2 className="text-3xl md:text-5xl lg:text-6xl font-extrabold mb-5">
             Plans that grow with you
           </h2>
-          <p className="text-muted-foreground text-lg">
-            3 months free trial on every plan.
-          </p>
+          <p className="text-muted-foreground text-lg">Start free. Upgrade only when you need more.</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
@@ -66,7 +64,7 @@ export const LandingPricing = () => {
                 <p className="text-xs text-muted-foreground">{plan.description}</p>
               </div>
               <div className="mb-8">
-                <span className="text-4xl font-extrabold">Free</span>
+                <span className="text-4xl font-extrabold">{plan.free ? "R0" : "Free"}</span>
                 <span className="text-muted-foreground text-sm ml-1">
                   {plan.free ? "forever" : "/3 months"}
                 </span>
