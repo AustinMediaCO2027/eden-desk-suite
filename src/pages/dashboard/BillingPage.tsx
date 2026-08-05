@@ -19,6 +19,7 @@ import { useCurrency } from "@/hooks/useCurrency";
 const BillingPage = () => {
   const { profile } = useProfile();
   const { planDisplayName, currentPlan } = useSubscription();
+  const { convert, currency } = useCurrency();
   const { convert } = useCurrency();
   const [searchParams, setSearchParams] = useSearchParams();
   const [checkoutPlan, setCheckoutPlan] = useState<PlanKey | null>(null);
