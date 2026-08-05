@@ -3,6 +3,8 @@ import { Link, useLocation, Outlet } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
 import { useTheme } from "@/hooks/useTheme";
+import { useSubscription, type PlanPermissions } from "@/hooks/useSubscription";
+import UpgradeDialog from "@/components/UpgradeDialog";
 import {
   LayoutDashboard,
   FileSpreadsheet,
@@ -19,6 +21,7 @@ import {
   FolderOpen,
   Gift,
   Shield,
+  Crown,
 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import edenLogo from "@/assets/eden_desk_logo.png";
@@ -34,10 +37,10 @@ const navItems = [
   { to: "/dashboard/quotes", icon: FileText, label: "Quotes" },
   { to: "/dashboard/letterhead", icon: Mail, label: "Letterheads" },
   { to: "/dashboard/clients", icon: Users, label: "Clients" },
-  { to: "/dashboard/files", icon: FolderOpen, label: "Files" },
+  { to: "/dashboard/files", icon: FolderOpen, label: "Files", feature: "fileManager" as keyof PlanPermissions },
   { to: "/dashboard/tasks", icon: CalendarDays, label: "Tasks" },
   { to: "/dashboard/referrals", icon: Gift, label: "Referrals" },
-  { to: "/dashboard/ai", icon: Bot, iconSrc: aiAgentIcon.url, label: "AI Agent" },
+  { to: "/dashboard/ai", icon: Bot, iconSrc: aiAgentIcon.url, label: "AI Agent", feature: "aiAgent" as keyof PlanPermissions },
   { to: "/dashboard/billing", icon: CreditCard, label: "Billing" },
   { to: "/dashboard/settings", icon: Settings, label: "Settings" },
 ];
@@ -47,13 +50,16 @@ export const DashboardLayout = () => {
   const { profile } = useProfile();
   const { theme, toggleTheme } = useTheme();
   const { isAdmin } = useAffiliate();
+  const { canUseFeature } = useSubscription();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [upgradeFeature, setUpgradeFeature] = useState<string | null>(null);
 
   const allNavItems = [
     ...navItems,
     ...(isAdmin ? [{ to: "/dashboard/admin/affiliates", icon: Shield, label: "Admin Affiliates" }] : []),
   ];
+
 
   return (
     <div className="flex h-screen bg-background overflow-hidden">
