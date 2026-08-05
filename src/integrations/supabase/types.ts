@@ -217,6 +217,107 @@ export type Database = {
           },
         ]
       }
+      credit_notes: {
+        Row: {
+          amount: number
+          client_name: string
+          created_at: string
+          credit_number: string | null
+          date: string
+          id: string
+          reason: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount?: number
+          client_name?: string
+          created_at?: string
+          credit_number?: string | null
+          date?: string
+          id?: string
+          reason?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          client_name?: string
+          created_at?: string
+          credit_number?: string | null
+          date?: string
+          id?: string
+          reason?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      expenses: {
+        Row: {
+          category: string
+          created_at: string
+          date: string
+          description: string | null
+          expense_number: string | null
+          id: string
+          notes: string | null
+          payment_method: string | null
+          purchase_order_id: string | null
+          reference: string | null
+          subtotal: number
+          supplier_name: string
+          tax_amount: number
+          total: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          date?: string
+          description?: string | null
+          expense_number?: string | null
+          id?: string
+          notes?: string | null
+          payment_method?: string | null
+          purchase_order_id?: string | null
+          reference?: string | null
+          subtotal?: number
+          supplier_name?: string
+          tax_amount?: number
+          total?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          date?: string
+          description?: string | null
+          expense_number?: string | null
+          id?: string
+          notes?: string | null
+          payment_method?: string | null
+          purchase_order_id?: string | null
+          reference?: string | null
+          subtotal?: number
+          supplier_name?: string
+          tax_amount?: number
+          total?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "expenses_purchase_order_id_fkey"
+            columns: ["purchase_order_id"]
+            isOneToOne: false
+            referencedRelation: "purchase_orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       folders: {
         Row: {
           created_at: string
@@ -495,6 +596,56 @@ export type Database = {
         }
         Relationships: []
       }
+      payments: {
+        Row: {
+          amount: number
+          client_name: string
+          created_at: string
+          date: string
+          id: string
+          invoice_id: string | null
+          invoice_number: string | null
+          method: string | null
+          notes: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount?: number
+          client_name?: string
+          created_at?: string
+          date?: string
+          id?: string
+          invoice_id?: string | null
+          invoice_number?: string | null
+          method?: string | null
+          notes?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          client_name?: string
+          created_at?: string
+          date?: string
+          id?: string
+          invoice_id?: string | null
+          invoice_number?: string | null
+          method?: string | null
+          notes?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payments_invoice_id_fkey"
+            columns: ["invoice_id"]
+            isOneToOne: false
+            referencedRelation: "invoices"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       payouts: {
         Row: {
           affiliate_id: string
@@ -682,6 +833,87 @@ export type Database = {
           event_type?: string | null
           id?: string
           provider?: string
+        }
+        Relationships: []
+      }
+      purchase_orders: {
+        Row: {
+          created_at: string
+          currency: string
+          discount_amount: number
+          expected_delivery_date: string | null
+          id: string
+          internal_notes: string | null
+          issue_date: string
+          items: Json
+          notes: string | null
+          payment_terms: string | null
+          po_number: string
+          status: string
+          subtotal: number
+          supplier_address: string | null
+          supplier_contact: string | null
+          supplier_email: string | null
+          supplier_name: string
+          supplier_phone: string | null
+          supplier_vat_number: string | null
+          tax_amount: number
+          tax_rate: number
+          total: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          currency?: string
+          discount_amount?: number
+          expected_delivery_date?: string | null
+          id?: string
+          internal_notes?: string | null
+          issue_date?: string
+          items?: Json
+          notes?: string | null
+          payment_terms?: string | null
+          po_number: string
+          status?: string
+          subtotal?: number
+          supplier_address?: string | null
+          supplier_contact?: string | null
+          supplier_email?: string | null
+          supplier_name?: string
+          supplier_phone?: string | null
+          supplier_vat_number?: string | null
+          tax_amount?: number
+          tax_rate?: number
+          total?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          currency?: string
+          discount_amount?: number
+          expected_delivery_date?: string | null
+          id?: string
+          internal_notes?: string | null
+          issue_date?: string
+          items?: Json
+          notes?: string | null
+          payment_terms?: string | null
+          po_number?: string
+          status?: string
+          subtotal?: number
+          supplier_address?: string | null
+          supplier_contact?: string | null
+          supplier_email?: string | null
+          supplier_name?: string
+          supplier_phone?: string | null
+          supplier_vat_number?: string | null
+          tax_amount?: number
+          tax_rate?: number
+          total?: number
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }

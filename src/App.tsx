@@ -20,6 +20,10 @@ import BillingPage from "./pages/dashboard/BillingPage";
 import SettingsPage from "./pages/dashboard/SettingsPage";
 import ClientsPage from "./pages/dashboard/ClientsPage";
 import FilesPage from "./pages/dashboard/FilesPage";
+import PurchaseOrdersPage from "./pages/dashboard/PurchaseOrdersPage";
+import StatementsPage from "./pages/dashboard/StatementsPage";
+import ReportsPage from "./pages/dashboard/ReportsPage";
+
 import ReferralsPage from "./pages/dashboard/ReferralsPage";
 import AdminAffiliatesPage from "./pages/dashboard/AdminAffiliatesPage";
 import AffiliatePage from "./pages/AffiliatePage";
@@ -67,6 +71,10 @@ const App = () => (
               <Route index element={<DashboardHome />} />
               <Route path="invoices" element={<InvoicesPage />} />
               <Route path="quotes" element={<QuotesPage />} />
+              <Route path="purchase-orders" element={<PurchaseOrdersPage />} />
+              <Route path="statements" element={<StatementsPage />} />
+              <Route path="reports" element={<ReportsPage />} />
+
               <Route path="letterhead" element={<LetterheadPage />} />
               <Route path="clients" element={<ClientsPage />} />
               <Route path="files" element={<FilesPage />} />
