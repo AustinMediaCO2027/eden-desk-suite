@@ -35,8 +35,12 @@ const navItems = [
   { to: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
   { to: "/dashboard/invoices", icon: FileSpreadsheet, label: "Invoices" },
   { to: "/dashboard/quotes", icon: FileText, label: "Quotes" },
+  { to: "/dashboard/purchase-orders", icon: ClipboardList, label: "Purchase Orders", feature: "purchaseOrders" as keyof PlanPermissions },
+  { to: "/dashboard/statements", icon: Receipt, label: "Client Statements", feature: "clientStatements" as keyof PlanPermissions },
+  { to: "/dashboard/reports", icon: BarChart3, label: "Accounting Reports", feature: "accountingReports" as keyof PlanPermissions },
   { to: "/dashboard/letterhead", icon: Mail, label: "Letterheads" },
   { to: "/dashboard/clients", icon: Users, label: "Clients" },
+
   { to: "/dashboard/files", icon: FolderOpen, label: "Files", feature: "fileManager" as keyof PlanPermissions },
   { to: "/dashboard/tasks", icon: CalendarDays, label: "Tasks", feature: "tasks" as keyof PlanPermissions },
   { to: "/dashboard/referrals", icon: Gift, label: "Referrals" },
