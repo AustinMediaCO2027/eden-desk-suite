@@ -22,6 +22,10 @@ import {
   Gift,
   Shield,
   Crown,
+  ClipboardList,
+  Receipt,
+  BarChart3,
+
 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import edenLogo from "@/assets/eden_desk_logo.png";
