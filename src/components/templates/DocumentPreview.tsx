@@ -1,9 +1,11 @@
-import { forwardRef, type CSSProperties } from "react";
+import { forwardRef } from "react";
 import { Profile } from "@/hooks/useProfile";
 import { LineItem } from "@/lib/document-utils";
 import InvoicePrint from "@/components/print/InvoicePrint";
 import QuotePrint from "@/components/print/QuotePrint";
 import ScaledPage from "@/components/templates/ScaledPage";
+import { A4_CANVAS_STYLE } from "@/components/templates/a4";
+
 
 
 export const INVOICE_TEMPLATE_OPTIONS = [
