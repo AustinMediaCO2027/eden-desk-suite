@@ -8,6 +8,7 @@ import { LandingTestimonials } from "@/components/landing/LandingTestimonials";
 import { LandingFooter } from "@/components/landing/LandingFooter";
 import { LandingNav } from "@/components/landing/LandingNav";
 import { AdBanner } from "@/components/ads/AdBanner";
+import { SocialBar } from "@/components/ads/SocialBar";
 import { useTheme } from "@/hooks/useTheme";
 
 const Index = () => {
