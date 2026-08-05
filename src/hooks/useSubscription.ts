@@ -104,13 +104,8 @@ export const useSubscription = () => {
   const currentPlan = useMemo((): PlanName => {
     const plan = profile?.subscription_plan;
     if (!plan || plan === "free") return "free";
-    if (plan === "trial") {
-      // Check if trial expired
-      if (profile?.trial_ends_at && new Date(profile.trial_ends_at) < new Date()) {
-        return "free";
-      }
-      return "trial";
-    }
+    // Legacy trial accounts now receive the ad-supported Standard experience.
+    if (plan === "trial") return "free";
     if (["standard", "silver", "premium", "yearly"].includes(plan)) {
       return plan as PlanName;
     }
@@ -142,7 +137,7 @@ export const useSubscription = () => {
   }, [profile]);
 
   const isPaid = useMemo(() => {
-    return ["standard", "silver", "premium", "yearly"].includes(currentPlan);
+    return ["silver", "premium", "yearly"].includes(currentPlan);
   }, [currentPlan]);
 
   const canUseFeature = useCallback(
@@ -153,8 +148,7 @@ export const useSubscription = () => {
   );
 
   const planDisplayName = useMemo(() => {
-    if (currentPlan === "free") return "Free";
-    if (currentPlan === "trial") return "Silver Trial";
+    if (currentPlan === "free" || currentPlan === "standard") return "Standard — Free";
     return currentPlan.charAt(0).toUpperCase() + currentPlan.slice(1);
   }, [currentPlan]);
 

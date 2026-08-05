@@ -42,9 +42,8 @@ const BillingPage = () => {
     setCheckoutOpen(true);
   };
 
-  const isPaidPlan = ["standard", "silver", "premium", "yearly"].includes(currentPlan);
+  const isPaidPlan = ["silver", "premium", "yearly"].includes(currentPlan);
   const addOnStorage = (profile as any)?.add_on_storage ?? 0;
-  const trialEnd = (profile as any)?.trial_end_date as string | undefined;
 
   return (
     <div className="space-y-6">
@@ -57,7 +56,7 @@ const BillingPage = () => {
       </div>
 
       {/* Current Plan Summary */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card>
           <CardContent className="p-5">
             <div className="flex items-center gap-2 mb-2">
@@ -65,7 +64,7 @@ const BillingPage = () => {
               <span className="text-xs text-muted-foreground uppercase tracking-wide">Current Plan</span>
             </div>
             <p className="text-lg font-bold capitalize">{planDisplayName}</p>
-            <p className="text-xs text-muted-foreground">{isPaidPlan ? "Active" : "Choose a plan to get started"}</p>
+            <p className="text-xs text-muted-foreground">{isPaidPlan ? "Active" : "Free, ad-supported access"}</p>
           </CardContent>
         </Card>
         <Card>
@@ -90,20 +89,6 @@ const BillingPage = () => {
             </div>
             <p className="text-lg font-bold">{addOnStorage > 0 ? `${(addOnStorage / (1024 * 1024 * 1024)).toFixed(0)} GB` : "None"}</p>
             <p className="text-xs text-muted-foreground">{addOnStorage > 0 ? "Active add-on" : "Available on Silver+"}</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-5">
-            <div className="flex items-center gap-2 mb-2">
-              <Calendar className="h-4 w-4 text-muted-foreground" />
-              <span className="text-xs text-muted-foreground uppercase tracking-wide">Trial Status</span>
-            </div>
-            <p className="text-lg font-bold">{(profile as any)?.trial_active ? "Active" : (profile as any)?.trial_used ? "Used" : "Available"}</p>
-            <p className="text-xs text-muted-foreground">
-              {(profile as any)?.trial_active && trialEnd
-                ? `Billing starts ${new Date(trialEnd).toLocaleDateString()}`
-                : "3 months free trial"}
-            </p>
           </CardContent>
         </Card>
       </div>

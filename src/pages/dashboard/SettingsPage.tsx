@@ -312,7 +312,7 @@ const SettingsPage = () => {
         <h3 className="font-semibold">Account</h3>
         <p className="text-sm text-muted-foreground">Logged in as {user?.email}</p>
         <p className="text-sm text-muted-foreground">
-          Plan: <span className="capitalize font-medium text-foreground">{profile?.subscription_plan || "trial"}</span>
+          Plan: <span className="capitalize font-medium text-foreground">{profile?.subscription_plan === "trial" || !profile?.subscription_plan ? "Standard — Free" : profile.subscription_plan}</span>
         </p>
       </div>
 
