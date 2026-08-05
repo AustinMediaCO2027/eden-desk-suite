@@ -1,13 +1,7 @@
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Check, Lock, ArrowRight, Sparkles } from "lucide-react";
+import { Check, Lock, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useAuth } from "@/hooks/useAuth";
-import { useProfile } from "@/hooks/useProfile";
-import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
-import { useState } from "react";
-import { submitPayFastForm } from "@/lib/payfast";
 
 interface PaywallDialogProps {
   open: boolean;
@@ -22,43 +16,6 @@ const features = [
 ];
 
 const PaywallDialog = ({ open, onOpenChange }: PaywallDialogProps) => {
-  const { user } = useAuth();
-  const { profile } = useProfile();
-  const { toast } = useToast();
-  const [activating, setActivating] = useState(false);
-
-  const trialUsed = (profile as any)?.trial_used === true;
-
-  const handleStartTrial = async () => {
-    if (!user || trialUsed) return;
-    setActivating(true);
-    try {
-      const { data, error } = await supabase.functions.invoke("payfast-checkout", {
-        body: {
-          planName: "Trial",
-          planId: "trial",
-          amount: "0.00",
-          period: "7 days",
-          userEmail: user.email,
-          userId: user.id,
-          companyName: profile?.company_name,
-          isTrial: true,
-          returnUrl: `${window.location.origin}/dashboard?payment=success&plan=trial`,
-          cancelUrl: `${window.location.origin}/dashboard/billing?status=cancelled`,
-        },
-      });
-
-      if (error) throw error;
-
-      // Redirect to PayFast
-      submitPayFastForm(data.paymentUrl, data.params as Record<string, string>);
-    } catch (err: any) {
-      toast({ title: "Error", description: err.message, variant: "destructive" });
-    } finally {
-      setActivating(false);
-    }
-  };
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="bg-card border-border p-0 overflow-hidden max-w-md">
@@ -69,10 +26,7 @@ const PaywallDialog = ({ open, onOpenChange }: PaywallDialogProps) => {
           </div>
           <h2 className="text-2xl font-bold tracking-tight mb-2">Free Access Used</h2>
           <p className="text-sm text-muted-foreground leading-relaxed max-w-xs">
-            You've used your free access for this feature.
-            {!trialUsed
-              ? " Start your 7-day trial or subscribe to continue."
-              : " Subscribe to a plan to continue creating documents."}
+            You've reached the free usage limit for this feature. Choose a paid plan to continue.
           </p>
           <div className="w-full mt-6 space-y-2.5">
             {features.map((feature) => (
@@ -85,21 +39,9 @@ const PaywallDialog = ({ open, onOpenChange }: PaywallDialogProps) => {
             ))}
           </div>
 
-          {!trialUsed && (
-            <Button
-              className="w-full mt-6 h-11 text-sm font-medium gap-2"
-              onClick={handleStartTrial}
-              disabled={activating}
-            >
-              <Sparkles className="h-4 w-4" />
-              {activating ? "Redirecting to PayFast..." : "Upgrade Now"}
-            </Button>
-          )}
-
           <Link to="/dashboard/billing" className="w-full">
             <Button
-              variant={trialUsed ? "default" : "outline"}
-              className="w-full mt-2 h-11 text-sm font-medium gap-2"
+              className="w-full mt-6 h-11 text-sm font-medium gap-2"
             >
               View Plans & Subscribe
               <ArrowRight className="h-4 w-4" />

@@ -44,7 +44,7 @@ interface Task {
 const DashboardHome = () => {
   const { user } = useAuth();
   const { profile, refetch } = useProfile();
-  const { currentPlan, planDisplayName, isTrialActive, trialDaysRemaining, isTrialExpired } = useSubscription();
+  const { currentPlan, planDisplayName } = useSubscription();
   const { toast } = useToast();
   const [searchParams, setSearchParams] = useSearchParams();
   const [stats, setStats] = useState({
@@ -217,7 +217,7 @@ const DashboardHome = () => {
     <div className="h-full">
 
       {/* Plan Badge */}
-      {currentPlan !== "free" && !isTrialActive && !isTrialExpired && (
+      {currentPlan !== "free" && (
         <div className="flex items-center gap-3 flex-wrap mb-2">
           <span className={`inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full ${
             currentPlan === "premium" || currentPlan === "yearly"

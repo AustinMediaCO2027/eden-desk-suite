@@ -86,7 +86,7 @@ export const PLAN_CARDS: PlanCard[] = [
     description: "Perfect for freelancers",
     zarPrice: PAYFAST_PLAN_PRICES.standard,
     free: true,
-    features: ["Create invoices", "Create quotes", "Download PDF", "Email sending", "Ad-supported"],
+    features: ["Create invoices", "Create quotes", "Create letterheads", "Download PDF", "Email sending", "Ad-supported"],
   },
   {
     key: "silver",
