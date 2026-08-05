@@ -8,6 +8,7 @@ import { LandingTestimonials } from "@/components/landing/LandingTestimonials";
 import { LandingFooter } from "@/components/landing/LandingFooter";
 import { LandingNav } from "@/components/landing/LandingNav";
 import { AdBanner } from "@/components/ads/AdBanner";
+import { SocialBar } from "@/components/ads/SocialBar";
 import { useTheme } from "@/hooks/useTheme";
 
 const Index = () => {
@@ -44,6 +45,8 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <LandingNav />
+      <SocialBar publicPlacement />
+
       <LandingHero />
       <LandingPricing />
       <aside aria-label="Advertisement" className="bg-background py-6">
