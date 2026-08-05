@@ -17,12 +17,11 @@ export default defineConfig(({ mode }) => ({
     react(),
     mode === "development" && componentTagger(),
     VitePWA({
-      registerType: "autoUpdate",
+      // Critical cache recovery: previously installed workers were keeping
+      // desktop users on an obsolete pricing/trial bundle. Keep the manifest
+      // installable while the generated worker removes itself and its caches.
+      selfDestroying: true,
       includeAssets: ["favicon.ico", "lovable-uploads/**/*"],
-      workbox: {
-        navigateFallbackDenylist: [/^\/~oauth/],
-        globPatterns: ["**/*.{js,css,html,ico,png,svg,jpg,jpeg,webp,woff,woff2}"],
-      },
       manifest: {
         name: "Eden Desk — Your Business. Organized.",
         short_name: "Eden Desk",

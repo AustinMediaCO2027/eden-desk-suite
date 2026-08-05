@@ -104,8 +104,8 @@ export const useSubscription = () => {
   const currentPlan = useMemo((): PlanName => {
     const plan = profile?.subscription_plan;
     if (!plan || plan === "free") return "free";
-    // Legacy trial accounts now receive the ad-supported Standard experience.
-    if (plan === "trial") return "trial";
+    // Legacy trial accounts receive the ad-supported Standard experience.
+    if (plan === "trial") return "free";
     if (["standard", "silver", "premium", "yearly"].includes(plan)) {
       return plan as PlanName;
     }
