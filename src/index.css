@@ -157,3 +157,18 @@
     animation: marquee 30s linear infinite;
   }
 }
+
+/* A4 document canvas: force any template root to the exact same box the PDF
+   pipeline renders at (794x1123px), so preview and export margins match. */
+.a4-canvas > * {
+  width: 794px !important;
+  min-width: 794px !important;
+  max-width: 794px !important;
+  height: 1123px !important;
+  min-height: 1123px !important;
+  max-height: 1123px !important;
+  margin: 0 !important;
+  transform: none !important;
+  box-sizing: border-box !important;
+  overflow: hidden !important;
+}
