@@ -14,9 +14,6 @@ export const PAYPAL_PLAN_PRICES: Record<
   {
     planName: string;
     productName: string;
-    trialPrice: number;
-    trialLengthMonths: number;
-    trialCycles: number;
     recurringPrice: number;
     currency: string;
     interval: string;
@@ -25,9 +22,6 @@ export const PAYPAL_PLAN_PRICES: Record<
   standard: {
     planName: "Eden Desk Standard Plan",
     productName: "Eden Desk Standard",
-    trialPrice: 0,
-    trialLengthMonths: 3,
-    trialCycles: 1,
     recurringPrice: 0,
     currency: "USD",
     interval: "month",
@@ -35,9 +29,6 @@ export const PAYPAL_PLAN_PRICES: Record<
   silver: {
     planName: "Eden Desk Silver Plan",
     productName: "Eden Desk Silver Plan",
-    trialPrice: 0,
-    trialLengthMonths: 3,
-    trialCycles: 1,
     recurringPrice: 2.99,
     currency: "USD",
     interval: "month",
@@ -45,9 +36,6 @@ export const PAYPAL_PLAN_PRICES: Record<
   premium: {
     planName: "Eden Desk Premium",
     productName: "Eden Desk Premium",
-    trialPrice: 0,
-    trialLengthMonths: 3,
-    trialCycles: 1,
     recurringPrice: 5.99,
     currency: "USD",
     interval: "month",

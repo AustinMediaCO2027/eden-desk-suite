@@ -137,9 +137,6 @@ const DashboardHome = () => {
     fetchData();
   }, [user]);
 
-  // No auto-trial activation — trial is manually activated via PaywallDialog
-
-
   const formatCurrency = (val: number) => convert(val);
 
   const getStatusBadge = (status: string | null) => {

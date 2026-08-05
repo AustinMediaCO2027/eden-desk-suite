@@ -32,8 +32,7 @@ const TasksPage = () => {
   const [showPaywall, setShowPaywall] = useState(false);
 
   const plan = profile?.subscription_plan || "free";
-  const hasTaskAccess = ["premium", "yearly"].includes(plan) || 
-    (plan === "trial" && profile?.trial_ends_at && new Date(profile.trial_ends_at) > new Date());
+  const hasTaskAccess = ["premium", "yearly"].includes(plan);
   const hasMeetingAccess = hasTaskAccess;
   const hasGoalAccess = ["premium", "yearly"].includes(plan);
   const hasAIAccess = ["premium", "yearly"].includes(plan);
