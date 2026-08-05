@@ -3,6 +3,8 @@ import { Link, useLocation, Outlet } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
 import { useTheme } from "@/hooks/useTheme";
+import { useSubscription, type PlanPermissions } from "@/hooks/useSubscription";
+import UpgradeDialog from "@/components/UpgradeDialog";
 import {
   LayoutDashboard,
   FileSpreadsheet,
@@ -19,6 +21,7 @@ import {
   FolderOpen,
   Gift,
   Shield,
+  Crown,
 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import edenLogo from "@/assets/eden_desk_logo.png";
@@ -34,10 +37,10 @@ const navItems = [
   { to: "/dashboard/quotes", icon: FileText, label: "Quotes" },
   { to: "/dashboard/letterhead", icon: Mail, label: "Letterheads" },
   { to: "/dashboard/clients", icon: Users, label: "Clients" },
-  { to: "/dashboard/files", icon: FolderOpen, label: "Files" },
+  { to: "/dashboard/files", icon: FolderOpen, label: "Files", feature: "fileManager" as keyof PlanPermissions },
   { to: "/dashboard/tasks", icon: CalendarDays, label: "Tasks" },
   { to: "/dashboard/referrals", icon: Gift, label: "Referrals" },
-  { to: "/dashboard/ai", icon: Bot, iconSrc: aiAgentIcon.url, label: "AI Agent" },
+  { to: "/dashboard/ai", icon: Bot, iconSrc: aiAgentIcon.url, label: "AI Agent", feature: "aiAgent" as keyof PlanPermissions },
   { to: "/dashboard/billing", icon: CreditCard, label: "Billing" },
   { to: "/dashboard/settings", icon: Settings, label: "Settings" },
 ];
@@ -47,13 +50,16 @@ export const DashboardLayout = () => {
   const { profile } = useProfile();
   const { theme, toggleTheme } = useTheme();
   const { isAdmin } = useAffiliate();
+  const { canUseFeature } = useSubscription();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [upgradeFeature, setUpgradeFeature] = useState<string | null>(null);
 
   const allNavItems = [
     ...navItems,
     ...(isAdmin ? [{ to: "/dashboard/admin/affiliates", icon: Shield, label: "Admin Affiliates" }] : []),
   ];
+
 
   return (
     <div className="flex h-screen bg-background overflow-hidden">
@@ -86,28 +92,49 @@ export const DashboardLayout = () => {
 
         {/* Navigation */}
         <nav className="flex-1 px-3 pt-2 overflow-y-auto space-y-1">
-          {allNavItems.map(({ to, icon: Icon, label, iconSrc }: any) => {
+          {allNavItems.map(({ to, icon: Icon, label, iconSrc, feature }: any) => {
             const isActive = location.pathname === to;
-            return (
-              <Link
-                key={to}
-                to={to}
-                onClick={() => setSidebarOpen(false)}
-                className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-150 ${
-                  isActive
-                    ? "bg-sidebar-primary/10 text-sidebar-primary border-l-[3px] border-sidebar-primary -ml-[3px] pl-[calc(0.75rem+3px)]"
-                    : "text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent/50"
-                }`}
-              >
+            const locked = feature ? !canUseFeature(feature) : false;
+            const inner = (
+              <>
                 {iconSrc ? (
                   <img src={iconSrc} alt="" aria-hidden className="h-[18px] w-[18px] shrink-0 object-contain" />
                 ) : (
                   <Icon className={`h-[18px] w-[18px] shrink-0 ${isActive ? "text-sidebar-primary" : ""}`} />
                 )}
                 <span>{label}</span>
+                {locked && <Crown className="h-3.5 w-3.5 ml-auto shrink-0 text-amber-500" aria-label="Premium feature" />}
+              </>
+            );
+            const className = `flex items-center gap-3 w-full rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-150 text-left ${
+              isActive
+                ? "bg-sidebar-primary/10 text-sidebar-primary border-l-[3px] border-sidebar-primary -ml-[3px] pl-[calc(0.75rem+3px)]"
+                : "text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent/50"
+            }`;
+
+            if (locked) {
+              return (
+                <button
+                  key={to}
+                  type="button"
+                  className={className}
+                  onClick={() => {
+                    setSidebarOpen(false);
+                    setUpgradeFeature(label);
+                  }}
+                >
+                  {inner}
+                </button>
+              );
+            }
+
+            return (
+              <Link key={to} to={to} onClick={() => setSidebarOpen(false)} className={className}>
+                {inner}
               </Link>
             );
           })}
+
         </nav>
 
         {/* Bottom section */}
@@ -158,6 +185,14 @@ export const DashboardLayout = () => {
           <Outlet />
         </main>
       </div>
+
+      <UpgradeDialog
+        open={!!upgradeFeature}
+        onOpenChange={(open) => !open && setUpgradeFeature(null)}
+        feature={upgradeFeature ?? ""}
+        requiredPlan="Silver"
+      />
     </div>
+
   );
 };
