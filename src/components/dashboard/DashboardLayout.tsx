@@ -185,6 +185,14 @@ export const DashboardLayout = () => {
           <Outlet />
         </main>
       </div>
+
+      <UpgradeDialog
+        open={!!upgradeFeature}
+        onOpenChange={(open) => !open && setUpgradeFeature(null)}
+        feature={upgradeFeature ?? ""}
+        requiredPlan="Silver"
+      />
     </div>
+
   );
 };
