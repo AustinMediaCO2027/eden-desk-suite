@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useRef } from "react";
 import { useSubscription } from "@/hooks/useSubscription";
 
 export type AdSlot = "728x90" | "300x250" | "320x50" | "160x600" | "160x300";
@@ -13,8 +13,8 @@ const AD_KEYS: Record<AdSlot, { key: string; width: number; height: number }> = 
 
 /** True when the signed-in user is on the free (Standard) plan and should see ads. */
 export const useShowAds = () => {
-  const { currentPlan, loading } = useSubscription();
-  return !loading && (currentPlan === "free" || currentPlan === "standard");
+  const { currentPlan } = useSubscription();
+  return currentPlan === "free" || currentPlan === "standard";
 };
 
 interface AdBannerProps {
@@ -23,15 +23,24 @@ interface AdBannerProps {
 }
 
 /**
- * Renders a Highperformanceformat ad unit inside an isolated iframe (srcDoc),
- * which is the safe way to run third-party document.write ad scripts in React.
+ * Renders a Highperformanceformat ad unit inside its own iframe document.
+ * Each unit needs its own `atOptions` global, so an isolated document is the
+ * only reliable way to run several units on one page.
  */
 export const AdBanner = ({ slot, className = "" }: AdBannerProps) => {
   const showAds = useShowAds();
   const cfg = AD_KEYS[slot];
+  const frameRef = useRef<HTMLIFrameElement | null>(null);
 
-  const srcDoc = useMemo(
-    () => `<!DOCTYPE html><html><head><meta charset="utf-8" />
+  useEffect(() => {
+    if (!showAds) return;
+    const frame = frameRef.current;
+    if (!frame) return;
+    const doc = frame.contentDocument;
+    if (!doc) return;
+
+    doc.open();
+    doc.write(`<!DOCTYPE html><html><head><meta charset="utf-8" />
 <style>html,body{margin:0;padding:0;overflow:hidden;background:transparent;}</style>
 </head><body>
 <script type="text/javascript">
@@ -42,11 +51,11 @@ export const AdBanner = ({ slot, className = "" }: AdBannerProps) => {
     'width' : ${cfg.width},
     'params' : {}
   };
-</script>
-<script type="text/javascript" src="https://www.highperformanceformat.com/${cfg.key}/invoke.js"></script>
-</body></html>`,
-    [cfg]
-  );
+<\/script>
+<script type="text/javascript" src="https://www.highperformanceformat.com/${cfg.key}/invoke.js"><\/script>
+</body></html>`);
+    doc.close();
+  }, [showAds, cfg]);
 
   if (!showAds) return null;
 
@@ -56,14 +65,13 @@ export const AdBanner = ({ slot, className = "" }: AdBannerProps) => {
       style={{ width: cfg.width, height: cfg.height, maxWidth: "100%" }}
     >
       <iframe
+        ref={frameRef}
         title={`ad-${slot}`}
-        srcDoc={srcDoc}
         width={cfg.width}
         height={cfg.height}
         scrolling="no"
         frameBorder={0}
         style={{ border: 0, display: "block", maxWidth: "100%" }}
-        sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox allow-same-origin"
       />
     </div>
   );
