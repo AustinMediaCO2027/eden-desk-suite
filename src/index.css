@@ -160,7 +160,7 @@
 
 /* A4 document canvas: force any template root to the exact same box the PDF
    pipeline renders at (794x1123px), so preview and export margins match. */
-.a4-canvas > * {
+.a4-canvas > *:not(.pdf-footer-watermark) {
   width: 794px !important;
   min-width: 794px !important;
   max-width: 794px !important;
