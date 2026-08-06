@@ -12,6 +12,7 @@ import QuotePrint from "@/components/print/QuotePrint";
 import LetterheadPrint from "@/components/print/LetterheadPrint";
 
 import { A4_WIDTH_MM, A4_HEIGHT_MM, A4_WIDTH_PX, A4_HEIGHT_PX } from "@/components/templates/a4";
+import { drawPdfWatermark } from "@/lib/pdf-watermark";
 
 
 interface BaseDocumentPayload {
@@ -43,7 +44,10 @@ export interface LetterheadPDFPayload extends LetterheadTemplateProps {
   templateStyle?: string;
 }
 
-export type DocumentPDFPayload = InvoicePDFPayload | QuotePDFPayload | LetterheadPDFPayload;
+export type DocumentPDFPayload = (InvoicePDFPayload | QuotePDFPayload | LetterheadPDFPayload) & {
+  /** Free-tier clickable footer watermark. */
+  watermark?: boolean;
+};
 
 const waitForNextFrame = () =>
   new Promise<void>((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
@@ -419,6 +423,10 @@ const buildSinglePagePdf = async (payload: DocumentPDFPayload, _filename: string
 
     const imgData = canvas.toDataURL("image/png");
     pdf.addImage(imgData, "PNG", 0, 0, A4_WIDTH_MM, A4_HEIGHT_MM, undefined, "FAST");
+
+    if (payload.watermark) {
+      drawPdfWatermark(pdf);
+    }
 
     return pdf;
   } catch (err) {

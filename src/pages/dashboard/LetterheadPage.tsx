@@ -63,7 +63,7 @@ const LetterheadPage = () => {
   const { toast } = useToast();
   const { showPaywall, setShowPaywall, checkAndProceed } = useGenerationLimit("letterhead");
   const { requireAuth, gateDialog } = useAuthGate("create your letterhead");
-  const { canUseFeature } = useSubscription();
+  const { canUseFeature, isPaid } = useSubscription();
   const [showUpgrade, setShowUpgrade] = useState(false);
   const [letterheads, setLetterheads] = useState<any[]>([]);
   const [editing, setEditing] = useState<LetterheadForm | null>(null);
@@ -189,6 +189,7 @@ const LetterheadPage = () => {
                   senderName: editing.sender_name,
                   senderTitle: editing.sender_title,
                   colorOverride: previewColor || undefined,
+                  watermark: !isPaid,
                   signatureUrl: editing.signature_url || undefined,
                 },
                 `letterhead-${editing.title}`
