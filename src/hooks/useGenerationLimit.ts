@@ -1,75 +1,89 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
 
 export type FeatureType = "invoice" | "quote" | "letterhead" | "general";
 
-const FREE_LIMITS: Record<FeatureType, number> = {
-  invoice: 1,
-  quote: 1,
-  letterhead: 1,
-  general: 1, // fallback for old behavior
+/** Free plan: 4 documents per day, per document type. */
+export const FREE_DAILY_LIMIT = 4;
+
+const TABLES: Record<FeatureType, "invoices" | "quotes" | "letterheads" | null> = {
+  invoice: "invoices",
+  quote: "quotes",
+  letterhead: "letterheads",
+  general: null,
+};
+
+const startOfToday = () => {
+  const d = new Date();
+  d.setHours(0, 0, 0, 0);
+  return d.toISOString();
 };
 
 export const useGenerationLimit = (featureType: FeatureType = "general") => {
   const { user } = useAuth();
-  const { profile, refetch } = useProfile();
+  const { profile } = useProfile();
   const [showPaywall, setShowPaywall] = useState(false);
+  const [usedToday, setUsedToday] = useState(0);
 
-  const getUsedCount = useCallback((type: FeatureType): number => {
-    if (!profile) return 0;
-    const p = profile as any;
-    switch (type) {
-      case "invoice": return p.free_invoices_used || 0;
-      case "quote": return p.free_quotes_used || 0;
-      case "letterhead": return p.free_letterheads_used || 0;
-      default: return p.free_generations_used || 0;
-    }
+  const isPaidUser = useCallback(() => {
+    const plan = profile?.subscription_plan;
+    return !!plan && !["trial", "free", "standard"].includes(plan);
   }, [profile]);
 
-  const canGenerate = useCallback(() => {
-    if (!profile) return false;
-    const plan = profile.subscription_plan;
-    // Paid users can always generate
-    if (plan && !["trial", "free"].includes(plan)) return true;
-    // Active trial users can generate
-    if (plan === "trial" && profile.trial_ends_at) {
-      if (new Date(profile.trial_ends_at) > new Date()) return true;
+  const fetchUsage = useCallback(async () => {
+    const table = TABLES[featureType];
+    if (!user || !table || isPaidUser()) {
+      setUsedToday(0);
+      return 0;
     }
-    // Free/expired trial: check per-feature limit
-    return getUsedCount(featureType) < FREE_LIMITS[featureType];
-  }, [profile, featureType, getUsedCount]);
+    const { count } = await supabase
+      .from(table)
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", user.id)
+      .gte("created_at", startOfToday());
+    const value = count ?? 0;
+    setUsedToday(value);
+    return value;
+  }, [user, featureType, isPaidUser]);
+
+  useEffect(() => {
+    void fetchUsage();
+  }, [fetchUsage]);
+
+  const canGenerate = isPaidUser() || !TABLES[featureType] ? true : usedToday < FREE_DAILY_LIMIT;
 
   const recordGeneration = useCallback(async () => {
-    if (!user || !profile) return;
-    const plan = profile.subscription_plan;
-    // Only count for free/expired trial users
-    if (plan && !["trial", "free"].includes(plan)) return;
-    if (plan === "trial" && profile.trial_ends_at && new Date(profile.trial_ends_at) > new Date()) return;
+    await fetchUsage();
+  }, [fetchUsage]);
 
-    const updateField: Record<FeatureType, string> = {
-      invoice: "free_invoices_used",
-      quote: "free_quotes_used",
-      letterhead: "free_letterheads_used",
-      general: "free_generations_used",
-    };
+  const checkAndProceed = useCallback(
+    async (onAllowed: () => Promise<void> | void) => {
+      if (isPaidUser() || !TABLES[featureType]) {
+        await onAllowed();
+        return;
+      }
+      // Always re-check against live data so the limit can't be bypassed by stale state.
+      const current = await fetchUsage();
+      if (current < FREE_DAILY_LIMIT) {
+        await onAllowed();
+        await fetchUsage();
+      } else {
+        setShowPaywall(true);
+      }
+    },
+    [isPaidUser, featureType, fetchUsage]
+  );
 
-    await supabase
-      .from("profiles")
-      .update({ [updateField[featureType]]: getUsedCount(featureType) + 1 } as any)
-      .eq("user_id", user.id);
-    refetch?.();
-  }, [user, profile, refetch, featureType, getUsedCount]);
-
-  const checkAndProceed = useCallback(async (onAllowed: () => Promise<void> | void) => {
-    if (canGenerate()) {
-      await onAllowed();
-      await recordGeneration();
-    } else {
-      setShowPaywall(true);
-    }
-  }, [canGenerate, recordGeneration]);
-
-  return { canGenerate: canGenerate(), showPaywall, setShowPaywall, checkAndProceed, recordGeneration };
+  return {
+    canGenerate,
+    usedToday,
+    remainingToday: Math.max(0, FREE_DAILY_LIMIT - usedToday),
+    dailyLimit: FREE_DAILY_LIMIT,
+    showPaywall,
+    setShowPaywall,
+    checkAndProceed,
+    recordGeneration,
+  };
 };
