@@ -19,6 +19,7 @@ import SendDocumentDialog from "@/components/dashboard/SendDocumentDialog";
 import type { Json } from "@/integrations/supabase/types";
 import { useGenerationLimit } from "@/hooks/useGenerationLimit";
 import PaywallDialog from "@/components/PaywallDialog";
+import { useSubscription } from "@/hooks/useSubscription";
 import { useAuthGate } from "@/components/SignInPromptDialog";
 
 interface InvoiceForm {
