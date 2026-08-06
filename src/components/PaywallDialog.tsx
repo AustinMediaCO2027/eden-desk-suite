@@ -24,9 +24,9 @@ const PaywallDialog = ({ open, onOpenChange }: PaywallDialogProps) => {
           <div className="h-14 w-14 rounded-2xl bg-muted flex items-center justify-center mb-6">
             <Lock className="h-7 w-7 text-muted-foreground" />
           </div>
-          <h2 className="text-2xl font-bold tracking-tight mb-2">Free Access Used</h2>
+          <h2 className="text-2xl font-bold tracking-tight mb-2">Daily Free Limit Reached</h2>
           <p className="text-sm text-muted-foreground leading-relaxed max-w-xs">
-            You've reached the free usage limit for this feature. Choose a paid plan to continue.
+            Free accounts can create 4 documents per day for each type. Upgrade for unlimited access, or try again tomorrow.
           </p>
           <div className="w-full mt-6 space-y-2.5">
             {features.map((feature) => (
