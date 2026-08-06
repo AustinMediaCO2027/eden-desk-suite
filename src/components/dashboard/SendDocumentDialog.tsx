@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Send, X, Mail, ExternalLink } from "lucide-react";
 import { generateDocumentPDFBase64 } from "@/lib/pdf";
 import { useAuthGate } from "@/components/SignInPromptDialog";
+import { useSubscription } from "@/hooks/useSubscription";
 import { isValidEmailAddress, sanitizeDocumentFilename } from "@/lib/document-export-utils";
 
 interface SendDocumentDialogProps {
@@ -86,6 +87,7 @@ const SendDocumentDialog = ({
         taxRate,
         notes: notes || "",
         status: status || (type === "invoice" ? "draft" : "pending"),
+        watermark: !isPaid,
       };
 
       const pdfBase64 =
