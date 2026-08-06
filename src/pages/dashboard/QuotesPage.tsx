@@ -55,6 +55,7 @@ const QuotesPage = () => {
   const { toast } = useToast();
   const { showPaywall, setShowPaywall, checkAndProceed } = useGenerationLimit("quote");
   const { requireAuth, gateDialog } = useAuthGate("create your quote");
+  const { isPaid } = useSubscription();
   const [quotes, setQuotes] = useState<any[]>([]);
   const [editing, setEditing] = useState<QuoteForm | null>(null);
   const [previewing, setPreviewing] = useState(false);
@@ -193,6 +194,7 @@ const QuotesPage = () => {
                   notes: editing.notes,
                   status: editing.status,
                   colorOverride: previewColor || undefined,
+                  watermark: !isPaid,
                 },
                 `quote-${editing.quote_number}`
               ))

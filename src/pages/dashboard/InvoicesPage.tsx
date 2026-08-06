@@ -55,6 +55,7 @@ const InvoicesPage = () => {
   const { toast } = useToast();
   const { showPaywall, setShowPaywall, checkAndProceed } = useGenerationLimit("invoice");
   const { requireAuth, gateDialog } = useAuthGate("create your invoice");
+  const { isPaid } = useSubscription();
   const [invoices, setInvoices] = useState<any[]>([]);
   const [editing, setEditing] = useState<InvoiceForm | null>(null);
   const [previewing, setPreviewing] = useState(false);
@@ -169,6 +170,7 @@ const InvoicesPage = () => {
                   notes: editing.notes,
                   status: editing.status,
                   colorOverride: previewColor || undefined,
+                  watermark: !isPaid,
                 },
                 `invoice-${editing.invoice_number}`
               ))
