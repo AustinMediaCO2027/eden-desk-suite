@@ -62,6 +62,7 @@ const SendLetterheadDialog = ({
   );
 
   const { requireAuth, gateDialog, isGuest } = useAuthGate("send this document");
+  const { isPaid } = useSubscription();
 
   const handleSend = async () => {
     if (isGuest) { requireAuth(() => {}); return; }

@@ -58,6 +58,7 @@ const SendDocumentDialog = ({
   );
 
   const { requireAuth, gateDialog, isGuest } = useAuthGate("send this document");
+  const { isPaid } = useSubscription();
 
   const handleSendViaEmail = async () => {
     if (isGuest) { requireAuth(() => {}); return; }

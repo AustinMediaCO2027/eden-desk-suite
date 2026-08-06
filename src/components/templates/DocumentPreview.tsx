@@ -5,6 +5,8 @@ import InvoicePrint from "@/components/print/InvoicePrint";
 import QuotePrint from "@/components/print/QuotePrint";
 import ScaledPage from "@/components/templates/ScaledPage";
 import { A4_CANVAS_STYLE } from "@/components/templates/a4";
+import DocumentWatermark from "@/components/templates/DocumentWatermark";
+import { useSubscription } from "@/hooks/useSubscription";
 
 
 
@@ -66,6 +68,7 @@ interface DocumentPreviewProps {
 
 const DocumentPreview = forwardRef<HTMLDivElement, DocumentPreviewProps>(
   ({ id, templateStyle = "classic", ...props }, ref) => {
+    const { isPaid } = useSubscription();
     return (
       <ScaledPage>
         <div id={id} ref={ref} className="a4-canvas" style={A4_CANVAS_STYLE}>
@@ -101,6 +104,7 @@ const DocumentPreview = forwardRef<HTMLDivElement, DocumentPreviewProps>(
               colorOverride={props.colorOverride}
             />
           )}
+          {!isPaid && <DocumentWatermark />}
         </div>
       </ScaledPage>
     );
