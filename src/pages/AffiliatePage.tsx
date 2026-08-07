@@ -162,7 +162,7 @@ const AffiliatePage = () => {
         <div className="mb-16">
           <h2 className="text-lg font-bold text-center mb-2">Commission Structure</h2>
           <p className="text-xs text-muted-foreground text-center mb-8">Earn 25% on Silver and 30% on Premium for the first 3 billing cycles per referred subscriber</p>
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {commissionTiers.map(t => (
               <div key={t.plan} className="rounded-xl border border-border/40 bg-card/30 p-5 text-center">
                 <p className="text-xs font-medium text-muted-foreground mb-1">{t.plan}</p>
@@ -218,7 +218,7 @@ const AffiliatePage = () => {
             <h2 className="text-lg font-bold mb-4">Apply Now</h2>
 
             {/* Basic Info */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <Label className="text-xs">Full Name *</Label>
                 <Input value={form.full_name} onChange={e => update("full_name", e.target.value)} required />
@@ -248,7 +248,7 @@ const AffiliatePage = () => {
             {/* Social Media */}
             <div className="pt-2">
               <h3 className="text-sm font-semibold mb-3">Social Media Profiles</h3>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <Label className="text-xs">Instagram URL</Label>
                   <Input value={form.instagram_url} onChange={e => update("instagram_url", e.target.value)} placeholder="https://instagram.com/..." />
