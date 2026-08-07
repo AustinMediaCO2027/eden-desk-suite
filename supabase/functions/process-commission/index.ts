@@ -6,8 +6,7 @@ const corsHeaders = {
 };
 
 const PLAN_PRICES: Record<string, number> = {
-  standard: 49.99,
-  silver: 85.99,
+  silver: 49.99,
   premium: 99.99,
   yearly: 985,
 };
@@ -41,8 +40,8 @@ Deno.serve(async (req) => {
       });
     }
 
-    if (plan === "trial" || plan === "free") {
-      return new Response(JSON.stringify({ skipped: true, reason: "No commission for trial/free" }), {
+    if (plan === "trial" || plan === "free" || plan === "standard") {
+      return new Response(JSON.stringify({ skipped: true, reason: "No commission for the free plan" }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
@@ -113,7 +112,12 @@ Deno.serve(async (req) => {
       });
     }
 
-    const planPrice = PLAN_PRICES[plan] || 49.99;
+    const planPrice = PLAN_PRICES[plan];
+    if (!planPrice) {
+      return new Response(JSON.stringify({ error: "Unsupported paid plan" }), {
+        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
     const commissionRate = commissionRateForPlan(plan);
     const amount = Math.round(planPrice * commissionRate * 100) / 100;
     const now = new Date();
