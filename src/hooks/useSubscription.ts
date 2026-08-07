@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from "react";
 import { useProfile } from "@/hooks/useProfile";
 
-export type PlanName = "free" | "trial" | "standard" | "silver" | "premium" | "yearly";
+export type PlanName = "free" | "standard" | "silver" | "premium" | "yearly";
 
 export interface PlanPermissions {
   invoices: boolean;
@@ -41,24 +41,6 @@ const PLAN_PERMISSIONS: Record<PlanName, PlanPermissions> = {
     advancedReports: false,
     exportExcel: false,
     maxAiPromptsPerDay: 0,
-  },
-  trial: {
-    invoices: true,
-    quotes: true,
-    downloadPdf: true,
-    emailSending: true,
-    letterheads: true,
-    tasks: true,
-    goals: true,
-    aiAgent: true,
-    unlimitedAi: false,
-    fileManager: false,
-    purchaseOrders: false,
-    clientStatements: false,
-    accountingReports: false,
-    advancedReports: false,
-    exportExcel: false,
-    maxAiPromptsPerDay: 5,
   },
   standard: {
     invoices: true,
@@ -151,28 +133,6 @@ export const useSubscription = () => {
 
   const permissions = useMemo(() => PLAN_PERMISSIONS[currentPlan], [currentPlan]);
 
-  const isTrialActive = useMemo(() => {
-    if (profile?.subscription_plan !== "trial") return false;
-    if (!profile?.trial_ends_at) return false;
-    return new Date(profile.trial_ends_at) > new Date();
-  }, [profile]);
-
-  const trialDaysRemaining = useMemo(() => {
-    if (!isTrialActive || !profile?.trial_ends_at) return 0;
-    const diff = new Date(profile.trial_ends_at).getTime() - Date.now();
-    return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
-  }, [isTrialActive, profile]);
-
-  const isTrialExpired = useMemo(() => {
-    if (profile?.subscription_plan !== "trial") return false;
-    if (!profile?.trial_ends_at) return false;
-    return new Date(profile.trial_ends_at) < new Date();
-  }, [profile]);
-
-  const trialUsed = useMemo(() => {
-    return (profile as any)?.trial_used === true;
-  }, [profile]);
-
   const isPaid = useMemo(() => {
     return ["silver", "premium", "yearly"].includes(currentPlan);
   }, [currentPlan]);
@@ -192,10 +152,6 @@ export const useSubscription = () => {
   return {
     currentPlan,
     permissions,
-    isTrialActive,
-    trialDaysRemaining,
-    isTrialExpired,
-    trialUsed,
     isPaid,
     canUseFeature,
     planDisplayName,

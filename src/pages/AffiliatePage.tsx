@@ -8,6 +8,9 @@ import { Link } from "react-router-dom";
 import { Check, ArrowLeft, Link2, BarChart3, DollarSign, Users, Zap, Globe } from "lucide-react";
 import edenDarkLogo from "@/assets/eden_dark_logo.png";
 import { z } from "zod";
+import { useAuth } from "@/hooks/useAuth";
+import { AdBanner } from "@/components/ads/AdBanner";
+import { SocialBar } from "@/components/ads/SocialBar";
 
 const optionalUrl = (domain?: string) =>
   z.string().max(500).optional().default("").transform(val => val?.trim() ?? "").pipe(
@@ -41,9 +44,9 @@ const schema = z.object({
 });
 
 const commissionTiers = [
-  { plan: "Standard", amount: "25%", desc: "per subscriber/month" },
+  { plan: "Standard", amount: "No commission", desc: "free plan" },
   { plan: "Silver", amount: "25%", desc: "per subscriber/month" },
-  { plan: "Premium", amount: "25%", desc: "per subscriber/month" },
+  { plan: "Premium", amount: "30%", desc: "per subscriber/month" },
 ];
 
 const howItWorks = [
@@ -54,6 +57,7 @@ const howItWorks = [
 
 const AffiliatePage = () => {
   const { toast } = useToast();
+  const { user, loading: authLoading } = useAuth();
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
@@ -64,6 +68,10 @@ const AffiliatePage = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!user) {
+      toast({ title: "Sign in required", description: "You must be a registered Eden Desk user to join the affiliate programme." });
+      return;
+    }
     const result = schema.safeParse(form);
     if (!result.success) {
       toast({ title: "Validation error", description: result.error.errors[0].message, variant: "destructive" });
@@ -71,7 +79,7 @@ const AffiliatePage = () => {
     }
     setLoading(true);
     const { error } = await supabase.from("affiliates").insert({
-      ...result.data, status: "pending",
+      ...result.data, user_id: user.id, status: "pending",
     } as any);
     setLoading(false);
     if (error) {
@@ -94,6 +102,7 @@ const AffiliatePage = () => {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
+      <SocialBar publicPlacement />
       {/* Nav */}
       <nav className="border-b border-border/30 px-6 py-4 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2">
@@ -120,6 +129,11 @@ const AffiliatePage = () => {
           </p>
         </div>
 
+        <aside aria-label="Advertisement" className="mb-12 w-full">
+          <AdBanner slot="728x90" className="hidden md:block" publicPlacement />
+          <AdBanner slot="320x50" className="md:hidden" publicPlacement />
+        </aside>
+
         {/* How it Works */}
         <div className="mb-16">
           <h2 className="text-lg font-bold text-center mb-8">How It Works</h2>
@@ -139,10 +153,15 @@ const AffiliatePage = () => {
           </div>
         </div>
 
+        <aside aria-label="Advertisement" className="mb-16 grid gap-6 lg:grid-cols-2 lg:items-start">
+          <AdBanner slot="300x250" publicPlacement />
+          <AdBanner slot="160x300" publicPlacement />
+        </aside>
+
         {/* Commission Tiers */}
         <div className="mb-16">
           <h2 className="text-lg font-bold text-center mb-2">Commission Structure</h2>
-          <p className="text-xs text-muted-foreground text-center mb-8">Earn 25% commission for the first 3 billing cycles per referred subscriber</p>
+          <p className="text-xs text-muted-foreground text-center mb-8">Earn 25% on Silver and 30% on Premium for the first 3 billing cycles per referred subscriber</p>
           <div className="grid grid-cols-3 gap-4">
             {commissionTiers.map(t => (
               <div key={t.plan} className="rounded-xl border border-border/40 bg-card/30 p-5 text-center">
@@ -174,7 +193,17 @@ const AffiliatePage = () => {
           </div>
         </div>
 
-        {submitted ? (
+        {authLoading ? (
+          <div className="py-12 text-center text-sm text-muted-foreground">Checking your account...</div>
+        ) : !user ? (
+          <div className="border-y border-border/40 py-12 text-center">
+            <h2 className="text-xl font-bold mb-2">Register to join the affiliate programme</h2>
+            <p className="text-sm text-muted-foreground mb-6">Affiliate applications are available to registered Eden Desk users only.</p>
+            <Link to="/auth?mode=signup&redirect=/affiliate">
+              <Button>Register or sign in</Button>
+            </Link>
+          </div>
+        ) : submitted ? (
           <div className="text-center py-16">
             <div className="h-14 w-14 rounded-full bg-foreground/10 flex items-center justify-center mx-auto mb-4">
               <Check className="h-7 w-7 text-foreground" />

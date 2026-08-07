@@ -12,7 +12,7 @@ const PLAN_PRICES: Record<string, number> = {
   yearly: 985,
 };
 
-const COMMISSION_RATE = 0.25; // 25%
+const commissionRateForPlan = (plan: string) => plan === "premium" || plan === "yearly" ? 0.30 : 0.25;
 
 const MAX_COMMISSIONS = 3;
 
@@ -114,7 +114,8 @@ Deno.serve(async (req) => {
     }
 
     const planPrice = PLAN_PRICES[plan] || 49.99;
-    const amount = Math.round(planPrice * COMMISSION_RATE * 100) / 100;
+    const commissionRate = commissionRateForPlan(plan);
+    const amount = Math.round(planPrice * commissionRate * 100) / 100;
     const now = new Date();
 
     const updateData: Record<string, any> = {
@@ -151,7 +152,7 @@ Deno.serve(async (req) => {
       })
       .eq("id", affiliateId);
 
-    return new Response(JSON.stringify({ success: true, amount, commissions_remaining: MAX_COMMISSIONS - commissionsPaid - 1 }), {
+    return new Response(JSON.stringify({ success: true, amount, commission_rate: commissionRate, commissions_remaining: MAX_COMMISSIONS - commissionsPaid - 1 }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (err) {
