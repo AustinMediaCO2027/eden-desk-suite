@@ -129,7 +129,7 @@ const ReferralsPage = () => {
         <div>
           <h1 className="text-xl font-bold tracking-tight">Referrals</h1>
           <p className="text-sm text-muted-foreground mt-1">
-            Share your link and earn recurring commissions for the first 3 months per subscriber.
+            Earn 25% on Silver and 30% on Premium for the first 3 billing cycles per subscriber.
           </p>
         </div>
         {isApproved && (

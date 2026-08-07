@@ -16,6 +16,9 @@ const Auth = () => {
   const [searchParams] = useSearchParams();
   const isSignUp = searchParams.get("mode") === "signup";
   const redirectTarget = searchParams.get("redirect");
+  const safeRedirectTarget = redirectTarget?.startsWith("/") && !redirectTarget.startsWith("//")
+    ? redirectTarget
+    : "/dashboard";
   const [mode, setMode] = useState<"login" | "signup" | "forgot">(isSignUp ? "signup" : "login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -25,7 +28,7 @@ const Auth = () => {
   const { user } = useAuth();
 
   if (user) {
-    return <Navigate to="/dashboard" replace />;
+    return <Navigate to={safeRedirectTarget} replace />;
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -43,7 +46,7 @@ const Auth = () => {
         const { data, error } = await supabase.auth.signUp({
           email,
           password,
-          options: { emailRedirectTo: `${window.location.origin}/dashboard` },
+          options: { emailRedirectTo: `${window.location.origin}${safeRedirectTarget}` },
         });
         if (error) throw error;
         // New accounts start on the free, ad-supported Standard plan.
@@ -70,7 +73,7 @@ const Auth = () => {
   const handleGoogleLogin = async () => {
     try {
       const result = await lovable.auth.signInWithOAuth("google", {
-        redirect_uri: `${window.location.origin}/dashboard`,
+        redirect_uri: `${window.location.origin}${safeRedirectTarget}`,
         extraParams: { prompt: "select_account" },
       });
       if (result?.error) {
