@@ -126,9 +126,9 @@ serve(async (req) => {
         break;
       case "BILLING.SUBSCRIPTION.ACTIVATED":
       case "BILLING.SUBSCRIPTION.RE-ACTIVATED":
-        updates.subscription_status = "trialing";
+        updates.subscription_status = "active";
         updates.cancellation_status = "none";
-        profileUpdates = { subscription_plan: sub.selected_plan, payment_status: "trialing" };
+        profileUpdates = { subscription_plan: sub.selected_plan, trial_active: false, payment_status: "complete" };
         break;
       case "PAYMENT.SALE.COMPLETED":
         updates.subscription_status = "active";

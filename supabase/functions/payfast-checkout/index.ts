@@ -187,10 +187,8 @@ serve(async (req) => {
       userEmail,
       userId,
       companyName,
-      isTrial,
       returnUrl,
       cancelUrl,
-      trialRecurringAmount,
       country,
     } = body ?? {};
 
@@ -220,36 +218,19 @@ serve(async (req) => {
     }
 
     const isSubscriptionPlan = typeof planId === "string" && planId in PAYFAST_PLAN_PRICES;
-    if (isTrial) {
-      const { data: profile } = await adminSupabase
-        .from("profiles")
-        .select("trial_used")
-        .eq("user_id", userId)
-        .single();
-
-      if (profile?.trial_used && isTrial) {
-        return new Response(JSON.stringify({ error: "Trial already used" }), {
-          status: 400,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-    }
-
     // Use a real R5 verification payment so 3DS runs as a conventional card transaction.
-    const rawTrialInitial = (Deno.env.get("PAYFAST_TRIAL_INITIAL_AMOUNT") || "5.00").trim();
-    const parsedTrialInitial = Number(rawTrialInitial);
-    const trialInitialAmount = Number.isFinite(parsedTrialInitial) && parsedTrialInitial >= 5
-      ? parsedTrialInitial.toFixed(2)
+    const rawVerificationAmount = (Deno.env.get("PAYFAST_TRIAL_INITIAL_AMOUNT") || "5.00").trim();
+    const parsedVerificationAmount = Number(rawVerificationAmount);
+    const verificationAmount = Number.isFinite(parsedVerificationAmount) && parsedVerificationAmount >= 5
+      ? parsedVerificationAmount.toFixed(2)
       : "5.00";
 
-    const paymentAmount = isSubscriptionPlan || isTrial
-      ? trialInitialAmount
+    const paymentAmount = isSubscriptionPlan
+      ? verificationAmount
       : formatAmount(amount, "0.00");
     const recurringAmount = isSubscriptionPlan
       ? PAYFAST_PLAN_PRICES[planId as string].toFixed(2)
-      : isTrial
-        ? formatAmount(trialRecurringAmount, "39.99")
-        : formatAmount(amount, "0.00");
+      : formatAmount(amount, "0.00");
 
 
 
@@ -303,7 +284,7 @@ serve(async (req) => {
     const lastName = sanitizeText(lastNameParts.join(" ") || "Customer", 100) || "Customer";
 
     // Keep the merchant reference short and strictly alphanumeric.
-    const rawReference = `${userId.replace(/-/g, "").slice(0, 12)}-${isTrial ? "trial" : (planId || "plan")}-${Date.now().toString(36)}`;
+    const rawReference = `${userId.replace(/-/g, "").slice(0, 12)}-${planId || "plan"}-${Date.now().toString(36)}`;
     const billingDate = formatBillingDate(0);
 
     // Empty string means "let PayFast decide" (it already restricts recurring
@@ -326,20 +307,18 @@ serve(async (req) => {
       item_description: sanitizeText(
         isSubscriptionPlan
           ? `R${paymentAmount} card verification then R${recurringAmount} per month`
-          : isTrial
-            ? `7 day trial then R${recurringAmount} per month`
-            : `${planName} subscription ${period}`,
+          : `${planName} subscription ${period}`,
         255,
       ),
       custom_str1: userId,
-      custom_str2: isTrial ? "trial" : (planId || ""),
+      custom_str2: planId || "",
       custom_str3: isSubscriptionPlan ? "subscription" : undefined,
       custom_str4: country ? String(country).toUpperCase().substring(0, 10) : undefined,
       payment_method: paymentMethodOverride || undefined,
       subscription_type: "1",
       billing_date: billingDate,
       recurring_amount: recurringAmount,
-      frequency: isTrial ? "3" : (planId === "yearly" ? "6" : "3"),
+      frequency: planId === "yearly" ? "6" : "3",
 
       cycles: "0",
       subscription_notify_email: "true",

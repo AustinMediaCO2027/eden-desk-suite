@@ -3,7 +3,7 @@ import App from "./App.tsx";
 import "./index.css";
 
 /** Bump this string to force every visitor's browser to drop stale caches. */
-const CACHE_RELEASE = "2026-08-08-logout-cache-1";
+const CACHE_RELEASE = "2026-08-08-no-trial-final-2";
 
 const unregisterServiceWorkers = async () => {
   if (!("serviceWorker" in navigator)) return false;
@@ -34,13 +34,16 @@ const purgeStaleCaches = async () => {
   }
 };
 
-void purgeStaleCaches();
-
 const root = document.getElementById("root");
 
 if (!root) {
   throw new Error("Application root element was not found");
 }
 
-createRoot(root).render(<App />);
+const startApp = async () => {
+  await purgeStaleCaches();
+  createRoot(root).render(<App />);
+};
+
+void startApp();
 
