@@ -5,12 +5,23 @@ import "./index.css";
 /** Bump this string to force every visitor's browser to drop stale caches. */
 const CACHE_RELEASE = "2026-08-08-cache-purge-2";
 
+const unregisterServiceWorkers = async () => {
+  if (!("serviceWorker" in navigator)) return false;
+  const registrations = await navigator.serviceWorker.getRegistrations();
+  await Promise.allSettled(registrations.map((registration) => registration.unregister()));
+  return registrations.length > 0;
+};
+
 const purgeStaleCaches = async () => {
   try {
-    if (localStorage.getItem("eden-cache-release") === CACHE_RELEASE) return;
-    if ("serviceWorker" in navigator) {
-      const registrations = await navigator.serviceWorker.getRegistrations();
-      await Promise.allSettled(registrations.map((registration) => registration.unregister()));
+    // Always drop any lingering service worker so stale app shells can never be served.
+    const hadWorker = await unregisterServiceWorkers();
+    if (localStorage.getItem("eden-cache-release") === CACHE_RELEASE) {
+      if (hadWorker && "caches" in window) {
+        const keys = await caches.keys();
+        await Promise.allSettled(keys.map((key) => caches.delete(key)));
+      }
+      return;
     }
     if ("caches" in window) {
       const keys = await caches.keys();
