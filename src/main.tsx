@@ -3,7 +3,7 @@ import App from "./App.tsx";
 import "./index.css";
 
 /** Bump this string to force every visitor's browser to drop stale caches. */
-const CACHE_RELEASE = "2026-08-07-affiliate-1";
+const CACHE_RELEASE = "2026-08-08-cache-purge-2";
 
 const purgeStaleCaches = async () => {
   try {
