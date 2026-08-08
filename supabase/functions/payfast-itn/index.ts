@@ -158,29 +158,6 @@ serve(async (req) => {
 
         if (error) console.error("Error updating storage add-on:", error);
       }
-    } else if (planId === "trial") {
-      const trialEndIso = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
-      const { error } = await supabase
-        .from("profiles")
-        .update({
-          subscription_plan: "trial",
-          trial_active: true,
-          trial_ends_at: trialEndIso,
-          trial_start_date: new Date().toISOString(),
-          trial_end_date: trialEndIso,
-          trial_used: true,
-          payfast_subscription_id: pfSubscriptionId,
-          payfast_token: pfToken,
-          payment_status: "complete",
-        })
-        .eq("user_id", userId)
-        .eq("trial_used", false);
-
-      if (error) {
-        console.error("Error activating trial:", error);
-      } else {
-        console.log(`Trial activated for user ${userId}`);
-      }
     } else if (isSubscriptionPlan) {
       const { data: existing } = await supabase
         .from("subscriptions")
@@ -258,7 +235,7 @@ serve(async (req) => {
     try {
       const gross = Number(params.get("amount_gross") || "0");
       const isVerificationPayment = params.get("custom_str3") === "subscription" && gross <= 5;
-      if (planId !== "trial" && planId !== "free" && !isVerificationPayment && Number.isFinite(gross) && gross > 0) {
+      if (planId !== "free" && planId !== "standard" && !isVerificationPayment && Number.isFinite(gross) && gross > 0) {
         const { data: profile } = await supabase
           .from("profiles")
           .select("referred_by_affiliate_id")
