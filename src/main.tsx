@@ -3,7 +3,7 @@ import App from "./App.tsx";
 import "./index.css";
 
 /** Bump this string to force every visitor's browser to drop stale caches. */
-const CACHE_RELEASE = "2026-08-08-cache-purge-2";
+const CACHE_RELEASE = "2026-08-08-logout-cache-1";
 
 const unregisterServiceWorkers = async () => {
   if (!("serviceWorker" in navigator)) return false;
