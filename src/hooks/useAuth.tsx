@@ -38,7 +38,23 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   const signOut = async () => {
-    await supabase.auth.signOut();
+    try {
+      await supabase.auth.signOut();
+    } catch {
+      // ignore — we clear local state regardless
+    }
+    try {
+      // Remove any lingering auth tokens so the session can't be restored.
+      Object.keys(localStorage)
+        .filter((k) => k.startsWith("sb-") && k.includes("auth-token"))
+        .forEach((k) => localStorage.removeItem(k));
+    } catch {
+      // storage unavailable
+    }
+    setSession(null);
+    setUser(null);
+    // Hard navigation guarantees all cached app state is dropped.
+    window.location.replace("/");
   };
 
   return (
